@@ -1,0 +1,12 @@
+.DS_Store
+.gradle
+.idea/*
+!.idea/codeStyles
+*.iml
+*.bag
+build
+local.properties
+src/main/resources/branch.txt
+src/main/resources/buildtime.txt
+src/main/resources/changes.txt
+src/main/resources/commit.txt
