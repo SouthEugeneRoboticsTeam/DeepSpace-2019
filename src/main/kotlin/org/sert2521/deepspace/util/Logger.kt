@@ -3,15 +3,15 @@ package org.sert2521.deepspace.util
 import badlog.lib.BadLog
 import badlog.lib.DataInferMode
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.RobotController
 import org.team2471.frc.lib.framework.Subsystem
-import org.team2471.frc.lib.util.Environment
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.function.Supplier
 
-private val pathPrefix = if (Environment.isReal) "/home/lvuser/logs" else "."
+private val pathPrefix = if (RobotBase.isReal()) "/home/lvuser/logs" else "."
 val logger = BadLog.init("$pathPrefix/${System.currentTimeMillis()}.bag")!!
 
 class Logger {
