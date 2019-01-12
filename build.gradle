@@ -58,14 +58,14 @@ deploy {
         }
     }
     artifacts {
-        frcJavaArtifact('frcJava') {
+        frcJavaArtifact("frcJava") {
             targets << "roborio"
             debug = frc.getDebugOrDefault(false)
         }
-        fileTreeArtifact('frcStaticFileDeploy') {
-            files = fileTree(dir: 'src/main/deploy')
+        fileTreeArtifact("frcStaticFileDeploy") {
+            files = fileTree(dir: "src/main/deploy")
             targets << "roborio"
-            directory = '/home/lvuser/deploy'
+            directory = "/home/lvuser/deploy"
         }
     }
 }
