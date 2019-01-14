@@ -5,6 +5,7 @@ import badlog.lib.DataInferMode
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.RobotController
+import org.sert2521.deepspace.Robot
 import org.team2471.frc.lib.framework.Subsystem
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -192,6 +193,6 @@ fun logBuildInfo() {
 }
 
 fun String.asResource(body: (String) -> Unit) {
-    val content = this.javaClass::class.java.getResource("/$this")?.readText()
+    val content = Robot.javaClass.getResource("/$this")?.readText()
     body(content ?: "")
 }
