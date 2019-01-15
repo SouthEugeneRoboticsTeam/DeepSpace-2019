@@ -18,14 +18,11 @@ import org.team2471.frc.lib.framework.RobotProgram
 import org.team2471.frc.lib.framework.initializeWpilib
 import org.team2471.frc.lib.framework.runRobotProgram
 
+val subsystems = arrayOf(Drivetrain)
+
 object Robot : RobotProgram {
     init {
         logger
-
-        AutoChooser
-        Vision
-
-        Drivetrain
 
         initControls()
         initPreferences()
@@ -38,6 +35,8 @@ object Robot : RobotProgram {
             periodic(0.1) { log() }
         }
 
+        subsystems.forEach { it.enable() }
+
         Drivetrain.brake()
     }
 
@@ -45,6 +44,8 @@ object Robot : RobotProgram {
         TelemetryScope.launch {
             periodic(0.25) { log() }
         }
+
+        subsystems.forEach { it.disable() }
 
         suspendUntil { Math.abs(Drivetrain.speed) < 0.5 }
         Drivetrain.coast()
@@ -65,6 +66,9 @@ object Robot : RobotProgram {
 
 fun main() {
     initializeWpilib()
+
+    AutoChooser
+    Vision
 
     runRobotProgram(Robot)
 }
