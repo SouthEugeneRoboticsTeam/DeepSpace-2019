@@ -20,6 +20,9 @@ import org.team2471.frc.lib.framework.runRobotProgram
 
 val subsystems = arrayOf(Drivetrain)
 
+private var loggerJob: Job? = null
+private val ds = DriverStation.getInstance()
+
 object Robot : RobotProgram {
     init {
         logger
@@ -31,9 +34,7 @@ object Robot : RobotProgram {
     }
 
     override suspend fun enable() {
-        TelemetryScope.launch {
-            periodic(0.1) { log() }
-        }
+        startLogger()
 
         subsystems.forEach { it.enable() }
 
@@ -41,9 +42,7 @@ object Robot : RobotProgram {
     }
 
     override suspend fun disable() {
-        TelemetryScope.launch {
-            periodic(0.25) { log() }
-        }
+        startLogger()
 
         subsystems.forEach { it.disable() }
 
@@ -61,6 +60,13 @@ object Robot : RobotProgram {
         Shuffleboard.selectTab("Autonomous")
 
         AutoChooser.runAuto()
+    }
+}
+
+private fun startLogger(interval: Double = if (ds.isEnabled) 0.1 else 0.25) {
+    loggerJob?.cancel()
+    loggerJob = TelemetryScope.launch {
+        periodic(interval) { log() }
     }
 }
 
