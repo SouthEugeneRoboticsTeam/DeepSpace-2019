@@ -1,6 +1,8 @@
 package org.sert2521.deepspace
 
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.sert2521.deepspace.autonomous.AutoChooser
 import org.sert2521.deepspace.drivetrain.Drivetrain
