@@ -14,7 +14,7 @@ import kotlin.math.abs
 /**
  * The robot's drive system.
  */
-object Drivetrain : Subsystem("Drivetrain", { teleopDrive() }) {
+object Drivetrain : Subsystem("Drivetrain", ::teleopDrive) {
     val leftDrive = TalonSRX(Talons.DRIVE_LEFT_FRONT, Talons.DRIVE_LEFT_REAR).config {
         feedbackCoefficient = ticksToFeet(1)
         brakeMode()
