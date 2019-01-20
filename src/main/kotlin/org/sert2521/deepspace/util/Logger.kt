@@ -12,7 +12,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.function.Supplier
 
-private val pathPrefix = if (RobotBase.isReal()) "/home/lvuser/logs" else "."
+private val pathPrefix = if (RobotBase.isReal()) "/home/lvuser" else "."
 val logger = BadLog.init("$pathPrefix/${System.currentTimeMillis()}.bag")!!
 
 class Logger {
