@@ -3,11 +3,14 @@ package org.sert2521.deepspace.util
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.Preferences
+import edu.wpi.first.wpilibj.XboxController
 import org.sert2521.deepspace.Operator
 import org.team2471.frc.lib.framework.createMappings
 
 val primaryJoystick by lazy { Joystick(Operator.PRIMARY_STICK) }
 val secondaryJoystick by lazy { Joystick(Operator.SECONDARY_STICK) }
+
+val primaryController by lazy { XboxController(0) }
 
 val driveSpeedScalar get() = Preferences.getInstance().getDouble("drive_speed_scalar", 1.0)
 
