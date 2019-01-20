@@ -14,8 +14,7 @@ object Operator {
 }
 
 object Characteristics {
-    const val WHEEL_DIAMETER = 4
-    const val WHEELBASE_WIDTH = 0.7
+    const val WHEEL_DIAMETER = 6
+    const val WHEELBASE_WIDTH = 22.0 / 12.0
     const val ENCODER_TICKS_PER_REVOLUTION = 4096
-    const val ENCODER_TICKS_PER_METER = ENCODER_TICKS_PER_REVOLUTION / (WHEEL_DIAMETER * Math.PI)
 }

@@ -20,14 +20,21 @@ import org.team2471.frc.lib.framework.RobotProgram
 import org.team2471.frc.lib.framework.initializeWpilib
 import org.team2471.frc.lib.framework.runRobotProgram
 
-val subsystems = arrayOf(Drivetrain)
-
 private var loggerJob: Job? = null
 private val ds = DriverStation.getInstance()
 
 object Robot : RobotProgram {
+    private val subsystems by lazy { arrayOf(Drivetrain) }
+
     init {
         logger
+
+        // Init subsystems
+        subsystems
+
+        // Init companions
+        AutoChooser
+        Vision
 
         initControls()
         initPreferences()
@@ -68,15 +75,12 @@ object Robot : RobotProgram {
 private fun startLogger(interval: Double = if (ds.isEnabled) 0.1 else 0.25) {
     loggerJob?.cancel()
     loggerJob = TelemetryScope.launch {
-        periodic(interval) { log() }
+        periodic(interval, watchOverrun = false) { log() }
     }
 }
 
 fun main() {
     initializeWpilib()
-
-    AutoChooser
-    Vision
 
     runRobotProgram(Robot)
 }
