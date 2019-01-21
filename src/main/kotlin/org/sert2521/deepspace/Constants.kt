@@ -6,6 +6,14 @@ object Talons {
     const val DRIVE_LEFT_REAR = 12
     const val DRIVE_RIGHT_FRONT = 13
     const val DRIVE_RIGHT_REAR = 14
+
+    // Intake
+    const val INTAKE_ROLLER = -1
+}
+
+object Pneumatics {
+    const val KICKER_RAISE_CHANNEL = -1
+    const val KICKER_LOWER_CHANNEL = -1
 }
 
 object Operator {
