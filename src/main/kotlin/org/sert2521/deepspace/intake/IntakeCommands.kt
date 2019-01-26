@@ -5,7 +5,7 @@ import org.team2471.frc.lib.framework.use
 
 suspend fun Intake.runIntake() = use(this) {
     try {
-        periodic {
+        periodic(watchOverrun = false) {
             Intake.intakeCargo()
         }
     } finally {
