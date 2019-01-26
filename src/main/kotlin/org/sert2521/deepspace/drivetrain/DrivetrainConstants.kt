@@ -1,16 +1,21 @@
 package org.sert2521.deepspace.drivetrain
 
-internal const val GYRO_CORRECTION_P = 0.008
-internal const val GYRO_CORRECTION_I = 0.001
-internal const val GYRO_CORRECTION_I_DECAY = 1.0
+import org.team2471.frc.lib.motion_profiling.following.ArcadeRobot
 
 internal const val DISTANCE_P = 0.075
 internal const val DISTANCE_D = 0.003
 
-internal const val LEFT_FEED_FORWARD_COEFFICIENT = 0.10
-internal const val LEFT_FEED_FORWARD_OFFSET = 0.02
-
-internal const val RIGHT_FEED_FORWARD_COEFFICIENT = 0.10
-internal const val RIGHT_FEED_FORWARD_OFFSET = 0.02
-
-internal const val TURNING_FEED_FORWARD = 0.035
+internal val drivetrainConfig = ArcadeRobot.Config(
+    trackWidth = 0.5,
+    scrubFactor = 1.115,
+    driveTurningP = 0.008,
+    leftFeedForwardOffset = 0.02,
+    leftFeedForwardCoefficient = 0.1,
+    rightFeedForwardOffset = 0.02,
+    rightFeedForwardCoefficient = 0.1,
+    headingFeedForward = 0.0,
+    doHeadingCorrection = true,
+    headingCorrectionP = 0.0,
+    headingCorrectionI = 0.0,
+    headingCorrectionIDecay = 0.0
+)

@@ -8,13 +8,14 @@ import org.sert2521.deepspace.util.Logger
 import org.sert2521.deepspace.util.Telemetry
 import org.team2471.frc.lib.actuators.TalonSRX
 import org.team2471.frc.lib.framework.Subsystem
-import org.team2471.frc.lib.math.deadband
-import kotlin.math.abs
+import org.team2471.frc.lib.motion_profiling.following.ArcadeRobot
 
 /**
  * The robot's drive system.
  */
-object Drivetrain : Subsystem("Drivetrain", ::teleopDrive) {
+object Drivetrain : Subsystem("Drivetrain", ::teleopDrive), ArcadeRobot {
+    override val config = drivetrainConfig
+
     val leftDrive = TalonSRX(Talons.DRIVE_LEFT_FRONT, Talons.DRIVE_LEFT_REAR).config {
         feedbackCoefficient = ticksToFeet(1)
         brakeMode()
@@ -39,7 +40,9 @@ object Drivetrain : Subsystem("Drivetrain", ::teleopDrive) {
     val telemetry = Telemetry(this)
     val logger = Logger(this)
 
-    val ahrs = AHRS(I2C.Port.kMXP)
+    private val ahrs = AHRS(I2C.Port.kMXP)
+    override val heading get() = ahrs.angle
+    override val headingRate get() = ahrs.rate
 
     val speed: Double get() = (leftDrive.velocity + rightDrive.velocity) / 2.0
 
@@ -81,28 +84,24 @@ object Drivetrain : Subsystem("Drivetrain", ::teleopDrive) {
     fun feetToTicks(feet: Double) =
         feet * 12.0 / Math.PI / Characteristics.WHEEL_DIAMETER * Characteristics.ENCODER_TICKS_PER_REVOLUTION
 
-    fun drive(throttle: Double, turn: Double) {
-        val scaledThrottle = abs(throttle).coerceAtMost(1.0).deadband(0.02)
-        val scaledTurn = abs(turn).coerceAtMost(1.0).deadband(0.02)
-
-        val squaredThrottle = Math.copySign(scaledThrottle * scaledThrottle, throttle)
-        val squaredTurn = Math.copySign(scaledTurn * scaledTurn, -turn)
-
-        val leftPower = (squaredThrottle + squaredTurn).coerceIn(-1.0, 1.0)
-        val rightPower = (squaredThrottle - squaredTurn).coerceIn(-1.0, 1.0)
-
+    override fun driveOpenLoop(leftPower: Double, rightPower: Double) {
         leftDrive.setPercentOutput(leftPower)
         rightDrive.setPercentOutput(rightPower)
     }
 
-    fun drivePosition(
-        leftPosition: Double,
-        rightPosition: Double,
-        leftFeedForward: Double = 0.0,
-        rightFeedForward: Double = 0.0
+    override fun driveClosedLoop(
+        leftDistance: Double,
+        leftFeedForward: Double,
+        rightDistance: Double,
+        rightFeedForward: Double
     ) {
-        leftDrive.setPositionSetpoint(leftPosition, leftFeedForward)
-        rightDrive.setPositionSetpoint(rightPosition, rightFeedForward)
+        leftDrive.setPositionSetpoint(leftDistance, leftFeedForward)
+        rightDrive.setPositionSetpoint(rightDistance, rightFeedForward)
+    }
+
+    override fun startFollowing() {
+        zeroEncoders()
+        zeroGyro()
     }
 
     fun coast() {
@@ -113,10 +112,5 @@ object Drivetrain : Subsystem("Drivetrain", ::teleopDrive) {
     fun brake() {
         leftDrive.config { brakeMode() }
         rightDrive.config { brakeMode() }
-    }
-
-    fun stop() {
-        leftDrive.stop()
-        rightDrive.stop()
     }
 }
