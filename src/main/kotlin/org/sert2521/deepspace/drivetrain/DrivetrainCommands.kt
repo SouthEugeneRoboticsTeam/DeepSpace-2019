@@ -10,7 +10,7 @@ import org.team2471.frc.lib.motion_profiling.following.drive
 import org.team2471.frc.lib.motion_profiling.following.driveAlongPath
 
 /**
- * Allows for teleoperated driveRaw of the robot.
+ * Allows for teleoperated drive of the robot.
  */
 suspend fun teleopDrive() = use(Drivetrain) {
     periodic(watchOverrun = false) {
