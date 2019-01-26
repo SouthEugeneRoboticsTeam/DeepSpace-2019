@@ -12,7 +12,7 @@ import org.team2471.frc.lib.motion_profiling.following.driveAlongPath
 /**
  * Allows for teleoperated drive of the robot.
  */
-suspend fun teleopDrive() = use(Drivetrain) {
+suspend fun Drivetrain.teleopDrive() = use(this) {
     periodic(watchOverrun = false) {
         Drivetrain.drive(
             driveSpeedScalar * primaryController.getY(GenericHID.Hand.kLeft),
@@ -22,6 +22,6 @@ suspend fun teleopDrive() = use(Drivetrain) {
     }
 }
 
-suspend fun followPath(path: Path2D, extraTime: Double = 0.0) = use(Drivetrain) {
+suspend fun Drivetrain.followPath(path: Path2D, extraTime: Double = 0.0) = use(this) {
     Drivetrain.driveAlongPath(path, extraTime)
 }

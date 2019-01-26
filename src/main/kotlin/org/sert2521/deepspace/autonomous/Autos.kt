@@ -1,5 +1,6 @@
 package org.sert2521.deepspace.autonomous
 
+import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.drivetrain.followPath
 
 /**
@@ -14,7 +15,7 @@ suspend fun testStraightAuto() {
     val path = auto["8 Foot Straight"]
 
     try {
-        followPath(path, 0.5)
+        Drivetrain.followPath(path, 0.5)
     } finally {
         println("Done following path")
     }
