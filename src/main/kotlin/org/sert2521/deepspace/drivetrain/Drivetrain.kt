@@ -14,7 +14,7 @@ import org.team2471.frc.lib.motion_profiling.following.ArcadeRobot
  * The robot's drive system.
  */
 object Drivetrain : Subsystem("Drivetrain", Drivetrain::teleopDrive), ArcadeRobot {
-    override val config = drivetrainConfig
+    override val parameters = drivetrainConfig
 
     val leftDrive = TalonSRX(Talons.DRIVE_LEFT_FRONT, Talons.DRIVE_LEFT_REAR).config {
         feedbackCoefficient = ticksToFeet(1)
