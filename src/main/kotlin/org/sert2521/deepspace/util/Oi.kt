@@ -13,6 +13,7 @@ val secondaryJoystick by lazy { Joystick(Operator.SECONDARY_STICK) }
 val primaryController by lazy { XboxController(0) }
 
 val driveSpeedScalar get() = Preferences.getInstance().getDouble("drive_speed_scalar", 1.0)
+val liftSpeedScalar get() = Preferences.getInstance().getDouble("lift_speed_scalar", 1.0)
 
 fun initControls() {
     val logger = Logger("Input")

@@ -7,8 +7,18 @@ object Talons {
     const val DRIVE_RIGHT_FRONT = 13
     const val DRIVE_RIGHT_REAR = 14
 
+    // Lift
+    const val LIFT_LEFT = -1
+    const val LIFT_RIGHT = -1
+
     // Intake
     const val INTAKE_ROLLER = -1
+}
+
+object Sensors {
+    // Lift
+    const val LIFT_SWITCH_TOP = -1
+    const val LIFT_SWITCH_BOTTOM = -1
 }
 
 object Pneumatics {
