@@ -14,7 +14,7 @@ enum class LiftState(val position: Int) {
     CARGO_LOW(0), CARGO_MIDDLE(0), CARGO_HIGH(0),
 }
 
-object Lift : Subsystem("Lift", Lift::manualControl) {
+object Lift : Subsystem("Lift") {
     private val motor = TalonSRX(Talons.LIFT_LEFT, Talons.LIFT_RIGHT).config {
         brakeMode()
         closedLoopRamp(0.25)
@@ -45,4 +45,6 @@ object Lift : Subsystem("Lift", Lift::manualControl) {
             setPosition(motionCurve.getValue(it))
         }
     }
+
+    override suspend fun default() = Lift.manualControl()
 }
