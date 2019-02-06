@@ -14,6 +14,8 @@ object Talons {
 object Pneumatics {
     const val KICKER_RAISE_CHANNEL = -1
     const val KICKER_LOWER_CHANNEL = -1
+    const val CARGOHOLD_RAISE_CHANNEL = -1
+    const val CARGOHOLD_LOWER_CHANNEL = -1
 }
 
 object Operator {

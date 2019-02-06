@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.Preferences
 import edu.wpi.first.wpilibj.XboxController
 import org.sert2521.deepspace.Operator
+import org.sert2521.deepspace.cargoholder.Bucket.releaseBall
+import org.sert2521.deepspace.cargoholder.runCargohold
 import org.team2471.frc.lib.framework.createMappings
 
 val primaryJoystick by lazy { Joystick(Operator.PRIMARY_STICK) }
@@ -23,6 +25,7 @@ fun initControls() {
 
     secondaryJoystick.createMappings {
         // Secondary joystick mappings
+        buttonHold(0) { runCargohold() }
     }
 
     for (i in 0 until DriverStation.kJoystickPorts) {
