@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.Preferences
 import edu.wpi.first.wpilibj.XboxController
 import org.sert2521.deepspace.Operator
+import org.sert2521.deepspace.claw.Claw
+import org.sert2521.deepspace.claw.release
 import org.team2471.frc.lib.framework.createMappings
 
 val primaryJoystick by lazy { Joystick(Operator.PRIMARY_STICK) }
@@ -18,13 +20,13 @@ val liftSpeedScalar get() = Preferences.getInstance().getDouble("lift_speed_scal
 fun initControls() {
     val logger = Logger("Input")
 
+    // Primary joystick mappings
     primaryJoystick.createMappings {
-        // Primary joystick mappings
+        buttonHold(2) { Claw.release(true) }
     }
 
-    secondaryJoystick.createMappings {
-        // Secondary joystick mappings
-    }
+    // Secondary joystick mappings
+    secondaryJoystick.createMappings { }
 
     for (i in 0 until DriverStation.kJoystickPorts) {
         logger.addValue("Controller $i Type",

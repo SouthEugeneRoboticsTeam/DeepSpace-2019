@@ -19,11 +19,19 @@ object Sensors {
     // Lift
     const val LIFT_SWITCH_TOP = -1
     const val LIFT_SWITCH_BOTTOM = -1
+
+    // Claw
+    const val CLAW_SWITCH = -1
 }
 
 object Pneumatics {
-    const val KICKER_RAISE_CHANNEL = -1
-    const val KICKER_LOWER_CHANNEL = -1
+    // Intake
+    const val INTAKE_RAISE = -1
+    const val INTAKE_LOWER = -1
+
+    // Claw
+    const val CLAW_OPEN = -1
+    const val CLAW_CLOSE = -1
 }
 
 object Operator {

@@ -7,24 +7,20 @@ import org.team2471.frc.lib.actuators.TalonSRX
 import org.team2471.frc.lib.framework.Subsystem
 
 object Intake : Subsystem("Intake") {
-    private enum class IntakeState {
-        LOWERED, RAISED
+    private enum class IntakeState(val position: DoubleSolenoid.Value) {
+        LOWERED(DoubleSolenoid.Value.kReverse), RAISED(DoubleSolenoid.Value.kForward)
     }
 
-    private val solenoid = DoubleSolenoid(Pneumatics.KICKER_RAISE_CHANNEL, Pneumatics.KICKER_LOWER_CHANNEL)
+    private val solenoid = DoubleSolenoid(Pneumatics.INTAKE_RAISE, Pneumatics.INTAKE_LOWER)
     private val roller = TalonSRX(Talons.INTAKE_ROLLER)
 
     private var state: IntakeState = IntakeState.RAISED
         set(value) {
-            // Ensure we only set solenoid once
-            if (field == value) return
+            if (field != value) {
+                field = value
 
-            when (value) {
-                IntakeState.LOWERED -> solenoid.set(DoubleSolenoid.Value.kReverse)
-                IntakeState.RAISED -> solenoid.set(DoubleSolenoid.Value.kForward)
+                solenoid.set(value.position)
             }
-
-            field = value
         }
 
     fun intakeCargo() {
