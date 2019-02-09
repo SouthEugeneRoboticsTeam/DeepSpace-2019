@@ -3,25 +3,39 @@ package org.sert2521.deepspace.drivetrain
 import org.team2471.frc.lib.motion_profiling.following.ArcadeParameters
 import org.team2471.frc.lib.motion_profiling.following.RobotParameters
 
-internal const val DISTANCE_P = 0.075
-internal const val DISTANCE_D = 0.003
+internal const val DISTANCE_P = 0.14
+internal const val DISTANCE_D = 0.0
+
+internal const val MAX_VELOCITY = 10.0 // ft/s
 
 internal val robotConfig = RobotParameters(
-    robotWidth = 28.0 / 12.0,
-    robotLength = 32.0 / 12.0
+    robotWidth = 27.0 / 12.0,
+    robotLength = 32.25 / 12.0
 )
 
 internal val drivetrainConfig = ArcadeParameters(
-    trackWidth = 0.5,
-    scrubFactor = 1.115,
-    driveTurningP = 0.008,
+//    trackWidth = 22.0 / 12.0,
+//    scrubFactor = 1.120,
+//    driveTurningP = 0.001,
+//    leftFeedForwardOffset = 0.03,
+//    leftFeedForwardCoefficient = 0.08,
+//    rightFeedForwardOffset = 0.03,
+//    rightFeedForwardCoefficient = 0.08,
+//    headingFeedForward = 0.0,
+//    doHeadingCorrection = true,
+//    headingCorrectionP = 0.01,
+//    headingCorrectionI = 0.003,
+//    headingCorrectionIDecay = 0.95
+    trackWidth = 22.0 / 12.0,
+    scrubFactor = 1.120,
+    driveTurningP = 0.001,
     leftFeedForwardOffset = 0.02,
-    leftFeedForwardCoefficient = 0.1,
+    leftFeedForwardCoefficient = 0.07,
     rightFeedForwardOffset = 0.02,
-    rightFeedForwardCoefficient = 0.1,
+    rightFeedForwardCoefficient = 0.07,
     headingFeedForward = 0.0,
     doHeadingCorrection = true,
-    headingCorrectionP = 0.0,
-    headingCorrectionI = 0.0,
-    headingCorrectionIDecay = 0.0
+    headingCorrectionP = 0.012,
+    headingCorrectionI = 0.005,
+    headingCorrectionIDecay = 0.95
 )

@@ -2,23 +2,23 @@ package org.sert2521.deepspace
 
 object Talons {
     // Drivetrain
-    const val DRIVE_LEFT_FRONT = 11
-    const val DRIVE_LEFT_REAR = 12
-    const val DRIVE_RIGHT_FRONT = 13
-    const val DRIVE_RIGHT_REAR = 14
+    const val DRIVE_RIGHT_FRONT = 11
+    const val DRIVE_RIGHT_REAR = 12
+    const val DRIVE_LEFT_FRONT = 13
+    const val DRIVE_LEFT_REAR = 14
 
     // Lift
-    const val LIFT_LEFT = -1
-    const val LIFT_RIGHT = -1
+    const val LIFT_LEFT = 20
+    const val LIFT_RIGHT = 21
 
     // Intake
-    const val INTAKE_ROLLER = -1
+    const val INTAKE_ROLLER = 22
 }
 
 object Sensors {
     // Lift
-    const val LIFT_SWITCH_TOP = -1
-    const val LIFT_SWITCH_BOTTOM = -1
+    const val LIFT_SWITCH_TOP = 1
+    const val LIFT_SWITCH_BOTTOM = 2
 
     // Claw
     const val CLAW_SWITCH = -1

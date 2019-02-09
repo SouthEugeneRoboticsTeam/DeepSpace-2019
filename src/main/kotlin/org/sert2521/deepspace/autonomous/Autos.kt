@@ -1,7 +1,7 @@
 package org.sert2521.deepspace.autonomous
 
 import org.sert2521.deepspace.drivetrain.Drivetrain
-import org.sert2521.deepspace.drivetrain.followPath
+import org.team2471.frc.lib.motion.following.driveAlongPath
 
 /**
  * This file defines the various different auto modes that can be run. They should call commands and
@@ -12,10 +12,10 @@ import org.sert2521.deepspace.drivetrain.followPath
 suspend fun testStraightAuto() {
     val auto = autonomi["Tests"]
 
-    val path = auto["8 Foot Straight"]
+    val path = auto["Turn"]
 
     try {
-        Drivetrain.followPath(path, 0.5)
+        Drivetrain.driveAlongPath(path, 0.5)
     } finally {
         println("Done following path")
     }

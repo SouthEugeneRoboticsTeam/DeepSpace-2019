@@ -3,12 +3,12 @@ package org.sert2521.deepspace
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.sert2521.deepspace.autonomous.AutoChooser
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.intake.Intake
 import org.sert2521.deepspace.util.TelemetryScope
-import org.sert2521.deepspace.util.Vision
 import org.sert2521.deepspace.util.initControls
 import org.sert2521.deepspace.util.initLogs
 import org.sert2521.deepspace.util.initPreferences
@@ -35,7 +35,6 @@ object Robot : RobotProgram {
 
         // Init companions
         AutoChooser
-        Vision
 
         initControls()
         initPreferences()
@@ -56,7 +55,7 @@ object Robot : RobotProgram {
 
         subsystems.forEach { it.disable() }
 
-        suspendUntil { Math.abs(Drivetrain.speed) < 0.5 }
+        suspendUntil { Math.abs(Drivetrain.speed) < 0.25 }
         Drivetrain.coast()
     }
 
@@ -66,6 +65,8 @@ object Robot : RobotProgram {
     }
 
     override suspend fun autonomous() {
+        delay(100)
+
         println("Entering autonomous...")
         Shuffleboard.selectTab("Autonomous")
 

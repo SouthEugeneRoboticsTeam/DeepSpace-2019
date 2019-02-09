@@ -8,18 +8,18 @@ import org.sert2521.deepspace.util.Logger
 import org.sert2521.deepspace.util.Telemetry
 import org.team2471.frc.lib.actuators.TalonSRX
 import org.team2471.frc.lib.framework.Subsystem
-import org.team2471.frc.lib.motion_profiling.following.ArcadeRobot
+import org.team2471.frc.lib.motion.following.ArcadeDrive
 
 /**
  * The robot's drive system.
  */
-object Drivetrain : Subsystem("Drivetrain"), ArcadeRobot {
+object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
     override val parameters = drivetrainConfig
 
     val leftDrive = TalonSRX(Talons.DRIVE_LEFT_FRONT, Talons.DRIVE_LEFT_REAR).config {
         feedbackCoefficient = ticksToFeet(1)
         brakeMode()
-        inverted(true)
+        sensorPhase(true)
         closedLoopRamp(0.1)
         pid(0) {
             p(DISTANCE_P)
@@ -30,6 +30,8 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeRobot {
     val rightDrive = TalonSRX(Talons.DRIVE_RIGHT_FRONT, Talons.DRIVE_RIGHT_REAR).config {
         feedbackCoefficient = ticksToFeet(1)
         brakeMode()
+        inverted(true)
+        sensorPhase(true)
         closedLoopRamp(0.1)
         pid(0) {
             p(DISTANCE_P)
@@ -44,13 +46,13 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeRobot {
     override val heading get() = ahrs.angle
     override val headingRate get() = ahrs.rate
 
+    private var followingPath = false
+
     val speed: Double get() = (leftDrive.velocity + rightDrive.velocity) / 2.0
 
     val leftSpeed: Double get() = leftDrive.velocity
 
     val rightSpeed: Double get() = rightDrive.velocity
-
-    val position: Double get() = (leftDrive.position + rightDrive.position) / 2.0
 
     val leftDistance get() = leftDrive.position
 
@@ -60,6 +62,10 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeRobot {
 
     init {
         telemetry.add("Gyro") { ahrs.angle }
+        telemetry.add("Speed") { speed }
+        telemetry.add("Distance") { distance }
+        telemetry.add("Left Distance") { leftDistance }
+        telemetry.add("Right Distance") { rightDistance }
 
         logger.addNumberTopic("Angle", "deg") { ahrs.angle }
         logger.addNumberTopic("Left Output") { leftDrive.output }
@@ -95,6 +101,7 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeRobot {
         rightDistance: Double,
         rightFeedForward: Double
     ) {
+        println("Actual left: ${this.leftDistance}, Actual right: ${this.rightDistance}, Actual heading: $heading")
         leftDrive.setPositionSetpoint(leftDistance, leftFeedForward)
         rightDrive.setPositionSetpoint(rightDistance, rightFeedForward)
     }
@@ -102,6 +109,12 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeRobot {
     override fun startFollowing() {
         zeroEncoders()
         zeroGyro()
+
+        followingPath = true
+    }
+
+    override fun stopFollowing() {
+        followingPath = false
     }
 
     fun coast() {

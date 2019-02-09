@@ -16,7 +16,7 @@ import org.team2471.frc.lib.motion_profiling.Autonomi
 import org.team2471.frc.lib.util.measureTimeFPGA
 import java.io.File
 
-internal lateinit var autonomi: Autonomi
+lateinit var autonomi: Autonomi
 
 enum class AutoMode {
     CROSS_BASELINE;
