@@ -3,10 +3,10 @@ package org.sert2521.deepspace.drivetrain
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj.I2C
 import org.sert2521.deepspace.Characteristics
-import org.sert2521.deepspace.Talons
+import org.sert2521.deepspace.MotorControllers
 import org.sert2521.deepspace.util.Logger
 import org.sert2521.deepspace.util.Telemetry
-import org.team2471.frc.lib.actuators.TalonSRX
+import org.team2471.frc.lib.actuators.MotorController
 import org.team2471.frc.lib.framework.Subsystem
 import org.team2471.frc.lib.motion.following.ArcadeDrive
 
@@ -16,7 +16,10 @@ import org.team2471.frc.lib.motion.following.ArcadeDrive
 object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
     override val parameters = drivetrainConfig
 
-    val leftDrive = TalonSRX(Talons.DRIVE_LEFT_FRONT, Talons.DRIVE_LEFT_REAR).config {
+    val leftDrive = MotorController(
+        MotorControllers.DRIVE_LEFT_FRONT,
+        MotorControllers.DRIVE_LEFT_REAR
+    ).config {
         feedbackCoefficient = ticksToFeet(1)
         brakeMode()
         sensorPhase(true)
@@ -27,7 +30,10 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
         }
     }
 
-    val rightDrive = TalonSRX(Talons.DRIVE_RIGHT_FRONT, Talons.DRIVE_RIGHT_REAR).config {
+    val rightDrive = MotorController(
+        MotorControllers.DRIVE_RIGHT_FRONT,
+        MotorControllers.DRIVE_RIGHT_REAR
+    ).config {
         feedbackCoefficient = ticksToFeet(1)
         brakeMode()
         inverted(true)

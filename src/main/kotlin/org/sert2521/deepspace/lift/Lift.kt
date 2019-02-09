@@ -1,11 +1,11 @@
 package org.sert2521.deepspace.lift
 
+import org.sert2521.deepspace.MotorControllers
 import org.sert2521.deepspace.Sensors
-import org.sert2521.deepspace.Talons
 import org.sert2521.deepspace.util.timer
 import org.sertain.hardware.DigitalInput
+import org.team2471.frc.lib.actuators.MotorController
 import org.team2471.frc.lib.framework.Subsystem
-import org.team2471.frc.lib.actuators.TalonSRX
 import org.team2471.frc.lib.motion_profiling.MotionCurve
 
 enum class LiftState(val position: Int) {
@@ -15,15 +15,22 @@ enum class LiftState(val position: Int) {
 }
 
 object Lift : Subsystem("Lift") {
-    private val motor = TalonSRX(Talons.LIFT_LEFT, Talons.LIFT_RIGHT).config {
+    private val motor = MotorController(
+        MotorControllers.LIFT_LEFT,
+        MotorControllers.LIFT_RIGHT
+    ).config {
+        ctreFollowers.forEach { it.inverted = true }
+
+        peakOutput(0.25)
         brakeMode()
+
         closedLoopRamp(0.25)
         pid(0) {
             p(DISTANCE_P)
         }
     }
 
-    var motionCurve = MotionCurve()
+    private var motionCurve = MotionCurve()
 
     val position get() = motor.position
 
@@ -32,9 +39,7 @@ object Lift : Subsystem("Lift") {
 
     fun setSpeed(speed: Double) = motor.setPercentOutput(speed)
 
-    fun setPosition(position: Double) {
-        motor.setPositionSetpoint(position)
-    }
+    fun setPosition(position: Double) = motor.setPositionSetpoint(position)
 
     suspend fun followMotionCurve(time: Double, position: Double) {
         motionCurve = MotionCurve()

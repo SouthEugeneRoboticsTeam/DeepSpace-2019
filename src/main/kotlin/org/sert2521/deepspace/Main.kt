@@ -6,8 +6,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.sert2521.deepspace.autonomous.AutoChooser
+import org.sert2521.deepspace.claw.Claw
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.intake.Intake
+import org.sert2521.deepspace.lift.Lift
 import org.sert2521.deepspace.util.TelemetryScope
 import org.sert2521.deepspace.util.initControls
 import org.sert2521.deepspace.util.initLogs
@@ -25,7 +27,7 @@ private var loggerJob: Job? = null
 private val ds = DriverStation.getInstance()
 
 object Robot : RobotProgram {
-    private val subsystems by lazy { arrayOf(Drivetrain, Intake) }
+    private val subsystems by lazy { arrayOf(Drivetrain, Lift, Intake, Claw) }
 
     init {
         logger

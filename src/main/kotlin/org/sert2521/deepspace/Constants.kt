@@ -1,18 +1,32 @@
 package org.sert2521.deepspace
 
-object Talons {
+import org.team2471.frc.lib.actuators.TalonID
+import org.team2471.frc.lib.actuators.VictorID
+
+object MotorControllers {
     // Drivetrain
-    const val DRIVE_RIGHT_FRONT = 11
-    const val DRIVE_RIGHT_REAR = 12
-    const val DRIVE_LEFT_FRONT = 13
-    const val DRIVE_LEFT_REAR = 14
+    val DRIVE_RIGHT_FRONT = TalonID(11)
+    val DRIVE_RIGHT_REAR = TalonID(12)
+    val DRIVE_LEFT_FRONT = TalonID(13)
+    val DRIVE_LEFT_REAR = TalonID(14)
 
     // Lift
-    const val LIFT_LEFT = 20
-    const val LIFT_RIGHT = 21
+    val LIFT_RIGHT = TalonID(15)
+    val LIFT_LEFT = TalonID(16)
+
+    // Climber
+    val CLIMBER_RIGHT_REAR = TalonID(17)
+    val CLIMBER_LEFT_REAR = TalonID(18)
+    val CLIMBER_FRONT = VictorID(19)
+    val CLIMBER_DRIVE = TalonID(20)
+
+    // Conveyor
+    val CONVEYOR_RIGHT = VictorID(21)
+    val CONVEYOR_LEFT = VictorID(22)
 
     // Intake
-    const val INTAKE_ROLLER = 22
+    val INTAKE_RIGHT = VictorID(23)
+    val INTAKE_LEFT = VictorID(24)
 }
 
 object Sensors {
@@ -21,17 +35,17 @@ object Sensors {
     const val LIFT_SWITCH_BOTTOM = 2
 
     // Claw
-    const val CLAW_SWITCH = -1
+    const val CLAW_SWITCH = 4
 }
 
 object Pneumatics {
     // Intake
-    const val INTAKE_RAISE = -1
-    const val INTAKE_LOWER = -1
+    const val INTAKE_RAISE = 1
+    const val INTAKE_LOWER = 2
 
     // Claw
-    const val CLAW_OPEN = -1
-    const val CLAW_CLOSE = -1
+    const val CLAW_OPEN = 3
+    const val CLAW_CLOSE = 4
 }
 
 object Operator {
