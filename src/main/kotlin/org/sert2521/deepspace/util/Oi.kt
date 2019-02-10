@@ -5,8 +5,15 @@ import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.Preferences
 import edu.wpi.first.wpilibj.XboxController
 import org.sert2521.deepspace.Operator
-import org.sert2521.deepspace.claw.Claw
-import org.sert2521.deepspace.claw.release
+import org.sert2521.deepspace.manipulators.GamePiece
+import org.sert2521.deepspace.manipulators.bucket.Bucket
+import org.sert2521.deepspace.manipulators.bucket.open
+import org.sert2521.deepspace.manipulators.conveyor.Conveyor
+import org.sert2521.deepspace.manipulators.conveyor.run
+import org.sert2521.deepspace.manipulators.intake.Intake
+import org.sert2521.deepspace.manipulators.intake.run
+import org.sert2521.deepspace.manipulators.releaseCurrent
+import org.team2471.frc.lib.coroutines.parallel
 import org.team2471.frc.lib.framework.createMappings
 
 val primaryJoystick by lazy { Joystick(Operator.PRIMARY_STICK) }
@@ -22,11 +29,16 @@ fun initControls() {
 
     // Primary joystick mappings
     primaryJoystick.createMappings {
-        buttonHold(2) { Claw.release(true) }
+        buttonHold(1) { GamePiece.releaseCurrent() }
     }
 
     // Secondary joystick mappings
-    secondaryJoystick.createMappings { }
+    secondaryJoystick.createMappings {
+        buttonHold(1) { GamePiece.releaseCurrent() }
+        buttonHold(2) { parallel({ Conveyor.run(1.5) }, { Intake.run(1.0) }) }
+        buttonHold(3) { Conveyor.run() }
+        buttonHold(4) { Bucket.open(true) }
+    }
 
     for (i in 0 until DriverStation.kJoystickPorts) {
         logger.addValue("Controller $i Type",

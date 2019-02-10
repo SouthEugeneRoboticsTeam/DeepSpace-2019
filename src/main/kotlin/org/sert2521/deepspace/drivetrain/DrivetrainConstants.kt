@@ -14,18 +14,6 @@ internal val robotConfig = RobotParameters(
 )
 
 internal val drivetrainConfig = ArcadeParameters(
-//    trackWidth = 22.0 / 12.0,
-//    scrubFactor = 1.120,
-//    driveTurningP = 0.001,
-//    leftFeedForwardOffset = 0.03,
-//    leftFeedForwardCoefficient = 0.08,
-//    rightFeedForwardOffset = 0.03,
-//    rightFeedForwardCoefficient = 0.08,
-//    headingFeedForward = 0.0,
-//    doHeadingCorrection = true,
-//    headingCorrectionP = 0.01,
-//    headingCorrectionI = 0.003,
-//    headingCorrectionIDecay = 0.95
     trackWidth = 22.0 / 12.0,
     scrubFactor = 1.120,
     driveTurningP = 0.001,

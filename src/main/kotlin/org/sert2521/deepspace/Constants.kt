@@ -31,8 +31,8 @@ object MotorControllers {
 
 object Sensors {
     // Lift
-    const val LIFT_SWITCH_TOP = 1
-    const val LIFT_SWITCH_BOTTOM = 2
+    const val LIFT_SWITCH_TOP = 9
+    const val LIFT_SWITCH_BOTTOM = 5
 
     // Climber
     const val CLIMBER_FRONT_POT = -1
@@ -40,22 +40,31 @@ object Sensors {
     const val CLIMBER_LIDAR = -1
 
     // Claw
-    const val CLAW_SWITCH = 4
+    const val CLAW_SWITCH = 2
+
+    // Conveyor
+    const val CONVEYOR_SWITCH = 0
 }
 
 object Pneumatics {
-    // Intake
-    const val INTAKE_RAISE = 1
-    const val INTAKE_LOWER = 2
-
     // Claw
-    const val CLAW_OPEN = 3
-    const val CLAW_CLOSE = 4
+    const val CLAW_RELEASE = 1
+    const val CLAW_CLAMP = 2
+
+    // Cargo
+    const val CARGO_RAISE = 3
+    const val CARGO_LOWER = 4
+
+    // Intake
+    const val INTAKE_LOWER = 5
+    const val INTAKE_RAISE = 6
 }
 
 object Operator {
     const val PRIMARY_STICK = 0
     const val SECONDARY_STICK = 1
+
+    const val TARGET_LEDS = 4
 }
 
 object Characteristics {

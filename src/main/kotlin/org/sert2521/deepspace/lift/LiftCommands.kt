@@ -6,7 +6,7 @@ import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.framework.use
 
 suspend fun Lift.manualControl() = use(this) {
-    periodic {
+    periodic(watchOverrun = false) {
         Lift.setSpeed(liftSpeedScalar * secondaryJoystick.y)
     }
 }

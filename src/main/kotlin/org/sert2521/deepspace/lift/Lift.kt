@@ -2,6 +2,7 @@ package org.sert2521.deepspace.lift
 
 import org.sert2521.deepspace.MotorControllers
 import org.sert2521.deepspace.Sensors
+import org.sert2521.deepspace.util.Telemetry
 import org.sert2521.deepspace.util.timer
 import org.sertain.hardware.DigitalInput
 import org.team2471.frc.lib.actuators.MotorController
@@ -16,12 +17,14 @@ enum class LiftState(val position: Int) {
 
 object Lift : Subsystem("Lift") {
     private val motor = MotorController(
-        MotorControllers.LIFT_LEFT,
-        MotorControllers.LIFT_RIGHT
+        MotorControllers.LIFT_RIGHT,
+        MotorControllers.LIFT_LEFT
     ).config {
         ctreFollowers.forEach { it.inverted = true }
 
-        peakOutput(0.25)
+        feedbackCoefficient = 1.0
+
+//        peakOutput(0.25)
         brakeMode()
 
         closedLoopRamp(0.25)
@@ -30,12 +33,23 @@ object Lift : Subsystem("Lift") {
         }
     }
 
+    val telemetry = Telemetry(this)
+
+    init {
+        telemetry.add("Position") { motor.position }
+        telemetry.add("Top Switch") { topSwitch.get() }
+        telemetry.add("Bottom Switch") { bottomSwitch.get() }
+    }
+
     private var motionCurve = MotionCurve()
 
     val position get() = motor.position
 
-    val topSwitch = DigitalInput(Sensors.LIFT_SWITCH_TOP)
-    val bottomSwitch = DigitalInput(Sensors.LIFT_SWITCH_BOTTOM)
+    val topSwitch = DigitalInput(Sensors.LIFT_SWITCH_TOP).invert()
+    val bottomSwitch = DigitalInput(Sensors.LIFT_SWITCH_BOTTOM).invert()
+
+    val atTop get() = topSwitch.get()
+    val atBottom get() = bottomSwitch.get()
 
     fun setSpeed(speed: Double) = motor.setPercentOutput(speed)
 

@@ -1,4 +1,4 @@
-package org.sert2521.deepspace.intake
+package org.sert2521.deepspace.manipulators.intake
 
 import edu.wpi.first.wpilibj.DoubleSolenoid
 import org.sert2521.deepspace.MotorControllers
@@ -12,7 +12,13 @@ object Intake : Subsystem("Intake") {
     }
 
     private val solenoid = DoubleSolenoid(Pneumatics.INTAKE_RAISE, Pneumatics.INTAKE_LOWER)
-    private val motor = MotorController(MotorControllers.INTAKE_LEFT, MotorControllers.INTAKE_RIGHT)
+    private val motor = MotorController(
+        MotorControllers.INTAKE_LEFT,
+        MotorControllers.INTAKE_RIGHT
+    ).config {
+        inverted(true)
+        ctreFollowers.forEach { it.inverted = false }
+    }
 
     private var state: IntakeState = IntakeState.RAISED
         set(value) {
@@ -23,13 +29,19 @@ object Intake : Subsystem("Intake") {
             }
         }
 
-    fun intakeCargo() {
-        state = IntakeState.LOWERED
+    fun runIntake() {
         motor.setPercentOutput(ROLLER_SPEED)
     }
 
-    fun stop() {
+    fun lower() {
+        state = IntakeState.LOWERED
+    }
+
+    fun raise() {
         state = IntakeState.RAISED
+    }
+
+    fun stop() {
         motor.stop()
     }
 }
