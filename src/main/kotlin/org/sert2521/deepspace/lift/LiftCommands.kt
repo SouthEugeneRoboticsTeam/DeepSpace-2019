@@ -7,7 +7,11 @@ import org.team2471.frc.lib.framework.use
 
 suspend fun Lift.manualControl() = use(this) {
     periodic(watchOverrun = false) {
-        Lift.setSpeed(liftSpeedScalar * secondaryJoystick.y)
+        val speed = liftSpeedScalar * secondaryJoystick.y
+
+        Lift.setSpeed(
+            if (Lift.atTop && speed >= 0) 0.04 else speed
+        )
     }
 }
 

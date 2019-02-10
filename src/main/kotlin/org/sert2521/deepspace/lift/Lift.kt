@@ -20,6 +20,7 @@ object Lift : Subsystem("Lift") {
         MotorControllers.LIFT_RIGHT,
         MotorControllers.LIFT_LEFT
     ).config {
+        ctreController.configNeutralDeadband(0.0)
         ctreFollowers.forEach { it.inverted = true }
 
         feedbackCoefficient = 1.0
