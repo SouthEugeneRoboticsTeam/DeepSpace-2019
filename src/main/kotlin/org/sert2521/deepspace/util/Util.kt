@@ -33,3 +33,7 @@ suspend fun timer(
 fun List<Double>.median() = this.sorted().let {
     (it[it.size / 2] + it[(it.size - 1) / 2]) / 2
 }
+
+// Function for tolerating error
+infix fun Int.tol(error: Int) = (this - error)..(this + error)
+infix fun Double.tol(error: Double) = (this - error)..(this + error)

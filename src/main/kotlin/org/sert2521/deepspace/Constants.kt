@@ -34,6 +34,11 @@ object Sensors {
     const val LIFT_SWITCH_TOP = 1
     const val LIFT_SWITCH_BOTTOM = 2
 
+    // Climber
+    const val CLIMBER_FRONT_POT = -1
+    const val CLIMBER_REAR_POT = -1
+    const val CLIMBER_LIDAR = -1
+
     // Claw
     const val CLAW_SWITCH = 4
 }
