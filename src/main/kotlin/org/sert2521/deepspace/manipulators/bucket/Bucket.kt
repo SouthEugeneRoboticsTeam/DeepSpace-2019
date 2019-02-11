@@ -10,7 +10,9 @@ object Bucket : Subsystem("Bucket") {
         OPEN(DoubleSolenoid.Value.kReverse), CLOSED(DoubleSolenoid.Value.kForward)
     }
 
-    private val solenoid = DoubleSolenoid(Pneumatics.CARGO_LOWER, Pneumatics.CARGO_RAISE)
+    private val solenoid = DoubleSolenoid(Pneumatics.CARGO_LOWER, Pneumatics.CARGO_RAISE).apply {
+        set(DoubleSolenoid.Value.kReverse)
+    }
 
     internal var state: BucketState = BucketState.OPEN
         set(value) {
@@ -23,7 +25,11 @@ object Bucket : Subsystem("Bucket") {
             }
         }
 
+    init {
+        state = Bucket.BucketState.OPEN
+    }
+
     override suspend fun default() {
-        state = BucketState.CLOSED
+        state = BucketState.OPEN
     }
 }
