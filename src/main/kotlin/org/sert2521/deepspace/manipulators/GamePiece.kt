@@ -6,13 +6,10 @@ import kotlinx.coroutines.launch
 import org.sert2521.deepspace.Sensors
 import org.sert2521.deepspace.manipulators.bucket.Bucket
 import org.sert2521.deepspace.manipulators.bucket.close
-import org.sert2521.deepspace.manipulators.bucket.open
 import org.sert2521.deepspace.util.Telemetry
 import org.sertain.hardware.DigitalInput
 import org.team2471.frc.lib.coroutines.MeanlibDispatcher
-import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.Subsystem
-import org.team2471.frc.lib.framework.use
 
 object GamePiece : Subsystem("GamePiece") {
     internal enum class GamePiece {

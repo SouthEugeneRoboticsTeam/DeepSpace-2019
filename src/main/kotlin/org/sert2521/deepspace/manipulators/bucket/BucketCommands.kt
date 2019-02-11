@@ -11,7 +11,7 @@ suspend fun Bucket.open(suspend: Boolean = false) = use(this) {
     }
 }
 
-suspend fun Bucket.close(suspend: Boolean = false) = use (this) {
+suspend fun Bucket.close(suspend: Boolean = false) = use(this) {
     state = Bucket.BucketState.CLOSED
 
     if (suspend) {
