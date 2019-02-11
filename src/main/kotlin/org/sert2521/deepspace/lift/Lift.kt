@@ -23,6 +23,8 @@ object Lift : Subsystem("Lift") {
         ctreController.configNeutralDeadband(0.0)
         ctreFollowers.forEach { it.inverted = true }
 
+//        currentLimit()
+
         feedbackCoefficient = 1.0
 
 //        peakOutput(0.25)
@@ -40,6 +42,7 @@ object Lift : Subsystem("Lift") {
         telemetry.add("Position") { motor.position }
         telemetry.add("Top Switch") { topSwitch.get() }
         telemetry.add("Bottom Switch") { bottomSwitch.get() }
+        telemetry.add("Current") { motor.current }
     }
 
     private var motionCurve = MotionCurve()

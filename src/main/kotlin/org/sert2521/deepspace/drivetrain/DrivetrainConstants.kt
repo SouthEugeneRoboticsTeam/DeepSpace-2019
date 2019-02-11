@@ -3,7 +3,7 @@ package org.sert2521.deepspace.drivetrain
 import org.team2471.frc.lib.motion_profiling.following.ArcadeParameters
 import org.team2471.frc.lib.motion_profiling.following.RobotParameters
 
-internal const val DISTANCE_P = 0.14
+internal const val DISTANCE_P = 0.00001
 internal const val DISTANCE_D = 0.0
 
 internal const val MAX_VELOCITY = 10.0 // ft/s
@@ -23,7 +23,7 @@ internal val drivetrainConfig = ArcadeParameters(
     rightFeedForwardCoefficient = 0.07,
     headingFeedForward = 0.0,
     doHeadingCorrection = true,
-    headingCorrectionP = 0.012,
+    headingCorrectionP = 0.015,
     headingCorrectionI = 0.005,
     headingCorrectionIDecay = 0.95
 )

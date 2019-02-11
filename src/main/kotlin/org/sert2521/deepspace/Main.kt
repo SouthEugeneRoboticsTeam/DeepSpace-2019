@@ -2,11 +2,13 @@ package org.sert2521.deepspace
 
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.sert2521.deepspace.autonomous.AutoChooser
 import org.sert2521.deepspace.drivetrain.Drivetrain
+import org.sert2521.deepspace.drivetrain.alignWithVision
 import org.sert2521.deepspace.lift.Lift
 import org.sert2521.deepspace.manipulators.GamePiece
 import org.sert2521.deepspace.manipulators.bucket.Bucket
@@ -14,12 +16,15 @@ import org.sert2521.deepspace.manipulators.claw.Claw
 import org.sert2521.deepspace.manipulators.conveyor.Conveyor
 import org.sert2521.deepspace.manipulators.intake.Intake
 import org.sert2521.deepspace.util.TelemetryScope
+import org.sert2521.deepspace.util.Vision
+import org.sert2521.deepspace.util.VisionSource
 import org.sert2521.deepspace.util.initControls
 import org.sert2521.deepspace.util.initLogs
 import org.sert2521.deepspace.util.initPreferences
 import org.sert2521.deepspace.util.log
 import org.sert2521.deepspace.util.logBuildInfo
 import org.sert2521.deepspace.util.logger
+import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.RobotProgram
@@ -47,6 +52,12 @@ object Robot : RobotProgram {
         initPreferences()
         logBuildInfo()
         initLogs()
+
+        GlobalScope.launch(MeanlibDispatcher) {
+            periodic(2.0) {
+                Vision.light = !Vision.light
+            }
+        }
     }
 
     override suspend fun enable() {
@@ -64,6 +75,12 @@ object Robot : RobotProgram {
 
         suspendUntil { Math.abs(Drivetrain.speed) < 0.25 }
         Drivetrain.coast()
+
+        val vision = Vision.getFromSource(VisionSource.Cargo)
+        periodic(1.0) {
+            val pose = vision.pose
+            println("X: ${pose.xDistance}, Y: ${pose.yDistance}, Target Angle: ${pose.targetAngle}, Robot Angle: ${pose.robotAngle}")
+        }
     }
 
     override suspend fun teleop() {
@@ -72,12 +89,13 @@ object Robot : RobotProgram {
     }
 
     override suspend fun autonomous() {
-        delay(100)
+        delay(50)
 
         println("Entering autonomous...")
         Shuffleboard.selectTab("Autonomous")
 
-        AutoChooser.runAuto()
+//        AutoChooser.runAuto()
+        Drivetrain.alignWithVision(VisionSource.Cargo)
     }
 }
 

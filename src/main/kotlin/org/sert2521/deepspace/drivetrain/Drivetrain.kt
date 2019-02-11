@@ -52,7 +52,7 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
     override val heading get() = ahrs.angle
     override val headingRate get() = ahrs.rate
 
-    private var followingPath = false
+    var followingPath = false
 
     val speed: Double get() = (leftDrive.velocity + rightDrive.velocity) / 2.0
 

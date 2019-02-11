@@ -2,12 +2,14 @@ package org.sert2521.deepspace.util
 
 import edu.wpi.first.networktables.EntryListenerFlags
 import edu.wpi.first.networktables.NetworkTableInstance
+import edu.wpi.first.wpilibj.DigitalOutput
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.RobotController.getFPGATime
 import kotlin.math.cos
 import kotlin.math.sin
 
-private const val cameraToCenter = 16.0
+private const val cameraToCenter = 13.25
+private val lights = DigitalOutput(4)
 
 enum class VisionSource(val path: String) {
     HatchPanel("hatch"), Cargo("cargo")
@@ -33,7 +35,7 @@ class CameraPose(
 
 abstract class Vision(source: VisionSource) {
     private val table = NetworkTableInstance.getDefault().getTable("Vision/${source.path}")
-    private val defaultOffset = cameraToCenter + 12.0
+    private val defaultOffset = cameraToCenter - 0.0
 
     private val xDistance get() = table.getEntry("x_distance").getNumber(0.0).toDouble()
     private val yDistance get() = table.getEntry("y_distance").getNumber(0.0).toDouble()
@@ -50,7 +52,8 @@ abstract class Vision(source: VisionSource) {
     /**
      * Whether the vision system is currently alive (has received value in last 2s).
      */
-    val alive get() = getFPGATime() - lastUpdate > 2.0e+6
+//    val alive get() = getFPGATime() - lastUpdate > 2.0e+6
+    val alive = true
 
     /**
      * The time at which the last value was read. Note that this time is sent from the Jetson, so it
@@ -66,7 +69,8 @@ abstract class Vision(source: VisionSource) {
     var locked = false
         set(value) {
             field = value
-            table.getEntry("locked").setBoolean(value)
+            println("Setting locked to $value")
+//            table.getEntry("locked").setBoolean(value)
             // TODO: enable LEDs
         }
 
@@ -147,11 +151,15 @@ abstract class Vision(source: VisionSource) {
         object HatchPanel : Vision(VisionSource.HatchPanel)
         object Cargo : Vision(VisionSource.Cargo)
 
-        fun getFromSource(source: VisionSource): Vision {
-            return when (source) {
-                VisionSource.HatchPanel -> HatchPanel
-                VisionSource.Cargo -> Cargo
+        var light: Boolean = false
+            set(value) {
+                field = value
+                lights.set(!value)
             }
+
+        fun getFromSource(source: VisionSource) = when (source) {
+            VisionSource.HatchPanel -> HatchPanel
+            VisionSource.Cargo -> Cargo
         }
     }
 }

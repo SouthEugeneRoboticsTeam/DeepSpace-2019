@@ -12,7 +12,7 @@ import org.team2471.frc.lib.motion.following.driveAlongPath
 suspend fun testStraightAuto() {
     val auto = autonomi["Tests"]
 
-    val path = auto["Turn"]
+    val path = auto["8 Foot Straight"]
 
     try {
         Drivetrain.driveAlongPath(path, 0.5)
