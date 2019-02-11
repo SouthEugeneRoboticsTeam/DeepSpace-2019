@@ -17,5 +17,5 @@ suspend fun Lift.manualControl() = use(this) {
 
 suspend fun Lift.elevateTo(state: LiftState) = use(this) {
     // TODO: calculate time (target - current / velocity)
-    Lift.followMotionCurve(1.0, state.position.toDouble())
+    Lift.followMotionCurve(1.0, state)
 }

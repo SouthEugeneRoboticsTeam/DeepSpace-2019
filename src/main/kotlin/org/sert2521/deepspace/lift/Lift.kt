@@ -2,6 +2,7 @@ package org.sert2521.deepspace.lift
 
 import org.sert2521.deepspace.MotorControllers
 import org.sert2521.deepspace.Sensors
+import org.sert2521.deepspace.manipulators.GamePiece
 import org.sert2521.deepspace.util.Telemetry
 import org.sert2521.deepspace.util.timer
 import org.sertain.hardware.DigitalInput
@@ -9,10 +10,28 @@ import org.team2471.frc.lib.actuators.MotorController
 import org.team2471.frc.lib.framework.Subsystem
 import org.team2471.frc.lib.motion_profiling.MotionCurve
 
-enum class LiftState(val position: Int) {
-    BOTTOM(0), TOP(0),
-    HATCH_LOW(0), HATCH_MIDDLE(0), HATCH_HIGH(0),
-    CARGO_LOW(0), CARGO_MIDDLE(0), CARGO_HIGH(0),
+enum class LiftState(private val height: Double, private val gamePiece: GamePiece? = null) {
+    HATCH_LOW(1.583, GamePiece.HATCH_PANEL),
+    HATCH_MIDDLE(3.917, GamePiece.HATCH_PANEL),
+    HATCH_HIGH(6.250, GamePiece.HATCH_PANEL),
+
+    CARGO_LOW(2.292, GamePiece.CARGO),
+    CARGO_MIDDLE(4.625, GamePiece.CARGO),
+    CARGO_HIGH(6.958, GamePiece.CARGO);
+
+    /**
+     * The absolute position the lift should be at.
+     */
+    val position get() = height - when (gamePiece) {
+        GamePiece.HATCH_PANEL -> HATCH_PANEL_OFFSET
+        GamePiece.CARGO -> CARGO_OFFSET
+        else -> 0.0
+    }
+
+    companion object {
+        val BOTTOM = HATCH_LOW
+        val TOP = CARGO_HIGH
+    }
 }
 
 object Lift : Subsystem("Lift") {
@@ -59,10 +78,10 @@ object Lift : Subsystem("Lift") {
 
     fun setPosition(position: Double) = motor.setPositionSetpoint(position)
 
-    suspend fun followMotionCurve(time: Double, position: Double) {
+    suspend fun followMotionCurve(time: Double, state: LiftState) {
         motionCurve = MotionCurve()
-        motionCurve.storeValue(0.0, this.position)
-        motionCurve.storeValue(time, position)
+        motionCurve.storeValue(0.0, position)
+        motionCurve.storeValue(time, state.position)
 
         timer(motionCurve.maxValue) {
             setPosition(motionCurve.getValue(it))

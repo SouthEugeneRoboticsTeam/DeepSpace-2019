@@ -10,7 +10,6 @@ import org.sert2521.deepspace.autonomous.AutoChooser
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.drivetrain.alignWithVision
 import org.sert2521.deepspace.lift.Lift
-import org.sert2521.deepspace.manipulators.GamePiece
 import org.sert2521.deepspace.manipulators.bucket.Bucket
 import org.sert2521.deepspace.manipulators.claw.Claw
 import org.sert2521.deepspace.manipulators.conveyor.Conveyor
@@ -36,7 +35,7 @@ private val ds = DriverStation.getInstance()
 
 object Robot : RobotProgram {
     private val subsystems by lazy {
-        arrayOf(Drivetrain, Lift, Intake, Conveyor, Claw, Bucket, GamePiece)
+        arrayOf(Drivetrain, Lift, Intake, Conveyor, Claw, Bucket)
     }
 
     init {

@@ -9,13 +9,12 @@ import org.sert2521.deepspace.manipulators.bucket.close
 import org.sert2521.deepspace.util.Telemetry
 import org.sertain.hardware.DigitalInput
 import org.team2471.frc.lib.coroutines.MeanlibDispatcher
-import org.team2471.frc.lib.framework.Subsystem
 
-object GamePiece : Subsystem("GamePiece") {
-    internal enum class GamePiece {
-        CARGO, HATCH_PANEL
-    }
+enum class GamePiece {
+    CARGO, HATCH_PANEL
+}
 
+object Manipulators {
     val hatchPanelSwitch = DigitalInput(Sensors.CLAW_SWITCH).invert()
     val conveyorSwitch = DigitalInput(Sensors.CONVEYOR_SWITCH).invert()
 
@@ -31,7 +30,7 @@ object GamePiece : Subsystem("GamePiece") {
             else -> null
         }
 
-    val telemetry = Telemetry(this)
+    val telemetry = Telemetry("Manipulators")
 
     init {
         telemetry.add("Conveyor Switch") { hasCargoInConveyor }

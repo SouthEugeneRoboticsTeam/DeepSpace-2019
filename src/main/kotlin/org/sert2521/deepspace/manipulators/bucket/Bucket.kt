@@ -2,7 +2,7 @@ package org.sert2521.deepspace.manipulators.bucket
 
 import edu.wpi.first.wpilibj.DoubleSolenoid
 import org.sert2521.deepspace.Pneumatics
-import org.sert2521.deepspace.manipulators.GamePiece.hasCargo
+import org.sert2521.deepspace.manipulators.Manipulators.hasCargo
 import org.team2471.frc.lib.framework.Subsystem
 
 object Bucket : Subsystem("Bucket") {

@@ -17,7 +17,7 @@ suspend fun Conveyor.run(extraTime: Double? = null) = use(this) {
             GlobalScope.launch(MeanlibDispatcher) {
                 timer(extraTime) {
                     Conveyor.runSpeed()
-//                    if (GamePiece.hasCargoInConveyor && !Lift.atBottom) stop()
+//                    if (Manipulators.hasCargoInConveyor && !Lift.atBottom) stop()
                 }
 
                 Conveyor.stop()
