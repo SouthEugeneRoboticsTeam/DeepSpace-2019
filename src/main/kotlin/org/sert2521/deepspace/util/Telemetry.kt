@@ -4,6 +4,7 @@ import edu.wpi.first.networktables.NetworkTable
 import edu.wpi.first.networktables.NetworkTableInstance
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.framework.Subsystem
@@ -13,6 +14,11 @@ object TelemetryScope : CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO
 }
+
+private val instances = mutableListOf<Telemetry>()
+private var telemetryJob: Job? = null
+
+val GlobalTelemetry = Telemetry("Global")
 
 class Telemetry {
     private data class Binding(val name: String, val body: () -> Any)
@@ -29,7 +35,7 @@ class Telemetry {
         table = NetworkTableInstance.getDefault().getTable(subsystem.name)!!
     }
 
-    private fun tick() = bindings.toList().forEach { put(it.name, it.body()) }
+    fun tick() = bindings.toList().forEach { put(it.name, it.body()) }
 
     fun add(name: String, body: () -> Any) = bindings.add(Binding(name, body))
 
@@ -38,12 +44,20 @@ class Telemetry {
     fun put(name: String, value: Any) = table.getEntry(name).setValue(value)
 
     init {
-        TelemetryScope.launch {
+        instances += this
+
+        launchTelemetry()
+    }
+}
+
+fun launchTelemetry() {
+    if (telemetryJob == null) {
+        telemetryJob = TelemetryScope.launch {
             periodic(0.1, false) {
-                tick()
+                instances.iterator().forEach {
+                    it.tick()
+                }
             }
         }
     }
 }
-
-val GlobalTelemetry = Telemetry("Global")
