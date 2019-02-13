@@ -18,6 +18,7 @@ import org.team2471.frc.lib.math.deadband
 import org.team2471.frc.lib.motion.following.driveAlongPath
 import org.team2471.frc.lib.motion.following.hybridDrive
 import org.team2471.frc.lib.motion_profiling.Path2D
+import kotlin.math.sign
 
 /**
  * Allows for teleoperated drive of the robot.
@@ -32,13 +33,13 @@ suspend fun Drivetrain.teleopDrive() = use(this) {
     }
 }
 
-suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
+suspend fun Drivetrain.alignWithVision(source: VisionSource, pickup: Boolean = false) = use(this) {
     val vision = Vision.getFromSource(source)
 
     vision.locked = true
 
     // Wait for light to turn on
-    delay(0.1)
+    delay(0.25)
 
     val path = Path2D()
 
@@ -48,11 +49,7 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
         println("Alive? ${vision.alive}, Found? ${vision.found}")
         if (!vision.alive || !vision.found) return
 
-        println(vision.pose)
-
         pose = vision.getMedianPose(0.25)
-
-        println(pose)
 
         val xPosition = pose.xDistance / 12.0
         val yPosition = pose.yDistance / 12.0
@@ -95,17 +92,16 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
 
     updatePath(0.0)
 
-    GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.5) }, {
-        delay(0.5)
-        Claw.release(true) {
-            println(!Drivetrain.followingPath)
-            !Drivetrain.followingPath
-        }
-    })
-
-    println("(${pose.xDistance}, ${pose.yDistance}, ${pose.robotAngle}, ${pose.targetAngle})")
-
     vision.locked = false
 
-    delay(10.0)
+    if (pickup) {
+        GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.25) }, {
+            delay(0.5)
+            Claw.release(true) { !Drivetrain.followingPath }
+        })
+    } else {
+        driveAlongPath(path, extraTime = 0.25)
+    }
+
+    println("(${pose.xDistance}, ${pose.yDistance}, ${pose.robotAngle}, ${pose.targetAngle})")
 }

@@ -53,7 +53,7 @@ object Pneumatics {
 
     // Cargo
     const val CARGO_RAISE = 3
-    const val CARGO_LOWER = 4
+    const val CARGO_LOWER = 7
 
     // Intake
     const val INTAKE_LOWER = 5

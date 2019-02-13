@@ -21,13 +21,9 @@ object Bucket : Subsystem("Bucket") {
 
                 solenoid.set(value.position)
 
-                if (value == Bucket.BucketState.OPEN) hasCargo = false
+                if (value == BucketState.OPEN) hasCargo = false
             }
         }
-
-    init {
-        state = Bucket.BucketState.OPEN
-    }
 
     override suspend fun default() {
         state = BucketState.OPEN

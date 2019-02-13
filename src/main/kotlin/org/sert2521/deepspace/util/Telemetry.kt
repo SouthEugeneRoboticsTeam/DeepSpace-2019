@@ -6,13 +6,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.framework.Subsystem
 import kotlin.coroutines.CoroutineContext
 
 object TelemetryScope : CoroutineScope {
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO
+        get() = MeanlibDispatcher
 }
 
 private val instances = mutableListOf<Telemetry>()

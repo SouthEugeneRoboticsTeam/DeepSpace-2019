@@ -10,6 +10,7 @@ import org.sert2521.deepspace.autonomous.AutoChooser
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.drivetrain.alignWithVision
 import org.sert2521.deepspace.lift.Lift
+import org.sert2521.deepspace.manipulators.Manipulators
 import org.sert2521.deepspace.manipulators.bucket.Bucket
 import org.sert2521.deepspace.manipulators.claw.Claw
 import org.sert2521.deepspace.manipulators.conveyor.Conveyor
@@ -38,6 +39,8 @@ object Robot : RobotProgram {
         arrayOf(Drivetrain, Lift, Intake, Conveyor, Claw, Bucket)
     }
 
+    private val vision = Vision.getFromSource(VisionSource.Cargo)
+
     init {
         logger
 
@@ -46,17 +49,15 @@ object Robot : RobotProgram {
 
         // Init companions
         AutoChooser
+        Manipulators
+
+        // Turn off light
+        vision.locked = false
 
         initControls()
         initPreferences()
         logBuildInfo()
         initLogs()
-
-        GlobalScope.launch(MeanlibDispatcher) {
-            periodic(2.0) {
-                Vision.light = !Vision.light
-            }
-        }
     }
 
     override suspend fun enable() {
@@ -76,7 +77,7 @@ object Robot : RobotProgram {
         Drivetrain.coast()
 
         val vision = Vision.getFromSource(VisionSource.Cargo)
-        periodic(1.0) {
+        periodic(5.0) {
             val pose = vision.pose
             println("X: ${pose.xDistance}, Y: ${pose.yDistance}, Target Angle: ${pose.targetAngle}, Robot Angle: ${pose.robotAngle}")
         }
@@ -93,8 +94,7 @@ object Robot : RobotProgram {
         println("Entering autonomous...")
         Shuffleboard.selectTab("Autonomous")
 
-//        AutoChooser.runAuto()
-        Drivetrain.alignWithVision(VisionSource.Cargo)
+        AutoChooser.runAuto()
     }
 }
 

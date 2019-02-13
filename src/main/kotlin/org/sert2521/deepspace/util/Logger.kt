@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.RobotController
 import org.sert2521.deepspace.Robot
 import org.team2471.frc.lib.framework.Subsystem
+import java.lang.Exception
+import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -133,8 +135,12 @@ val SystemLogger = Logger("System")
 fun log() {
     BadLog.publish("Time", System.nanoTime().toDouble())
 
-    logger.updateTopics()
-    logger.log()
+    try {
+        logger.updateTopics()
+        logger.log()
+    } catch (exception: NullPointerException) {
+        // Logger could not update... Do nothing.
+    }
 }
 
 fun initLogs() {
@@ -159,7 +165,11 @@ fun initLogs() {
 
     BadLog.createTopicSubscriber("Time", "s", DataInferMode.DEFAULT, "hide", "delta", "xaxis")
 
-    logger.finishInitialization()
+    try {
+        logger.finishInitialization()
+    } catch (exception: Exception) {
+        println("Error finishing initialization!")
+    }
 }
 
 fun logBuildInfo() {
