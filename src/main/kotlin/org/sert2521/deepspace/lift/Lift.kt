@@ -3,6 +3,7 @@ package org.sert2521.deepspace.lift
 import org.sert2521.deepspace.MotorControllers
 import org.sert2521.deepspace.Sensors
 import org.sert2521.deepspace.manipulators.GamePiece
+import org.sert2521.deepspace.manipulators.Manipulators
 import org.sert2521.deepspace.util.Telemetry
 import org.sert2521.deepspace.util.timer
 import org.sertain.hardware.DigitalInput
@@ -31,6 +32,10 @@ enum class LiftState(private val height: Double, private val gamePiece: GamePiec
     companion object {
         val BOTTOM = HATCH_LOW
         val TOP = CARGO_HIGH
+
+        val LOW = if (Manipulators.hasHatchPanel) HATCH_LOW else CARGO_LOW
+        val MIDDLE = if (Manipulators.hasHatchPanel) HATCH_MIDDLE else CARGO_MIDDLE
+        val HIGH = if (Manipulators.hasHatchPanel) HATCH_HIGH else CARGO_HIGH
     }
 }
 

@@ -53,9 +53,9 @@ fun initControls() {
         buttonHold(3) { Conveyor.run() }
         buttonHold(4) { Bucket.open(true) }
 
-        buttonPress(8) { Lift.elevateTo(LiftState.HATCH_LOW) }
-        buttonPress(9) { Lift.elevateTo(LiftState.HATCH_MIDDLE) }
-        buttonPress(10) { Lift.elevateTo(LiftState.HATCH_HIGH) }
+        buttonPress(8) { Lift.elevateTo(LiftState.LOW) }
+        buttonPress(9) { Lift.elevateTo(LiftState.MIDDLE) }
+        buttonPress(10) { Lift.elevateTo(LiftState.HIGH) }
     }
 
     for (i in 0 until DriverStation.kJoystickPorts) {
