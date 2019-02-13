@@ -1,5 +1,6 @@
 package org.sert2521.deepspace.lift
 
+import edu.wpi.first.wpilibj.InterruptHandlerFunction
 import org.sert2521.deepspace.MotorControllers
 import org.sert2521.deepspace.Sensors
 import org.sert2521.deepspace.manipulators.GamePiece
@@ -49,25 +50,23 @@ object Lift : Subsystem("Lift") {
 
 //        currentLimit()
 
-        feedbackCoefficient = 1.0
+        sensorPhase(true)
 
-//        peakOutput(0.25)
+        feedbackCoefficient = 1.0 / 7156.0
         brakeMode()
 
         closedLoopRamp(0.25)
+
+        peakOutputRange(-0.35..0.35)
+        nominalOutputRange(0.0..0.0)
+
         pid(0) {
             p(DISTANCE_P)
+            i(DISTANCE_I)
         }
     }
 
     val telemetry = Telemetry(this)
-
-    init {
-        telemetry.add("Position") { motor.position }
-        telemetry.add("Top Switch") { topSwitch.get() }
-        telemetry.add("Bottom Switch") { bottomSwitch.get() }
-        telemetry.add("Current") { motor.current }
-    }
 
     private var motionCurve = MotionCurve()
 
@@ -94,4 +93,21 @@ object Lift : Subsystem("Lift") {
     }
 
     override suspend fun default() = Lift.manualControl()
+
+    init {
+        telemetry.add("Position") { motor.position }
+        telemetry.add("Top Switch") { topSwitch.get() }
+        telemetry.add("Bottom Switch") { bottomSwitch.get() }
+        telemetry.add("Current") { motor.current }
+
+        bottomSwitch.requestInterrupts(object : InterruptHandlerFunction<Boolean>() {
+            override fun interruptFired(interruptAssertedMask: Int, param: Boolean?) {
+                println("Interrupted!")
+                motor.position = 0.0
+            }
+        })
+
+        bottomSwitch.setUpSourceEdge(true, false)
+        bottomSwitch.enableInterrupts()
+    }
 }
