@@ -2,13 +2,11 @@ package org.sert2521.deepspace
 
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.sert2521.deepspace.autonomous.AutoChooser
 import org.sert2521.deepspace.drivetrain.Drivetrain
-import org.sert2521.deepspace.drivetrain.alignWithVision
 import org.sert2521.deepspace.lift.Lift
 import org.sert2521.deepspace.manipulators.Manipulators
 import org.sert2521.deepspace.manipulators.bucket.Bucket
@@ -24,7 +22,6 @@ import org.sert2521.deepspace.util.initPreferences
 import org.sert2521.deepspace.util.log
 import org.sert2521.deepspace.util.logBuildInfo
 import org.sert2521.deepspace.util.logger
-import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.RobotProgram
