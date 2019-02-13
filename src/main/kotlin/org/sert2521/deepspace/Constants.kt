@@ -65,6 +65,8 @@ object Operator {
     const val SECONDARY_STICK = 1
 
     const val TARGET_LEDS = 4
+
+    const val STATUS_LEDS = 0
 }
 
 object Characteristics {
