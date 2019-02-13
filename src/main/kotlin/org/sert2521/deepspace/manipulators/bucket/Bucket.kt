@@ -5,27 +5,23 @@ import org.sert2521.deepspace.Pneumatics
 import org.sert2521.deepspace.manipulators.Manipulators.hasCargo
 import org.team2471.frc.lib.framework.Subsystem
 
+enum class BucketState(val position: DoubleSolenoid.Value) {
+    OPEN(DoubleSolenoid.Value.kReverse), CLOSED(DoubleSolenoid.Value.kForward)
+}
+
 object Bucket : Subsystem("Bucket") {
-    internal enum class BucketState(val position: DoubleSolenoid.Value) {
-        OPEN(DoubleSolenoid.Value.kReverse), CLOSED(DoubleSolenoid.Value.kForward)
-    }
+    private val solenoid = DoubleSolenoid(Pneumatics.CARGO_LOWER, Pneumatics.CARGO_RAISE)
 
-    private val solenoid = DoubleSolenoid(Pneumatics.CARGO_LOWER, Pneumatics.CARGO_RAISE).apply {
-        set(DoubleSolenoid.Value.kReverse)
-    }
-
-    internal var state: BucketState = BucketState.OPEN
+    var state: BucketState = BucketState.OPEN
         set(value) {
-            if (field != value) {
-                field = value
+            field = value
 
-                solenoid.set(value.position)
+            solenoid.set(value.position)
 
-                if (value == BucketState.OPEN) hasCargo = false
-            }
+            if (value == BucketState.OPEN) hasCargo = false
         }
 
-    override suspend fun default() {
+    init {
         state = BucketState.OPEN
     }
 }

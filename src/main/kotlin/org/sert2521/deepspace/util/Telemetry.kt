@@ -3,7 +3,6 @@ package org.sert2521.deepspace.util
 import edu.wpi.first.networktables.NetworkTable
 import edu.wpi.first.networktables.NetworkTableInstance
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.team2471.frc.lib.coroutines.MeanlibDispatcher

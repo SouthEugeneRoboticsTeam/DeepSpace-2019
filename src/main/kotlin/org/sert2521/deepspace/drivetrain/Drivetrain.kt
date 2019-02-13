@@ -16,7 +16,7 @@ import org.team2471.frc.lib.motion.following.ArcadeDrive
 object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
     override val parameters = drivetrainConfig
 
-    val leftDrive = MotorController(
+    private val leftDrive = MotorController(
         MotorControllers.DRIVE_LEFT_FRONT,
         MotorControllers.DRIVE_LEFT_REAR
     ).config {
@@ -30,7 +30,7 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
         }
     }
 
-    val rightDrive = MotorController(
+    private val rightDrive = MotorController(
         MotorControllers.DRIVE_RIGHT_FRONT,
         MotorControllers.DRIVE_RIGHT_REAR
     ).config {

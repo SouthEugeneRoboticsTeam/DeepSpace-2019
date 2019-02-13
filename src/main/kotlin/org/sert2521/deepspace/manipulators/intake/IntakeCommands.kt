@@ -9,17 +9,18 @@ import org.team2471.frc.lib.framework.use
 
 suspend fun Intake.run(extraTime: Double? = null) = use(this) {
     try {
-        Intake.lower()
+        Intake.state = IntakeState.LOWERED
+
         periodic {
-            Intake.runIntake()
+            Intake.spin()
         }
     } finally {
-        Intake.raise()
+        Intake.state = IntakeState.RAISED
 
         if (extraTime != null) {
             GlobalScope.launch(MeanlibDispatcher) {
                 timer(extraTime) {
-                    Intake.runIntake()
+                    Intake.spin()
                 }
 
                 Intake.stop()

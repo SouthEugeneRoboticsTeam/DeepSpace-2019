@@ -6,11 +6,11 @@ import org.sert2521.deepspace.Pneumatics
 import org.team2471.frc.lib.actuators.MotorController
 import org.team2471.frc.lib.framework.Subsystem
 
-object Intake : Subsystem("Intake") {
-    private enum class IntakeState(val position: DoubleSolenoid.Value) {
-        LOWERED(DoubleSolenoid.Value.kReverse), RAISED(DoubleSolenoid.Value.kForward)
-    }
+enum class IntakeState(val position: DoubleSolenoid.Value) {
+    LOWERED(DoubleSolenoid.Value.kReverse), RAISED(DoubleSolenoid.Value.kForward)
+}
 
+object Intake : Subsystem("Intake") {
     private val solenoid = DoubleSolenoid(Pneumatics.INTAKE_RAISE, Pneumatics.INTAKE_LOWER)
     private val motor = MotorController(
         MotorControllers.INTAKE_LEFT,
@@ -20,7 +20,7 @@ object Intake : Subsystem("Intake") {
         ctreFollowers.forEach { it.inverted = false }
     }
 
-    private var state: IntakeState = IntakeState.RAISED
+    var state: IntakeState = IntakeState.RAISED
         set(value) {
             if (field != value) {
                 field = value
@@ -29,16 +29,8 @@ object Intake : Subsystem("Intake") {
             }
         }
 
-    fun runIntake() {
+    fun spin() {
         motor.setPercentOutput(ROLLER_SPEED)
-    }
-
-    fun lower() {
-        state = IntakeState.LOWERED
-    }
-
-    fun raise() {
-        state = IntakeState.RAISED
     }
 
     fun stop() {

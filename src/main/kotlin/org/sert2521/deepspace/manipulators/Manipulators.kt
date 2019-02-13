@@ -1,14 +1,11 @@
 package org.sert2521.deepspace.manipulators
 
 import edu.wpi.first.wpilibj.InterruptHandlerFunction
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.sert2521.deepspace.Sensors
 import org.sert2521.deepspace.manipulators.bucket.Bucket
-import org.sert2521.deepspace.manipulators.bucket.close
+import org.sert2521.deepspace.manipulators.bucket.BucketState
 import org.sert2521.deepspace.util.Telemetry
 import org.sertain.hardware.DigitalInput
-import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 
 enum class GamePiece {
     CARGO, HATCH_PANEL
@@ -23,7 +20,7 @@ object Manipulators {
 
     var hasCargo = false
 
-    internal val currentGamePiece
+    val currentGamePiece
         get() = when {
             hasHatchPanel -> GamePiece.HATCH_PANEL
             hasCargo -> GamePiece.CARGO
@@ -39,9 +36,7 @@ object Manipulators {
         conveyorSwitch.requestInterrupts(object : InterruptHandlerFunction<Boolean>() {
             override fun interruptFired(interruptAssertedMask: Int, param: Boolean?) {
                 hasCargo = true
-                GlobalScope.launch(MeanlibDispatcher) {
-                    Bucket.close(true)
-                }
+                Bucket.state = BucketState.CLOSED
             }
         })
 

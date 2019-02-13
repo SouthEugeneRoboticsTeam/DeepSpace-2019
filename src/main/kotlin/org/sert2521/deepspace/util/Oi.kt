@@ -51,7 +51,7 @@ fun initControls() {
         buttonHold(1) { Manipulators.releaseCurrent() }
         buttonHold(2) { parallel({ Conveyor.run(1.5) }, { Intake.run(1.0) }) }
         buttonHold(3) { Conveyor.run() }
-        buttonHold(4) { Bucket.open(true) }
+        buttonHold(4) { Bucket.open() }
 
         buttonPress(8) { Lift.elevateTo(LiftState.LOW) }
         buttonPress(9) { Lift.elevateTo(LiftState.MIDDLE) }
