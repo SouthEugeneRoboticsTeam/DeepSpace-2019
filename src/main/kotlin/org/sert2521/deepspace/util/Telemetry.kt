@@ -2,18 +2,12 @@ package org.sert2521.deepspace.util
 
 import edu.wpi.first.networktables.NetworkTable
 import edu.wpi.first.networktables.NetworkTableInstance
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.framework.Subsystem
-import kotlin.coroutines.CoroutineContext
-
-object TelemetryScope : CoroutineScope {
-    override val coroutineContext: CoroutineContext
-        get() = MeanlibDispatcher
-}
 
 private val instances = mutableListOf<Telemetry>()
 private var telemetryJob: Job? = null
@@ -54,7 +48,7 @@ class Telemetry {
 
 fun launchTelemetry() {
     if (telemetryJob == null) {
-        telemetryJob = TelemetryScope.launch {
+        telemetryJob = GlobalScope.launch(MeanlibDispatcher) {
             periodic(0.1, false) {
                 log()
 
