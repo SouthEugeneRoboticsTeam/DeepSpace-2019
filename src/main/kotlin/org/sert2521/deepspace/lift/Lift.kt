@@ -34,9 +34,9 @@ enum class LiftState(private val height: Double, private val gamePiece: GamePiec
         val BOTTOM = HATCH_LOW
         val TOP = CARGO_HIGH
 
-        val LOW = if (Manipulators.hasHatchPanel) HATCH_LOW else CARGO_LOW
-        val MIDDLE = if (Manipulators.hasHatchPanel) HATCH_MIDDLE else CARGO_MIDDLE
-        val HIGH = if (Manipulators.hasHatchPanel) HATCH_HIGH else CARGO_HIGH
+        val LOW get() = if (Manipulators.hasHatchPanel) HATCH_LOW else CARGO_LOW
+        val MIDDLE get() = if (Manipulators.hasHatchPanel) HATCH_MIDDLE else CARGO_MIDDLE
+        val HIGH get() = if (Manipulators.hasHatchPanel) HATCH_HIGH else CARGO_HIGH
     }
 }
 
