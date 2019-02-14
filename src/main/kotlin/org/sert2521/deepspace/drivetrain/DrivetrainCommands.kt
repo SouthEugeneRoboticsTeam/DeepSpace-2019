@@ -18,7 +18,6 @@ import org.team2471.frc.lib.math.deadband
 import org.team2471.frc.lib.motion.following.driveAlongPath
 import org.team2471.frc.lib.motion.following.hybridDrive
 import org.team2471.frc.lib.motion_profiling.Path2D
-import kotlin.math.sign
 
 /**
  * Allows for teleoperated drive of the robot.

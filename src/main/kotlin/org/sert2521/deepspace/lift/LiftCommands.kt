@@ -1,5 +1,6 @@
 package org.sert2521.deepspace.lift
 
+import org.sert2521.deepspace.util.getOptimalTime
 import org.sert2521.deepspace.util.liftSpeedScalar
 import org.sert2521.deepspace.util.secondaryJoystick
 import org.team2471.frc.lib.coroutines.periodic
@@ -16,6 +17,8 @@ suspend fun Lift.manualControl() = use(this) {
 }
 
 suspend fun Lift.elevateTo(state: LiftState) = use(this) {
-    // TODO: calculate time (target - current / velocity)
-    Lift.followMotionCurve(1.0, state)
+    Lift.followMotionCurve(
+        getOptimalTime(Lift.position, state.position, MAX_ACCELERATION),
+        state
+    )
 }
