@@ -31,9 +31,7 @@ class Telemetry {
 
     fun tick() = bindings.toList().forEach { put(it.name, it.body()) }
 
-    fun add(name: String, body: () -> Any) {
-        bindings.add(Binding(name, body))
-    }
+    fun add(name: String, body: () -> Any) = bindings.add(Binding(name, body))
 
     fun remove(name: String) = bindings.removeIf { it.name == name }
 
