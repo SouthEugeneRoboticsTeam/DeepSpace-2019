@@ -9,7 +9,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 enum class VisionSource(val path: String) {
-    HatchPanel("hatch"), Cargo("cargo")
+    Cargo("cargo")
 }
 
 /**
@@ -147,8 +147,6 @@ abstract class Vision(source: VisionSource) {
         private const val cameraToCenter = 13.25
         private val lights = DigitalOutput(4)
 
-        // TODO: remove one of these if we're only using one camera
-        object HatchPanel : Vision(VisionSource.HatchPanel)
         object Cargo : Vision(VisionSource.Cargo)
 
         var light: Boolean = false
@@ -158,7 +156,6 @@ abstract class Vision(source: VisionSource) {
             }
 
         fun getFromSource(source: VisionSource) = when (source) {
-            VisionSource.HatchPanel -> HatchPanel
             VisionSource.Cargo -> Cargo
         }
     }
