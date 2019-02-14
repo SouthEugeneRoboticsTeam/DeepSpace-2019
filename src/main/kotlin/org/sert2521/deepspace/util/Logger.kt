@@ -53,9 +53,41 @@ class Logger {
     fun addNumberTopic(
         name: String,
         unit: String = BadLog.UNITLESS,
-        body: () -> Number,
-        vararg attrs: String
+        vararg attrs: String,
+        body: () -> Number
     ) = BadLog.createTopic("$subsystemName/$name", unit, Supplier { body().toDouble() }, *attrs)
+
+    /**
+     * Creates a named topic that logs a Boolean.
+     *
+     * @param name name of the topic
+     * @param unit unit to assign values in this topic
+     * @param body the function to be called to return the logged data
+     * @see BadLog.createTopicStr
+     */
+    fun addBooleanTopic(name: String, unit: String = BadLog.UNITLESS, body: () -> Boolean) =
+        BadLog.createTopic("$subsystemName/$name", unit, Supplier { if (body()) 1.0 else 0.0 })
+
+    /**
+     * Creates a named topic that logs a Boolean.
+     *
+     * @param name name of the topic
+     * @param unit unit to assign values in this topic
+     * @param body the function to be called to return the logged data
+     * @param attrs array of topic attributes
+     * @see BadLog.createTopicStr
+     */
+    fun addBooleanTopic(
+        name: String,
+        unit: String = BadLog.UNITLESS,
+        vararg attrs: String,
+        body: () -> Boolean
+    ) = BadLog.createTopic(
+        "$subsystemName/$name",
+        unit,
+        Supplier { if (body()) 1.0 else 0.0 },
+        *attrs
+    )
 
     /**
      * Creates a named topic that logs a String. Non-String values returned from the body will be
@@ -82,8 +114,8 @@ class Logger {
     fun addTopic(
         name: String,
         unit: String = BadLog.UNITLESS,
-        body: () -> Any,
-        vararg attrs: String
+        vararg attrs: String,
+        body: () -> Any
     ) = BadLog.createTopicStr(
         "$subsystemName/$name",
         unit,

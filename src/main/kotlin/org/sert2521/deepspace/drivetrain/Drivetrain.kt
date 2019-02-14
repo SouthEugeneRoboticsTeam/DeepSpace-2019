@@ -45,8 +45,8 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
         }
     }
 
-    val telemetry = Telemetry(this)
-    val logger = Logger(this)
+    private val telemetry = Telemetry(this)
+    private val logger = Logger(this)
 
     private val ahrs = AHRS(I2C.Port.kMXP)
     override val heading get() = ahrs.angle
@@ -76,6 +76,8 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
         logger.addNumberTopic("Angle", "deg") { ahrs.angle }
         logger.addNumberTopic("Left Output") { leftDrive.output }
         logger.addNumberTopic("Right Output") { rightDrive.output }
+        logger.addNumberTopic("Left Distance") { leftDistance }
+        logger.addNumberTopic("Right Distance") { rightDistance }
 
         zeroEncoders()
         zeroGyro()

@@ -29,11 +29,7 @@ object Intake : Subsystem("Intake") {
             }
         }
 
-    fun spin() {
-        motor.setPercentOutput(ROLLER_SPEED)
-    }
+    fun spin() = motor.setPercentOutput(ROLLER_SPEED)
 
-    fun stop() {
-        motor.stop()
-    }
+    fun stop() = motor.stop()
 }

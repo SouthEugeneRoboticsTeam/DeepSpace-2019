@@ -34,25 +34,23 @@ enum class AutoMode {
     }
 
     companion object {
-        val start get() = startChooser.selected ?: Start.MIDDLE
-        val objective get() = objectiveChooser.selected ?: Objective.BASELINE
-        val constraint get() = constraintChooser.selected ?: Constraint.NONE
-
         val startChooser = SendableChooser(
                 "Middle" to Start.MIDDLE,
                 "Left" to Start.LEFT,
                 "Right" to Start.RIGHT
         )
-
         val objectiveChooser = SendableChooser(
                 "Baseline" to Objective.BASELINE
         )
-
         val constraintChooser = SendableChooser(
                 "None" to Constraint.NONE,
                 "No Traverse" to Constraint.NO_FIELD_TRAVERSE,
                 "No Far Lane" to Constraint.NO_FAR_LANE
         )
+
+        val start get() = startChooser.selected ?: Start.MIDDLE
+        val objective get() = objectiveChooser.selected ?: Objective.BASELINE
+        val constraint get() = constraintChooser.selected ?: Constraint.NONE
     }
 }
 
@@ -129,7 +127,10 @@ object AutoChooser {
     suspend fun runAuto() {
         val auto = calculateAuto()
 
-        logger.publish("Calculated Auto Mode", auto.name)
+        logger.publish("Start Position", AutoMode.start)
+        logger.publish("Objective", AutoMode.objective)
+        logger.publish("Constraint", AutoMode.constraint)
+        logger.publish("Calculated Mode", auto.name)
 
         when (auto) {
             CROSS_BASELINE -> testStraightAuto()

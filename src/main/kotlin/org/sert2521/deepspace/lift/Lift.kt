@@ -5,6 +5,7 @@ import org.sert2521.deepspace.MotorControllers
 import org.sert2521.deepspace.Sensors
 import org.sert2521.deepspace.manipulators.GamePiece
 import org.sert2521.deepspace.manipulators.Manipulators
+import org.sert2521.deepspace.util.Logger
 import org.sert2521.deepspace.util.Telemetry
 import org.sert2521.deepspace.util.timer
 import org.sertain.hardware.DigitalInput
@@ -41,6 +42,9 @@ enum class LiftState(private val height: Double, private val gamePiece: GamePiec
 }
 
 object Lift : Subsystem("Lift") {
+    private val telemetry = Telemetry(this)
+    private val logger = Logger(this)
+
     private val motor = MotorController(
         MotorControllers.LIFT_RIGHT,
         MotorControllers.LIFT_LEFT
@@ -48,25 +52,25 @@ object Lift : Subsystem("Lift") {
         ctreController.configNeutralDeadband(0.0)
         ctreFollowers.forEach { it.inverted = true }
 
-//        currentLimit()
-
+        brakeMode()
         sensorPhase(true)
 
         feedbackCoefficient = 1.0 / 7156.0
-        brakeMode()
 
-        closedLoopRamp(0.25)
+        // If current exceeds 15A for more than 5s, cut power back to 5A
+        currentLimit(5, 15, 5)
 
+        // Limit % output to [-0.35, 0.35]
         peakOutputRange(-0.35..0.35)
         nominalOutputRange(0.0..0.0)
+
+        openLoopRamp(0.25)
 
         pid(0) {
             p(DISTANCE_P)
             i(DISTANCE_I)
         }
     }
-
-    val telemetry = Telemetry(this)
 
     private var motionCurve = MotionCurve()
 
@@ -96,9 +100,16 @@ object Lift : Subsystem("Lift") {
 
     init {
         telemetry.add("Position") { motor.position }
+        telemetry.add("Current") { motor.current }
+        telemetry.add("Closed Loop Error") { motor.closedLoopError }
         telemetry.add("Top Switch") { topSwitch.get() }
         telemetry.add("Bottom Switch") { bottomSwitch.get() }
-        telemetry.add("Current") { motor.current }
+
+        logger.addNumberTopic("Position") { motor.position }
+        logger.addNumberTopic("Current") { motor.current }
+        logger.addNumberTopic("Closed Loop Error") { motor.closedLoopError }
+        logger.addBooleanTopic("Top Switch") { topSwitch.get() }
+        logger.addBooleanTopic("Bottom Switch") { bottomSwitch.get() }
 
         bottomSwitch.requestInterrupts(object : InterruptHandlerFunction<Boolean>() {
             override fun interruptFired(interruptAssertedMask: Int, param: Boolean?) {

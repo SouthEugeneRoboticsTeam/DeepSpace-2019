@@ -12,9 +12,7 @@ object Conveyor : Subsystem("Conveyor") {
         ctreFollowers.forEach { it.inverted = true }
     }
 
-    fun setPercent(percent: Double = CONVEYOR_SPEED) {
-        motor.setPercentOutput(percent)
-    }
+    fun setPercent(percent: Double = CONVEYOR_SPEED) = motor.setPercentOutput(percent)
 
     fun stop() = motor.stop()
 }
