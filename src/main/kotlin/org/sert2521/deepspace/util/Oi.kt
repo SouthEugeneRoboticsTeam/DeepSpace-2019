@@ -24,7 +24,7 @@ import org.team2471.frc.lib.framework.rightBumperHold
 import org.team2471.frc.lib.framework.xPress
 import org.team2471.frc.lib.framework.yPress
 
-val primaryController by lazy { XboxController(0) }
+val primaryController by lazy { XboxController(Operator.PRIMARY_CONTROLLER) }
 val primaryJoystick by lazy { Joystick(Operator.PRIMARY_STICK) }
 val secondaryJoystick by lazy { Joystick(Operator.SECONDARY_STICK) }
 
@@ -36,16 +36,16 @@ fun initControls() {
 
     primaryController.createMappings {
         rightBumperHold { Manipulators.releaseCurrent() }
-        leftBumperHold { Manipulators.intakeCargo() }
+        leftBumperHold { Manipulators.intakeCargo(2.0) }
 
-        xPress { Drivetrain.alignWithVision(VisionSource.Cargo, true) }
-        yPress { Drivetrain.alignWithVision(VisionSource.Cargo) }
+        buttonPress(3) { Drivetrain.alignWithVision(VisionSource.Cargo, true) }
+        buttonPress(4) { Drivetrain.alignWithVision(VisionSource.Cargo) }
     }
 
     // Primary joystick mappings
     primaryJoystick.createMappings {
         buttonHold(1) { Manipulators.releaseCurrent() }
-        buttonHold(3) { Manipulators.intakeCargo() }
+        buttonHold(3) { Manipulators.intakeCargo(2.0) }
 
         buttonPress(2) { Drivetrain.alignWithVision(VisionSource.Cargo, true) }
     }
@@ -53,8 +53,8 @@ fun initControls() {
     // Secondary joystick mappings
     secondaryJoystick.createMappings {
         buttonHold(1) { Lift.manualControl() }
-        buttonHold(2) { Manipulators.intakeCargo() }
-        buttonHold(3) { Conveyor.run() }
+        buttonHold(2) { Manipulators.intakeCargo(2.0) }
+//        buttonHold(3) { Conveyor.run() }
         buttonHold(4) { Bucket.open() }
         buttonHold(7) { Manipulators.releaseCurrent() }
 

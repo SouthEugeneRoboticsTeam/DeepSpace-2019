@@ -165,12 +165,12 @@ class Logger {
 val SystemLogger = Logger("System")
 
 fun log() {
-    BadLog.publish("Time", System.nanoTime().toDouble())
-
     try {
+        BadLog.publish("Time", System.nanoTime().toDouble())
+
         logger.updateTopics()
         logger.log()
-    } catch (exception: NullPointerException) {
+    } catch (exception: Exception) {
         // Logger could not update... Do nothing.
     }
 }
