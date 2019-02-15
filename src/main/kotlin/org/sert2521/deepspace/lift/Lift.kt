@@ -96,7 +96,7 @@ object Lift : Subsystem("Lift") {
         }
     }
 
-    override suspend fun default() = Lift.manualControl()
+    fun stop() = motor.stop()
 
     init {
         telemetry.add("Position") { motor.position }

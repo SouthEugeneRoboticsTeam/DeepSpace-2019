@@ -7,12 +7,16 @@ import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.framework.use
 
 suspend fun Lift.manualControl() = use(this) {
-    periodic(watchOverrun = false) {
-        val speed = liftSpeedScalar * secondaryJoystick.y
+    try {
+        periodic(watchOverrun = false) {
+            val speed = liftSpeedScalar * secondaryJoystick.y
 
-        Lift.setSpeed(
-            if (Lift.atTop && speed >= 0) 0.04 else speed
-        )
+            Lift.setSpeed(
+                if (Lift.atTop && speed >= 0) 0.04 else speed
+            )
+        }
+    } finally {
+        Lift.stop()
     }
 }
 
