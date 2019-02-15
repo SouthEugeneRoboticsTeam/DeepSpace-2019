@@ -44,11 +44,11 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, pickup: Boolean = f
 
     var pose = vision.pose
 
-    suspend fun updatePath(time: Double) {
+    suspend fun updatePath(time: Double, offset: Double) {
         println("Alive? ${vision.alive}, Found? ${vision.found}")
         if (!vision.alive || !vision.found) return
 
-        pose = vision.getMedianPose(0.25)
+        pose = vision.getMedianPose(0.25, offset = offset)
 
         val xPosition = pose.xDistance / 12.0
         val yPosition = pose.yDistance / 12.0
@@ -66,7 +66,7 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, pickup: Boolean = f
         path.addPointToEnd(0.0, 0.0, angle = 0.0, magnitude = yPosition / 3.0)
         path.addPointToEnd(xPosition, yPosition, angle = angle, magnitude = yPosition / 3.0)
 
-        if (oldDuration == 0.0) oldDuration = path.length / 3.0 + 2.0
+        if (oldDuration == 0.0) oldDuration = path.length / 4.0 + 1.0
 
         path.addEasePointToEnd(time, 0.0, slope = oldPath, magnitude = 1.0)
         path.addEasePointToEnd(oldDuration, 1.0, slope = 0.0, magnitude = 1.0)
@@ -89,13 +89,17 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, pickup: Boolean = f
         """.trimIndent())
     }
 
-    updatePath(0.0)
+    updatePath(0.0, 16.0 + 30.0)
+
+    driveAlongPath(path, extraTime = 0.25)
+
+    updatePath(0.0, 16.0)
 
     vision.locked = false
 
     if (pickup) {
         GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.25) }, {
-            delay(0.5)
+            delay(0.25)
             Claw.release(true) { !Drivetrain.followingPath }
         })
     } else {
