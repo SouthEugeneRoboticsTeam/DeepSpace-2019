@@ -127,10 +127,10 @@ object AutoChooser {
     suspend fun runAuto() {
         val auto = calculateAuto()
 
-        logger.publish("Start Position", AutoMode.start)
-        logger.publish("Objective", AutoMode.objective)
-        logger.publish("Constraint", AutoMode.constraint)
-        logger.publish("Calculated Mode", auto.name)
+//        logger.publish("Start Position", AutoMode.start)
+//        logger.publish("Objective", AutoMode.objective)
+//        logger.publish("Constraint", AutoMode.constraint)
+//        logger.publish("Calculated Mode", auto.name)
 
         when (auto) {
             CROSS_BASELINE -> testStraightAuto()
