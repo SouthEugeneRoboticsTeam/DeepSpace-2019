@@ -14,6 +14,8 @@ import org.sert2521.deepspace.lift.manualControl
 import org.sert2521.deepspace.manipulators.Manipulators
 import org.sert2521.deepspace.manipulators.bucket.Bucket
 import org.sert2521.deepspace.manipulators.bucket.open
+import org.sert2521.deepspace.manipulators.claw.Claw
+import org.sert2521.deepspace.manipulators.claw.release
 import org.sert2521.deepspace.manipulators.conveyor.Conveyor
 import org.sert2521.deepspace.manipulators.conveyor.run
 import org.sert2521.deepspace.manipulators.intakeCargo
@@ -57,10 +59,10 @@ fun initControls() {
     secondaryJoystick.createMappings {
         buttonHold(1) { Lift.manualControl() }
         buttonHold(2) { Manipulators.intakeCargo(2.0) }
-//        buttonHold(3) { Conveyor.run() }
-        buttonHold(4) { Bucket.open() }
-        buttonHold(5) { Conveyor.run(true) }
-        buttonHold(6) { Conveyor.run() }
+        buttonHold(3) { Conveyor.run() }
+        buttonHold(4) { Conveyor.run(invert = true) }
+        buttonHold(5) { Claw.release() }
+        buttonHold(6) { Bucket.open() }
         buttonHold(7) { Manipulators.releaseCurrent() }
 
         buttonPress(8) {
