@@ -171,6 +171,7 @@ fun log() {
         logger.updateTopics()
         logger.log()
     } catch (exception: Exception) {
+//        println(exception.toString())
         // Logger could not update... Do nothing.
     }
 }
@@ -200,7 +201,8 @@ fun initLogs() {
     try {
         logger.finishInitialization()
     } catch (exception: Exception) {
-        println("Error finishing initialization!")
+        println("Error finishing logger initialization!")
+        println(exception.toString())
     }
 }
 

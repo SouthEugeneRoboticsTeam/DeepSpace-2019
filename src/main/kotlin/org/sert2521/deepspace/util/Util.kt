@@ -2,6 +2,7 @@ package org.sert2521.deepspace.util
 
 import org.team2471.frc.lib.coroutines.PeriodicScope
 import org.team2471.frc.lib.coroutines.periodic
+import org.team2471.frc.lib.math.DoubleRange
 import org.team2471.frc.lib.util.Timer
 import kotlin.math.abs
 import kotlin.math.sqrt
@@ -43,3 +44,15 @@ infix fun Double.tol(error: Double) = (this - error)..(this + error)
 // Function for finding fastest safe time to run lift
 fun getOptimalTime(lastPos: Double, nextPos: Double, accl: Double) =
     sqrt(abs(nextPos - lastPos) / (.5 * accl))
+
+/**
+ * Re-maps a number from a specified [fromRange] to a new [toRange] such that the smallest and
+ * largest values in [fromRange] corresponds to the smallest and largest values in [toRange], and
+ * the values between are mapped proportionally.
+ *
+ * @param fromRange the range that the initial value lies on
+ * @param toRange the range to convert the value onto
+ * @return the new value converted onto the [toRange]
+ */
+fun Number.remap(fromRange: DoubleRange, toRange: DoubleRange) =
+    (this.toDouble() - fromRange.start) * (toRange.endInclusive - toRange.start) / (fromRange.endInclusive - fromRange.start) + toRange.start

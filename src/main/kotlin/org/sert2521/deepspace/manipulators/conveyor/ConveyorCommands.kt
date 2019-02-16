@@ -5,10 +5,10 @@ import org.sert2521.deepspace.manipulators.Manipulators
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.framework.use
 
-suspend fun Conveyor.run() = use(this) {
+suspend fun Conveyor.run(invert: Boolean = false) = use(this) {
     try {
         periodic {
-            Conveyor.setPercent()
+            Conveyor.setPercent(CONVEYOR_SPEED * if (invert) -1 else 1)
             if (Manipulators.hasCargoInConveyor && !Lift.atBottom) stop()
         }
     } finally {

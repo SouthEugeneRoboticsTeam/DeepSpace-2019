@@ -2,6 +2,8 @@ package org.sert2521.deepspace.drivetrain
 
 import edu.wpi.first.wpilibj.GenericHID
 import kotlinx.coroutines.GlobalScope
+import org.sert2521.deepspace.lift.Lift
+import org.sert2521.deepspace.lift.LiftState
 import org.sert2521.deepspace.manipulators.claw.Claw
 import org.sert2521.deepspace.manipulators.claw.release
 import org.sert2521.deepspace.util.Vision
@@ -9,7 +11,11 @@ import org.sert2521.deepspace.util.VisionSource
 import org.sert2521.deepspace.util.addEasePointToEnd
 import org.sert2521.deepspace.util.addPointToEnd
 import org.sert2521.deepspace.util.driveSpeedScalar
+import org.sert2521.deepspace.util.driverIsController
+import org.sert2521.deepspace.util.driverIsJoystick
 import org.sert2521.deepspace.util.primaryController
+import org.sert2521.deepspace.util.primaryJoystick
+import org.sert2521.deepspace.util.remap
 import org.team2471.frc.lib.coroutines.delay
 import org.team2471.frc.lib.coroutines.parallel
 import org.team2471.frc.lib.coroutines.periodic
@@ -24,11 +30,20 @@ import org.team2471.frc.lib.motion_profiling.Path2D
  */
 suspend fun Drivetrain.teleopDrive() = use(this) {
     periodic(watchOverrun = false) {
-        Drivetrain.hybridDrive(
-            -driveSpeedScalar * primaryController.getY(GenericHID.Hand.kLeft).deadband(0.02),
-            0.0,
-            driveSpeedScalar * primaryController.getX(GenericHID.Hand.kRight).deadband(0.02)
-        )
+        val liftModifier = (1.0 - Lift.position / LiftState.HIGH.position).remap(0.0..1.0, 0.25..1.0)
+
+        when {
+            driverIsController -> Drivetrain.hybridDrive(
+                -driveSpeedScalar * liftModifier * primaryController.getY(GenericHID.Hand.kLeft).deadband(0.02),
+                0.0,
+                driveSpeedScalar * liftModifier * primaryController.getX(GenericHID.Hand.kRight).deadband(0.02)
+            )
+            driverIsJoystick -> Drivetrain.hybridDrive(
+                -driveSpeedScalar * liftModifier * primaryJoystick.y.deadband(0.02),
+                0.0,
+                driveSpeedScalar * liftModifier * primaryJoystick.x.deadband(0.02)
+            )
+        }
     }
 }
 
@@ -48,7 +63,7 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, pickup: Boolean = f
         println("Alive? ${vision.alive}, Found? ${vision.found}")
         if (!vision.alive || !vision.found) return
 
-        pose = vision.getMedianPose(0.25, offset = offset)
+        pose = vision.getMedianPose(0.125, offset = offset)
 
         val xPosition = pose.xDistance / 12.0
         val yPosition = pose.yDistance / 12.0
@@ -91,19 +106,18 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, pickup: Boolean = f
 
     updatePath(0.0, 16.0 + 30.0)
 
-    driveAlongPath(path, extraTime = 0.25)
+    driveAlongPath(path, extraTime = 0.1)
 
     updatePath(0.0, 16.0)
 
     vision.locked = false
 
-    if (pickup) {
-        GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.25) }, {
+    when {
+        pickup -> GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.1) }, {
             delay(0.25)
             Claw.release(true) { !Drivetrain.followingPath }
         })
-    } else {
-        driveAlongPath(path, extraTime = 0.25)
+        else -> driveAlongPath(path, extraTime = 0.1)
     }
 
     println("(${pose.xDistance}, ${pose.yDistance}, ${pose.robotAngle}, ${pose.targetAngle})")

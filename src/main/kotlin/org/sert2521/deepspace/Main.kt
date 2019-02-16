@@ -60,12 +60,6 @@ object Robot : RobotProgram {
 
         suspendUntil { Math.abs(Drivetrain.speed) < 0.25 }
         Drivetrain.coast()
-
-        val vision = Vision.getFromSource(VisionSource.Cargo)
-        periodic(5.0) {
-            val pose = vision.pose
-            println("X: ${pose.xDistance}, Y: ${pose.yDistance}, Target Angle: ${pose.targetAngle}, Robot Angle: ${pose.robotAngle}")
-        }
     }
 
     override suspend fun teleop() {

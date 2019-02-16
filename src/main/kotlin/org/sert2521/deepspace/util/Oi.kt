@@ -21,8 +21,6 @@ import org.sert2521.deepspace.manipulators.releaseCurrent
 import org.team2471.frc.lib.framework.createMappings
 import org.team2471.frc.lib.framework.leftBumperHold
 import org.team2471.frc.lib.framework.rightBumperHold
-import org.team2471.frc.lib.framework.xPress
-import org.team2471.frc.lib.framework.yPress
 
 val primaryController by lazy { XboxController(Operator.PRIMARY_CONTROLLER) }
 val primaryJoystick by lazy { Joystick(Operator.PRIMARY_STICK) }
@@ -30,6 +28,11 @@ val secondaryJoystick by lazy { Joystick(Operator.SECONDARY_STICK) }
 
 val driveSpeedScalar get() = Preferences.getInstance().getDouble("drive_speed_scalar", 1.0)
 val liftSpeedScalar get() = Preferences.getInstance().getDouble("lift_speed_scalar", 1.0)
+
+val driverIsJoystick
+    get() = DriverStation.getInstance().getJoystickName(Operator.PRIMARY_STICK).isNotBlank()
+val driverIsController
+    get() = DriverStation.getInstance().getJoystickName(Operator.PRIMARY_CONTROLLER).isNotBlank()
 
 fun initControls() {
     val logger = Logger("Input")
@@ -56,6 +59,8 @@ fun initControls() {
         buttonHold(2) { Manipulators.intakeCargo(2.0) }
 //        buttonHold(3) { Conveyor.run() }
         buttonHold(4) { Bucket.open() }
+        buttonHold(5) { Conveyor.run(true) }
+        buttonHold(6) { Conveyor.run() }
         buttonHold(7) { Manipulators.releaseCurrent() }
 
         buttonPress(8) {

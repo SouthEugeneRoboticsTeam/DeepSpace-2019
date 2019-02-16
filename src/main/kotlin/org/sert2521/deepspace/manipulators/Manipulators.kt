@@ -1,5 +1,6 @@
 package org.sert2521.deepspace.manipulators
 
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.InterruptHandlerFunction
 import org.sert2521.deepspace.Sensors
 import org.sert2521.deepspace.manipulators.bucket.Bucket
@@ -50,8 +51,10 @@ object Manipulators {
 
         conveyorSwitch.requestInterrupts(object : InterruptHandlerFunction<Boolean>() {
             override fun interruptFired(interruptAssertedMask: Int, param: Boolean?) {
-                hasCargo = true
-                Bucket.state = BucketState.CLOSED
+                if (DriverStation.getInstance().isEnabled) {
+                    hasCargo = true
+                    Bucket.state = BucketState.CLOSED
+                }
             }
         })
 
