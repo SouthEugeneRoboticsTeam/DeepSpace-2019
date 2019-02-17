@@ -2,7 +2,8 @@ package org.sert2521.deepspace
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import kotlinx.coroutines.delay
-import org.sert2521.deepspace.autonomous.AutoChooser
+import org.sert2521.deepspace.autonomous.AutoLoader
+import org.sert2521.deepspace.autonomous.AutoMode
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.lift.Lift
 import org.sert2521.deepspace.manipulators.Manipulators
@@ -36,7 +37,7 @@ object Robot : RobotProgram {
         subsystems
 
         // Init companions
-        AutoChooser
+        AutoLoader
         Manipulators
 
         // Turn off light
@@ -72,7 +73,7 @@ object Robot : RobotProgram {
         println("Entering autonomous...")
         Shuffleboard.selectTab("Autonomous")
 
-        AutoChooser.runAuto()
+        AutoMode.runAuto()
     }
 }
 
