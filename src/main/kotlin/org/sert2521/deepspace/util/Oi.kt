@@ -62,36 +62,12 @@ fun initControls() {
         buttonHold(3) { Conveyor.run() }
         buttonHold(4) { Conveyor.run(invert = true) }
         buttonHold(5) { Claw.release() }
-        buttonHold(6) { Bucket.open() }
+        buttonPress(6) { Bucket.open() }
         buttonHold(7) { Manipulators.releaseCurrent() }
 
-        buttonPress(8) {
-            Lift.elevateTo(
-                when {
-                    secondaryJoystick.getRawButton(3) -> LiftState.HATCH_LOW
-                    secondaryJoystick.getRawButton(4) -> LiftState.CARGO_LOW
-                    else -> LiftState.LOW
-                }
-            )
-        }
-        buttonPress(9) {
-            Lift.elevateTo(
-                when {
-                    secondaryJoystick.getRawButton(3) -> LiftState.HATCH_MIDDLE
-                    secondaryJoystick.getRawButton(4) -> LiftState.CARGO_MIDDLE
-                    else -> LiftState.MIDDLE
-                }
-            )
-        }
-        buttonPress(10) {
-            Lift.elevateTo(
-                when {
-                    secondaryJoystick.getRawButton(3) -> LiftState.HATCH_HIGH
-                    secondaryJoystick.getRawButton(4) -> LiftState.CARGO_HIGH
-                    else -> LiftState.HIGH
-                }
-            )
-        }
+        buttonPress(8) { Lift.elevateTo(LiftState.LOW) }
+        buttonPress(9) { Lift.elevateTo(LiftState.MIDDLE) }
+        buttonPress(10) { Lift.elevateTo(LiftState.HIGH) }
     }
 
     for (i in 0 until DriverStation.kJoystickPorts) {
