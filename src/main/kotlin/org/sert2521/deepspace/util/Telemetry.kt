@@ -50,7 +50,7 @@ fun launchTelemetry() {
             periodic(0.1, false) {
                 log()
 
-                instances.iterator().forEach {
+                instances.toList().forEach {
                     it.tick()
                 }
             }

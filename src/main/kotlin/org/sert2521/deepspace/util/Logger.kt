@@ -12,6 +12,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.function.Supplier
 
+private var startTime = 0.0
 private val pathPrefix = if (RobotBase.isReal()) "/media/sda1" else "."
 val logger = BadLog.init("$pathPrefix/${System.currentTimeMillis()}.bag")!!
 
@@ -164,17 +165,18 @@ val SystemLogger = Logger("System")
 
 fun log() {
     try {
-        BadLog.publish("Time", System.nanoTime().toDouble())
+        BadLog.publish("Time", (System.nanoTime().toDouble() - startTime) / 1000000000.0)
 
         logger.updateTopics()
         logger.log()
     } catch (exception: Exception) {
-//        println(exception.toString())
         // Logger could not update... Do nothing.
     }
 }
 
 fun initLogs() {
+    startTime = System.nanoTime().toDouble()
+
     val dateFormat = SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US)
 
     BadLog.createValue("Start Time", dateFormat.format(Date()))
@@ -187,12 +189,8 @@ fun initLogs() {
     BadLog.createTopic("Match Time", "s", Supplier { DriverStation.getInstance().matchTime })
 
     SystemLogger.addNumberTopic("Battery Voltage", "V") { RobotController.getBatteryVoltage() }
-    SystemLogger.addTopic("Browned Out", "bool") {
-        if (RobotController.isBrownedOut()) "1" else "0"
-    }
-    SystemLogger.addTopic("FPGA Active", "bool") {
-        if (RobotController.isSysActive()) "1" else "0"
-    }
+    SystemLogger.addBooleanTopic("Browned Out") { RobotController.isBrownedOut() }
+    SystemLogger.addBooleanTopic("FPGA Active") { RobotController.isSysActive() }
 
     BadLog.createTopicSubscriber("Time", "s", DataInferMode.DEFAULT, "hide", "delta", "xaxis")
 

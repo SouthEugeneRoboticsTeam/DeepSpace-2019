@@ -72,12 +72,41 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
         telemetry.add("Distance") { distance }
         telemetry.add("Left Distance") { leftDistance }
         telemetry.add("Right Distance") { rightDistance }
+        telemetry.add("Following Path") { followingPath }
 
         logger.addNumberTopic("Angle", "deg") { ahrs.angle }
-        logger.addNumberTopic("Left Output") { leftDrive.output }
-        logger.addNumberTopic("Right Output") { rightDrive.output }
-        logger.addNumberTopic("Left Distance") { leftDistance }
-        logger.addNumberTopic("Right Distance") { rightDistance }
+        logger.addBooleanTopic("Following Path") { followingPath }
+
+        logger.addNumberTopic("Left Output", "%", "hide", "join:Drivetrain/Percent") {
+            leftDrive.output
+        }
+        logger.addNumberTopic("Right Output", "%", "hide", "join:Drivetrain/Percent") {
+            rightDrive.output
+        }
+
+        logger.addNumberTopic("Left Current", "A", "hide", "join:Drivetrain/Current") {
+            leftDrive.currentSum
+        }
+        logger.addNumberTopic("Right Current", "A", "hide", "join:Drivetrain/Current") {
+            leftDrive.currentSum
+        }
+
+        logger.addNumberTopic("Left Distance", "ft", "hide", "join:Drivetrain/Distances") {
+            leftDistance
+        }
+        logger.addNumberTopic("Right Distance", "ft", "hide", "join:Drivetrain/Distances") {
+            rightDistance
+        }
+
+        logger.addNumberTopic("Left Speed", "ft/s", "hide", "join:Drivetrain/Speeds") {
+            leftSpeed
+        }
+        logger.addNumberTopic("Right Speed", "ft/s", "hide", "join:Drivetrain/Speeds") {
+            rightSpeed
+        }
+        logger.addNumberTopic("Average Speed", "ft/s", "hide", "join:Drivetrain/Speeds") {
+            speed
+        }
 
         zeroEncoders()
         zeroGyro()
