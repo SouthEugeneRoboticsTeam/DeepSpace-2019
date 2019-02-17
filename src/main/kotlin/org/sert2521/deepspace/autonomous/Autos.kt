@@ -27,13 +27,13 @@ suspend fun testStraightAuto() {
 
         GlobalScope.parallel({
             delay(0.5)
-            Drivetrain.driveAlongPath( auto["Rocket Front to Reverse"], 0.25)
+            Drivetrain.driveAlongPath(auto["Rocket Front to Reverse"], 0.25)
         }, {
             val timeStart = Date().time
             Claw.release(true) { Date().time > timeStart + 1500 }
         })
 
-        Drivetrain.driveAlongPath( auto["Rocket Reverse to Pickup"], 0.1)
+        Drivetrain.driveAlongPath(auto["Rocket Reverse to Pickup"], 0.1)
     } finally {
         println("Done following path")
     }

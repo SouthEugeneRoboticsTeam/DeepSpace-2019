@@ -7,8 +7,6 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.RobotController
 import org.sert2521.deepspace.Robot
 import org.team2471.frc.lib.framework.Subsystem
-import java.lang.Exception
-import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

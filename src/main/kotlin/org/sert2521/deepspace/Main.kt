@@ -17,7 +17,6 @@ import org.sert2521.deepspace.util.initLogs
 import org.sert2521.deepspace.util.initPreferences
 import org.sert2521.deepspace.util.logBuildInfo
 import org.sert2521.deepspace.util.logger
-import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.RobotProgram
 import org.team2471.frc.lib.framework.initializeWpilib
