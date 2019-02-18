@@ -41,25 +41,25 @@ suspend fun crossBaseline() {
 }
 
 suspend fun levelOneToRocket(start: AutoMode.StartPosition, pickup: Boolean) {
-    val auto = autonomi["Left Start"]
+    val auto = autonomi["Paths"]
 
     auto.isMirrored = start.location == AutoMode.Location.RIGHT
 
     try {
-        Drivetrain.driveAlongPath(auto["HAB to Rocket Front"], 0.1)
+        Drivetrain.driveAlongPath(auto["HAB to Rocket Front"], 0.2)
 
         Drivetrain.alignWithVision(VisionSource.Cargo)
 
         if (pickup) {
             GlobalScope.parallel({
                 delay(0.5)
-                Drivetrain.driveAlongPath(auto["Rocket Front to Reverse"], 0.1)
+                Drivetrain.driveAlongPath(auto["Rocket Front to Reverse"], 0.2)
             }, {
                 val timeStart = Date().time
                 Claw.release(true) { Date().time > timeStart + 1500 }
             })
 
-            Drivetrain.driveAlongPath(auto["Rocket Reverse to Pickup"], 0.1)
+//            Drivetrain.driveAlongPath(auto["Rocket Reverse to Pickup"], 0.2)
         } else {
             releaseHatchPanel()
         }
@@ -69,7 +69,7 @@ suspend fun levelOneToRocket(start: AutoMode.StartPosition, pickup: Boolean) {
 }
 
 suspend fun levelOneToCargoSide(start: AutoMode.StartPosition, pickup: Boolean) {
-    val auto = autonomi["Left Start"]
+    val auto = autonomi["Paths"]
 
     auto.isMirrored = start.location == AutoMode.Location.RIGHT
 
@@ -97,7 +97,7 @@ suspend fun levelOneToCargoSide(start: AutoMode.StartPosition, pickup: Boolean) 
 }
 
 suspend fun levelOneToCargoFront(start: AutoMode.StartPosition, pickup: Boolean) {
-    val auto = autonomi["Left Start"]
+    val auto = autonomi["Paths"]
 
     // Verify we are starting in the middle position
     if (start.location != AutoMode.Location.MIDDLE) return

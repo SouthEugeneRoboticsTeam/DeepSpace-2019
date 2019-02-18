@@ -27,7 +27,7 @@ suspend fun Manipulators.intakeCargo(extraTime: Double? = null) = use(Conveyor, 
         Intake.state = IntakeState.LOWERED
 
         periodic {
-            Conveyor.setPercent()
+            Conveyor.spin()
             Intake.spin()
 
             if (hasCargoInConveyor && !Lift.atBottom) stop()
@@ -39,7 +39,7 @@ suspend fun Manipulators.intakeCargo(extraTime: Double? = null) = use(Conveyor, 
             intakeJob?.cancel()
             intakeJob = GlobalScope.launch(MeanlibDispatcher) {
                 timer(extraTime) {
-                    Conveyor.setPercent()
+                    Conveyor.spin()
                     Intake.spin()
 
                     if (hasCargoInConveyor && !Lift.atBottom) stop()

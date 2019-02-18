@@ -15,7 +15,7 @@ object Conveyor : Subsystem("Conveyor") {
     var isRunning = false
         private set
 
-    fun spin(percent: Double) {
+    fun spin(percent: Double = CONVEYOR_SPEED) {
         motor.setPercentOutput(percent)
 
         if (!isRunning) isRunning = true

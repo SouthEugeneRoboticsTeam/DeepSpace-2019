@@ -57,7 +57,7 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
     vision.locked = true
 
     // Wait for light to turn on
-    delay(0.25)
+    delay(0.2)
 
     val path = Path2D()
 
@@ -67,7 +67,7 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
         println("Alive? ${vision.alive}, Found? ${vision.found}")
         if (!vision.alive || !vision.found) return
 
-        pose = vision.getMedianPose(0.125, offset = offset)
+        pose = vision.getMedianPose(0.33, offset = offset)
 
         val xPosition = pose.xDistance / 12.0
         val yPosition = pose.yDistance / 12.0
@@ -108,20 +108,20 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
         """.trimIndent())
     }
 
-    updatePath(0.0, 16.0 + 30.0)
+    updatePath(0.0, 16.0 + 28.0)
 
     driveAlongPath(path, extraTime = 0.1)
 
-    updatePath(0.0, 16.0)
+    updatePath(0.0, 16.0 + 3.0)
 
     vision.locked = false
 
     when {
-        shouldPickup -> GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.1) }, {
+        shouldPickup -> GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.25) }, {
             delay(0.25)
             Claw.release(true) { !Drivetrain.followingPath }
         })
-        else -> driveAlongPath(path, extraTime = 0.1)
+        else -> driveAlongPath(path, extraTime = 0.25)
     }
 
     println("(${pose.xDistance}, ${pose.yDistance}, ${pose.robotAngle}, ${pose.targetAngle})")
