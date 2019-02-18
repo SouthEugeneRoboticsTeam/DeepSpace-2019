@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.GenericHID
 import kotlinx.coroutines.GlobalScope
 import org.sert2521.deepspace.lift.Lift
 import org.sert2521.deepspace.lift.LiftState
+import org.sert2521.deepspace.manipulators.Manipulators
 import org.sert2521.deepspace.manipulators.claw.Claw
 import org.sert2521.deepspace.manipulators.claw.release
 import org.sert2521.deepspace.util.Vision
@@ -47,7 +48,10 @@ suspend fun Drivetrain.teleopDrive() = use(this) {
     }
 }
 
-suspend fun Drivetrain.alignWithVision(source: VisionSource, pickup: Boolean = false) = use(this) {
+suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
+    // Pickup hatch panel if currently does not have game piece
+    val shouldPickup = Manipulators.currentGamePiece == null
+
     val vision = Vision.getFromSource(source)
 
     vision.locked = true
@@ -113,7 +117,7 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, pickup: Boolean = f
     vision.locked = false
 
     when {
-        pickup -> GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.1) }, {
+        shouldPickup -> GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.1) }, {
             delay(0.25)
             Claw.release(true) { !Drivetrain.followingPath }
         })

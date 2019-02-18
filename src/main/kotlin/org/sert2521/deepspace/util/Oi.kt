@@ -43,8 +43,7 @@ fun initControls() {
         rightBumperHold { Manipulators.releaseCurrent() }
         leftBumperHold { Manipulators.intakeCargo(2.0) }
 
-        buttonPress(3) { Drivetrain.alignWithVision(VisionSource.Cargo, true) }
-        buttonPress(4) { Drivetrain.alignWithVision(VisionSource.Cargo) }
+        buttonPress(3) { Drivetrain.alignWithVision(VisionSource.Cargo) }
     }
 
     // Primary joystick mappings
@@ -52,7 +51,7 @@ fun initControls() {
         buttonHold(1) { Manipulators.releaseCurrent() }
         buttonHold(3) { Manipulators.intakeCargo(2.0) }
 
-        buttonPress(2) { Drivetrain.alignWithVision(VisionSource.Cargo, true) }
+        buttonPress(2) { Drivetrain.alignWithVision(VisionSource.Cargo) }
     }
 
     // Secondary joystick mappings
