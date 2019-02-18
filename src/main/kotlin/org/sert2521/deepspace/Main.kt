@@ -10,6 +10,7 @@ import org.sert2521.deepspace.autonomous.AutoChooser
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.drivetrain.alignWithVision
 import org.sert2521.deepspace.lift.Lift
+import org.sert2521.deepspace.lights.Lights.runLights
 import org.sert2521.deepspace.manipulators.bucket.Bucket
 import org.sert2521.deepspace.manipulators.claw.Claw
 import org.sert2521.deepspace.manipulators.conveyor.Conveyor
@@ -65,6 +66,8 @@ object Robot : RobotProgram {
         subsystems.forEach { it.enable() }
 
         Drivetrain.brake()
+
+        runLights()
     }
 
     override suspend fun disable() {
