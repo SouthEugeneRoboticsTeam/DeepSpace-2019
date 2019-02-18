@@ -6,7 +6,7 @@ plugins {
 }
 
 ext.kotlinVersion = "1.3.20"
-ext.ktlintVersion = "0.29.0"
+ext.ktlintVersion = "0.30.0"
 ext.sertainVersion = "a2c505171b318836e0619b3c25dabae3a7857bf5"
 ext.badlogVersion = "d3f791967f11888df925af0a32178b264fce42a6"
 
