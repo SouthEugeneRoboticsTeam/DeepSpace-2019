@@ -7,11 +7,13 @@ import org.team2471.frc.lib.framework.use
 
 suspend fun Conveyor.run(invert: Boolean = false) = use(this) {
     try {
+        Conveyor.isRunning = true
         periodic {
             Conveyor.setPercent(CONVEYOR_SPEED * if (invert) -1 else 1)
             if (Manipulators.hasCargoInConveyor && !Lift.atBottom) stop()
         }
     } finally {
+        Conveyor.isRunning = false
         Conveyor.stop()
     }
 }
