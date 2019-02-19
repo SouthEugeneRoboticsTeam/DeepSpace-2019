@@ -75,7 +75,6 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
 
         println("X: $xPosition, Y: $yPosition, Target Angle: ${pose.targetAngle}, Robot Angle: ${pose.robotAngle}")
 
-        val tangent = path.getTangent(time)
         val oldPath = path.easeCurve.getDerivative(time)
         var oldDuration = path.duration
 
