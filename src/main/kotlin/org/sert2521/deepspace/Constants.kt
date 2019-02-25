@@ -44,6 +44,9 @@ object Sensors {
 
     // Conveyor
     const val CONVEYOR_SWITCH = 0
+
+    // Lights
+    const val TARGET_LEDS = 4
 }
 
 object Pneumatics {
@@ -61,11 +64,8 @@ object Pneumatics {
 }
 
 object Operator {
-    const val PRIMARY_STICK = 0
+    const val PRIMARY_CONTROLLER = 0
     const val SECONDARY_STICK = 1
-    const val PRIMARY_CONTROLLER = 2
-
-    const val TARGET_LEDS = 4
 }
 
 object Characteristics {

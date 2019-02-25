@@ -12,10 +12,7 @@ import org.sert2521.deepspace.util.VisionSource
 import org.sert2521.deepspace.util.addEasePointToEnd
 import org.sert2521.deepspace.util.addPointToEnd
 import org.sert2521.deepspace.util.driveSpeedScalar
-import org.sert2521.deepspace.util.driverIsController
-import org.sert2521.deepspace.util.driverIsJoystick
 import org.sert2521.deepspace.util.primaryController
-import org.sert2521.deepspace.util.primaryJoystick
 import org.sert2521.deepspace.util.remap
 import org.team2471.frc.lib.coroutines.delay
 import org.team2471.frc.lib.coroutines.parallel
@@ -31,20 +28,13 @@ import org.team2471.frc.lib.motion_profiling.Path2D
  */
 suspend fun Drivetrain.teleopDrive() = use(this) {
     periodic(watchOverrun = false) {
-        val liftModifier = (1.0 - Lift.position / LiftState.HIGH.position).remap(0.0..1.0, 0.25..1.0)
+        val liftScalar = (1.0 - Lift.position / LiftState.HIGH.position).remap(0.0..1.0, 0.35..1.0)
 
-        when {
-            driverIsController -> Drivetrain.hybridDrive(
-                -driveSpeedScalar * liftModifier * primaryController.getY(GenericHID.Hand.kLeft).deadband(0.02),
-                0.0,
-                driveSpeedScalar * liftModifier * primaryController.getX(GenericHID.Hand.kRight).deadband(0.02)
-            )
-            driverIsJoystick -> Drivetrain.hybridDrive(
-                -driveSpeedScalar * liftModifier * primaryJoystick.y.deadband(0.02),
-                0.0,
-                driveSpeedScalar * liftModifier * primaryJoystick.x.deadband(0.02)
-            )
-        }
+        Drivetrain.hybridDrive(
+            -driveSpeedScalar * liftScalar * primaryController.getY(GenericHID.Hand.kLeft).deadband(0.02),
+            0.0,
+            driveSpeedScalar * liftScalar * primaryController.getX(GenericHID.Hand.kRight).deadband(0.02)
+        )
     }
 }
 

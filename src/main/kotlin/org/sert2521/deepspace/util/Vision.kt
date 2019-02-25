@@ -5,6 +5,7 @@ import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DigitalOutput
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.RobotController.getFPGATime
+import org.sert2521.deepspace.Sensors
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -145,7 +146,7 @@ abstract class Vision(source: VisionSource) {
 
     companion object {
         private const val cameraToCenter = 13.25
-        private val lights = DigitalOutput(4)
+        private val lights = DigitalOutput(Sensors.TARGET_LEDS)
 
         object Cargo : Vision(VisionSource.Cargo)
 

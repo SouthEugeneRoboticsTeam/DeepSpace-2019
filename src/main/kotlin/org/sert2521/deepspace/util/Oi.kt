@@ -25,16 +25,10 @@ import org.team2471.frc.lib.framework.leftBumperHold
 import org.team2471.frc.lib.framework.rightBumperHold
 
 val primaryController by lazy { XboxController(Operator.PRIMARY_CONTROLLER) }
-val primaryJoystick by lazy { Joystick(Operator.PRIMARY_STICK) }
 val secondaryJoystick by lazy { Joystick(Operator.SECONDARY_STICK) }
 
 val driveSpeedScalar get() = Preferences.getInstance().getDouble("drive_speed_scalar", 1.0)
 val liftSpeedScalar get() = Preferences.getInstance().getDouble("lift_speed_scalar", 1.0)
-
-val driverIsJoystick
-    get() = DriverStation.getInstance().getJoystickName(Operator.PRIMARY_STICK).isNotBlank()
-val driverIsController
-    get() = DriverStation.getInstance().getJoystickName(Operator.PRIMARY_CONTROLLER).isNotBlank()
 
 fun initControls() {
     val logger = Logger("Input")
@@ -44,14 +38,6 @@ fun initControls() {
         leftBumperHold { Manipulators.intakeCargo(2.0) }
 
         buttonPress(3) { Drivetrain.alignWithVision(VisionSource.Cargo) }
-    }
-
-    // Primary joystick mappings
-    primaryJoystick.createMappings {
-        buttonHold(1) { Manipulators.releaseCurrent() }
-        buttonHold(3) { Manipulators.intakeCargo(2.0) }
-
-        buttonPress(2) { Drivetrain.alignWithVision(VisionSource.Cargo) }
     }
 
     // Secondary joystick mappings
@@ -71,7 +57,7 @@ fun initControls() {
 
     for (i in 0 until DriverStation.kJoystickPorts) {
         logger.addValue("Controller $i Type",
-                        DriverStation.getInstance().getJoystickName(i) ?: "Unknown")
+                        DriverStation.getInstance().getJoystickName(i) ?: "")
     }
 }
 
