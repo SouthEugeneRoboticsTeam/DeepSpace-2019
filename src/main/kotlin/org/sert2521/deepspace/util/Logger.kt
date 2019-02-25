@@ -16,6 +16,8 @@ private var startTime = 0.0
 private val pathPrefix = if (RobotBase.isReal()) "/media/sda1" else "."
 val logger = BadLog.init("$pathPrefix/${System.currentTimeMillis()}.bag")!!
 
+private val dateFormat = SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US)
+
 class Logger {
     private val subsystemName: String
 
@@ -177,8 +179,6 @@ fun log() {
 fun initLogs() {
     startTime = System.nanoTime().toDouble()
 
-    val dateFormat = SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US)
-
     BadLog.createValue("Start Time", dateFormat.format(Date()))
     BadLog.createValue("Event Name", DriverStation.getInstance().eventName)
     BadLog.createValue("Match Type", DriverStation.getInstance().matchType.toString())
@@ -224,9 +224,13 @@ fun logBuildInfo() {
     }
 
     "buildtime.txt".asResource {
-        println("Build Time: $it")
-        GlobalTelemetry.put("Build Time", it)
-        BadLog.createValue("Build Time", it)
+        val date = dateFormat.format(
+            SimpleDateFormat("dd'-'MM'-'yyyy' 'HH:mm:ss", Locale.US).parse(it)
+        )
+
+        println("Build Time: $date")
+        GlobalTelemetry.put("Build Time", date)
+        BadLog.createValue("Build Time", date)
     }
 
     println("----------------------------------------------------\n")
