@@ -84,13 +84,6 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
             rightDrive.output
         }
 
-        logger.addNumberTopic("Left Current", "A", "hide", "join:Drivetrain/Current") {
-            leftDrive.currentSum
-        }
-        logger.addNumberTopic("Right Current", "A", "hide", "join:Drivetrain/Current") {
-            leftDrive.currentSum
-        }
-
         logger.addNumberTopic("Left Distance", "ft", "hide", "join:Drivetrain/Distances") {
             leftDistance
         }

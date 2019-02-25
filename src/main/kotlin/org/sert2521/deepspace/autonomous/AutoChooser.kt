@@ -1,16 +1,20 @@
 package org.sert2521.deepspace.autonomous
 
+import badlog.lib.BadLog
+import badlog.lib.DataInferMode
 import edu.wpi.first.networktables.EntryListenerFlags
 import edu.wpi.first.networktables.EntryNotification
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import org.sert2521.deepspace.util.Logger
 import org.sertain.util.SendableChooser
 import org.team2471.frc.lib.motion_profiling.Autonomi
 import org.team2471.frc.lib.util.measureTimeFPGA
 import java.io.File
 
 lateinit var autonomi: Autonomi
+private val logger = Logger("Autonomous")
 
 enum class AutoMode(val command: suspend () -> Unit) {
     CROSS_BASELINE({ crossBaseline() }),
@@ -22,7 +26,9 @@ enum class AutoMode(val command: suspend () -> Unit) {
     LEVEL_TWO_TO_ROCKET({ }),
     LEVEL_TWO_TO_CARGO_SIDE({ });
 
-    data class StartPosition(val location: Location, val level: Level)
+    data class StartPosition(val location: Location, val level: Level) {
+        val name get() = "${location.name} (Level ${level.name})"
+    }
 
     enum class Location {
         LEFT, MIDDLE, RIGHT;
@@ -63,20 +69,29 @@ enum class AutoMode(val command: suspend () -> Unit) {
         val objective get() = objectiveChooser.selected ?: Objective.BASELINE
         val constraint get() = constraintChooser.selected ?: Constraint.NONE
 
-        private fun calculateAuto() = when (AutoMode.objective) {
-            Objective.BASELINE -> AutoMode.CROSS_BASELINE
-            Objective.CARGO_FRONT -> AutoMode.LEVEL_ONE_TO_CARGO_FRONT
-            Objective.CARGO_SIDE -> when (AutoMode.start.level) {
-                AutoMode.Level.ONE -> AutoMode.LEVEL_ONE_TO_CARGO_SIDE
-                AutoMode.Level.TWO -> AutoMode.LEVEL_TWO_TO_CARGO_SIDE
+        private fun calculateAuto() = when (objective) {
+            Objective.BASELINE -> CROSS_BASELINE
+            Objective.CARGO_FRONT -> LEVEL_ONE_TO_CARGO_FRONT
+            Objective.CARGO_SIDE -> when (start.level) {
+                Level.ONE -> LEVEL_ONE_TO_CARGO_SIDE
+                Level.TWO -> LEVEL_TWO_TO_CARGO_SIDE
             }
-            Objective.ROCKET_FRONT -> when (AutoMode.start.level) {
-                AutoMode.Level.ONE -> AutoMode.LEVEL_ONE_TO_ROCKET
-                AutoMode.Level.TWO -> AutoMode.LEVEL_TWO_TO_CARGO_SIDE
+            Objective.ROCKET_FRONT -> when (start.level) {
+                Level.ONE -> LEVEL_ONE_TO_ROCKET
+                Level.TWO -> LEVEL_TWO_TO_ROCKET
             }
         }
 
-        suspend fun runAuto() = AutoMode.calculateAuto().command()
+        suspend fun runAuto() {
+            logger.publish("Start Position", "<b>using: ${start.name}</b>")
+            logger.publish("Objective", "<b>using: ${objective.name}</b>")
+            logger.publish("Constraint", "<b>using: ${constraint.name}</b>")
+
+            val autoMode = calculateAuto()
+            logger.publish("Calculated Mode", autoMode.name)
+
+            autoMode.command()
+        }
     }
 }
 
@@ -84,6 +99,11 @@ object AutoLoader {
     private val cacheFile = File("/home/lvuser/autonomi.json")
 
     init {
+        logger.addSubscriber("Start Position", BadLog.UNITLESS, DataInferMode.DEFAULT, "log")
+        logger.addSubscriber("Objective", BadLog.UNITLESS, DataInferMode.DEFAULT, "log")
+        logger.addSubscriber("Constraint", BadLog.UNITLESS, DataInferMode.DEFAULT, "log")
+        logger.addSubscriber("Calculated Mode", BadLog.UNITLESS, DataInferMode.DEFAULT, "log")
+
         SmartDashboard.putData("Auto Start Position", AutoMode.startChooser)
         SmartDashboard.putData("Auto Objective", AutoMode.objectiveChooser)
         SmartDashboard.putData("Auto Constraint", AutoMode.constraintChooser)
@@ -116,13 +136,31 @@ object AutoLoader {
             }
         }
 
-        val flags = EntryListenerFlags.kImmediate or
-                EntryListenerFlags.kNew or
-                EntryListenerFlags.kUpdate
+        val autoFlags = EntryListenerFlags.kImmediate or
+            EntryListenerFlags.kNew or
+            EntryListenerFlags.kUpdate
 
         NetworkTableInstance.getDefault()
-                .getTable("PathVisualizer")
-                .getEntry("Autonomi")
-                .addListener(handler, flags)
+            .getTable("PathVisualizer")
+            .getEntry("Autonomi")
+            .addListener(handler, autoFlags)
+
+        val modeFlags = EntryListenerFlags.kNew or
+            EntryListenerFlags.kUpdate
+
+        NetworkTableInstance.getDefault()
+            .getTable("SmartDashboard/Auto Start Position")
+            .getEntry("selected")
+            .addListener({ logger.publish("Start Position", AutoMode.start.name) }, modeFlags)
+
+        NetworkTableInstance.getDefault()
+            .getTable("SmartDashboard/Auto Objective")
+            .getEntry("selected")
+            .addListener({ logger.publish("Objective", AutoMode.objective.name) }, modeFlags)
+
+        NetworkTableInstance.getDefault()
+            .getTable("SmartDashboard/Auto Constraint")
+            .getEntry("selected")
+            .addListener({ logger.publish("Constraint", AutoMode.constraint.name) }, modeFlags)
     }
 }
