@@ -1,12 +1,17 @@
 package org.sert2521.deepspace.autonomous
 
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.drivetrain.alignWithVision
+import org.sert2521.deepspace.manipulators.GamePiece
 import org.sert2521.deepspace.manipulators.claw.Claw
 import org.sert2521.deepspace.manipulators.claw.release
+import org.sert2521.deepspace.manipulators.conveyor.Conveyor
+import org.sert2521.deepspace.manipulators.conveyor.runTimed
 import org.sert2521.deepspace.util.VisionSource
 import org.sert2521.deepspace.util.timer
+import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.delay
 import org.team2471.frc.lib.coroutines.parallel
 import org.team2471.frc.lib.motion.following.driveAlongPath
@@ -28,6 +33,12 @@ private suspend fun releaseHatchPanel() {
         val timeStart = Date().time
         Claw.release(true) { Date().time > timeStart + 1500 }
     })
+}
+
+private fun prepareLoadedCargo() {
+    GlobalScope.launch(MeanlibDispatcher) {
+        Conveyor.runTimed(1.0)
+    }
 }
 
 suspend fun crossBaseline() {
@@ -68,10 +79,12 @@ suspend fun levelOneToRocket(start: AutoMode.StartPosition, pickup: Boolean) {
     }
 }
 
-suspend fun levelOneToCargoSide(start: AutoMode.StartPosition, pickup: Boolean) {
+suspend fun levelOneToCargoSide(start: AutoMode.StartPosition, gamePiece: GamePiece, pickup: Boolean) {
     val auto = autonomi["Paths"]
 
     auto.isMirrored = start.location == AutoMode.Location.RIGHT
+
+    if (gamePiece == GamePiece.CARGO) prepareLoadedCargo()
 
     try {
         Drivetrain.driveAlongPath(auto["HAB to Cargo Side"], 0.1)

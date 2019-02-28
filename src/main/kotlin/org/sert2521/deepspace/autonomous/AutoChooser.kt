@@ -7,6 +7,7 @@ import edu.wpi.first.networktables.EntryNotification
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import org.sert2521.deepspace.manipulators.GamePiece
 import org.sert2521.deepspace.util.Logger
 import org.sertain.util.SendableChooser
 import org.team2471.frc.lib.motion_profiling.Autonomi
@@ -20,7 +21,7 @@ enum class AutoMode(val command: suspend () -> Unit) {
     CROSS_BASELINE({ crossBaseline() }),
 
     LEVEL_ONE_TO_ROCKET({ levelOneToRocket(start, constraint != Constraint.NO_PICKUP) }),
-    LEVEL_ONE_TO_CARGO_SIDE({ levelOneToCargoSide(start, constraint != Constraint.NO_PICKUP) }),
+    LEVEL_ONE_TO_CARGO_SIDE({ levelOneToCargoSide(start, gamePiece, constraint != Constraint.NO_PICKUP) }),
     LEVEL_ONE_TO_CARGO_FRONT({ levelOneToCargoFront(start, constraint != Constraint.NO_PICKUP) }),
 
     LEVEL_TWO_TO_ROCKET({ }),
@@ -64,10 +65,15 @@ enum class AutoMode(val command: suspend () -> Unit) {
                 "None" to Constraint.NONE,
                 "No Pickup" to Constraint.NO_PICKUP
         )
+        val gamePieceChooser = SendableChooser(
+            "Hatch Panel" to GamePiece.HATCH_PANEL,
+            "Cargo" to GamePiece.CARGO
+        )
 
         val start get() = startChooser.selected ?: StartPosition(Location.MIDDLE, Level.ONE)
         val objective get() = objectiveChooser.selected ?: Objective.BASELINE
         val constraint get() = constraintChooser.selected ?: Constraint.NONE
+        val gamePiece get() = gamePieceChooser.selected ?: GamePiece.HATCH_PANEL
 
         private fun calculateAuto() = when (objective) {
             Objective.BASELINE -> CROSS_BASELINE
@@ -107,6 +113,7 @@ object AutoLoader {
         SmartDashboard.putData("Auto Start Position", AutoMode.startChooser)
         SmartDashboard.putData("Auto Objective", AutoMode.objectiveChooser)
         SmartDashboard.putData("Auto Constraint", AutoMode.constraintChooser)
+        SmartDashboard.putData("Auto Game Piece", AutoMode.gamePieceChooser)
 
         try {
             autonomi = Autonomi.fromJsonString(cacheFile.readText())
