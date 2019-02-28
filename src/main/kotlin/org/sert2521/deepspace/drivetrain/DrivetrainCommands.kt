@@ -46,10 +46,11 @@ suspend fun Drivetrain.teleopDrive() = use(this) {
 }
 
 suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
+    val context = coroutineContext
     val cancelJob = launch {
         periodic {
             if (throttle.absoluteValue > 0.0 || turn.absoluteValue > 0.0) {
-                coroutineContext.cancel()
+                context.cancel()
             }
         }
     }
