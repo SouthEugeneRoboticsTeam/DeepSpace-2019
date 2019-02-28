@@ -2,6 +2,9 @@ package org.sert2521.deepspace.drivetrain
 
 import edu.wpi.first.wpilibj.GenericHID
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
 import org.sert2521.deepspace.lift.Lift
 import org.sert2521.deepspace.lift.LiftState
 import org.sert2521.deepspace.manipulators.Manipulators
@@ -22,6 +25,10 @@ import org.team2471.frc.lib.math.deadband
 import org.team2471.frc.lib.motion.following.driveAlongPath
 import org.team2471.frc.lib.motion.following.hybridDrive
 import org.team2471.frc.lib.motion_profiling.Path2D
+import kotlin.math.absoluteValue
+
+private val throttle get() = primaryController.getY(GenericHID.Hand.kLeft).deadband(0.02)
+private val turn get() = primaryController.getX(GenericHID.Hand.kRight).deadband(0.02)
 
 /**
  * Allows for teleoperated drive of the robot.
@@ -31,14 +38,22 @@ suspend fun Drivetrain.teleopDrive() = use(this) {
         val liftScalar = (1.0 - Lift.position / LiftState.HIGH.position).remap(0.0..1.0, 0.35..1.0)
 
         Drivetrain.hybridDrive(
-            -driveSpeedScalar * liftScalar * primaryController.getY(GenericHID.Hand.kLeft).deadband(0.02),
+            -driveSpeedScalar * liftScalar * throttle,
             0.0,
-            driveSpeedScalar * liftScalar * primaryController.getX(GenericHID.Hand.kRight).deadband(0.02)
+            driveSpeedScalar * liftScalar * turn
         )
     }
 }
 
 suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
+    val cancelJob = launch {
+        periodic {
+            if (throttle.absoluteValue > 0.0 || turn.absoluteValue > 0.0) {
+                coroutineContext.cancel()
+            }
+        }
+    }
+
     // Pickup hatch panel if currently does not have game piece
     val shouldPickup = Manipulators.currentGamePiece == null
 
@@ -113,5 +128,5 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
         else -> driveAlongPath(path, extraTime = 0.25)
     }
 
-    println("(${pose.xDistance}, ${pose.yDistance}, ${pose.robotAngle}, ${pose.targetAngle})")
+    cancelJob.cancelAndJoin()
 }
