@@ -18,6 +18,8 @@ lateinit var autonomi: Autonomi
 private val logger = Logger("Autonomous")
 
 enum class AutoMode(val command: suspend () -> Unit) {
+    NONE({ }),
+
     CROSS_BASELINE({ crossBaseline() }),
 
     LEVEL_ONE_TO_ROCKET({ levelOneToRocket(start, constraint != Constraint.NO_PICKUP) }),
@@ -40,7 +42,7 @@ enum class AutoMode(val command: suspend () -> Unit) {
     }
 
     enum class Objective {
-        BASELINE, CARGO_FRONT, CARGO_SIDE, ROCKET_FRONT
+        NONE, BASELINE, CARGO_FRONT, CARGO_SIDE, ROCKET_FRONT
     }
 
     enum class Constraint {
@@ -56,6 +58,7 @@ enum class AutoMode(val command: suspend () -> Unit) {
                 "Right (Level 2)" to StartPosition(Location.RIGHT, Level.TWO)
         )
         val objectiveChooser = SendableChooser(
+                "None (Teleop)" to Objective.NONE,
                 "Baseline" to Objective.BASELINE,
                 "Cargo Front" to Objective.CARGO_FRONT,
                 "Cargo Side" to Objective.CARGO_SIDE,
@@ -76,6 +79,7 @@ enum class AutoMode(val command: suspend () -> Unit) {
         val gamePiece get() = gamePieceChooser.selected ?: GamePiece.HATCH_PANEL
 
         private fun calculateAuto() = when (objective) {
+            Objective.NONE -> NONE
             Objective.BASELINE -> CROSS_BASELINE
             Objective.CARGO_FRONT -> LEVEL_ONE_TO_CARGO_FRONT
             Objective.CARGO_SIDE -> when (start.level) {
