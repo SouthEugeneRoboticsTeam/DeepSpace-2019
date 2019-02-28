@@ -4,6 +4,7 @@ import org.team2471.frc.lib.coroutines.PeriodicScope
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.math.DoubleRange
 import org.team2471.frc.lib.util.Timer
+import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -56,3 +57,13 @@ fun getOptimalTime(lastPos: Double, nextPos: Double, accl: Double) =
  */
 fun Number.remap(fromRange: DoubleRange, toRange: DoubleRange) =
     (this.toDouble() - fromRange.start) * (toRange.endInclusive - toRange.start) / (fromRange.endInclusive - fromRange.start) + toRange.start
+
+fun Pair<Color, Color>.fade(percent: Double): Color {
+    val red = Math.abs(percent * second.red + (1 - percent) * first.red)
+    val green = Math.abs(percent * second.green + (1 - percent) * first.green)
+    val blue = Math.abs(percent * second.blue + (1 - percent) * first.blue)
+
+    return Color(red.toInt(), green.toInt(), blue.toInt())
+}
+
+fun Double.format(digits: Int) = String.format("%.${digits}f", this)

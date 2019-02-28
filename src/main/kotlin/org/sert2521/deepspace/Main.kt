@@ -1,7 +1,5 @@
 package org.sert2521.deepspace
 
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import kotlinx.coroutines.delay
 import org.sert2521.deepspace.autonomous.AutoLoader
 import org.sert2521.deepspace.autonomous.AutoMode
 import org.sert2521.deepspace.drivetrain.Drivetrain
@@ -64,14 +62,10 @@ object Robot : RobotProgram {
 
     override suspend fun teleop() {
         println("Entering teleop...")
-        Shuffleboard.selectTab("Driver")
     }
 
     override suspend fun autonomous() {
-        delay(50)
-
         println("Entering autonomous...")
-        Shuffleboard.selectTab("Autonomous")
 
         AutoMode.runAuto()
     }
