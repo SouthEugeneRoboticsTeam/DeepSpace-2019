@@ -158,4 +158,6 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
     }
 
     override suspend fun default() = Drivetrain.teleopDrive()
+
+    override fun reset() = stop()
 }

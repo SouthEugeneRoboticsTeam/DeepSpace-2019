@@ -100,6 +100,8 @@ object Lift : Subsystem("Lift") {
 
     fun stop() = motor.stop()
 
+    override fun reset() = stop()
+
     init {
         telemetry.add("Position") { motor.position }
         telemetry.add("Current") { motor.current }

@@ -26,4 +26,6 @@ object Conveyor : Subsystem("Conveyor") {
 
         isRunning = false
     }
+
+    override fun reset() = stop()
 }
