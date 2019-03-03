@@ -74,7 +74,6 @@ infix fun Double.tol(error: Double) = (this - error)..(this + error)
 fun Number.remap(fromRange: DoubleRange, toRange: DoubleRange) =
     (this.toDouble() - fromRange.start) * (toRange.endInclusive - toRange.start) / (fromRange.endInclusive - fromRange.start) + toRange.start
 
-
 /**
  * Calculates a color at a specified [percent] through a fade between a pair of [Color].
  *
