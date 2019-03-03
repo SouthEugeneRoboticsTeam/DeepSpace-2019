@@ -12,6 +12,8 @@ import org.sertain.hardware.DigitalInput
 import org.team2471.frc.lib.actuators.MotorController
 import org.team2471.frc.lib.framework.Subsystem
 import org.team2471.frc.lib.motion_profiling.MotionCurve
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 enum class LiftState(private val height: Double, private val gamePiece: GamePiece? = null) {
     HATCH_LOW(1.583, GamePiece.HATCH_PANEL),
@@ -83,6 +85,9 @@ object Lift : Subsystem("Lift") {
 
     val atTop get() = topSwitch.get()
     val atBottom get() = bottomSwitch.get()
+
+    fun calculateOptimalTime(currentPos: Double, targetPos: Double, accl: Double) =
+        sqrt(abs(targetPos - currentPos) / (accl * 0.5))
 
     fun setSpeed(speed: Double) = motor.setPercentOutput(speed)
 

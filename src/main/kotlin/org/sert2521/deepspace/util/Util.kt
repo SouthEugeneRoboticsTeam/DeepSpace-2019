@@ -42,10 +42,6 @@ fun List<Double>.median() = this.sorted().let {
 infix fun Int.tol(error: Int) = (this - error)..(this + error)
 infix fun Double.tol(error: Double) = (this - error)..(this + error)
 
-// Function for finding fastest safe time to run lift
-fun getOptimalTime(lastPos: Double, nextPos: Double, accl: Double) =
-    sqrt(abs(nextPos - lastPos) / (.5 * accl))
-
 /**
  * Re-maps a number from a specified [fromRange] to a new [toRange] such that the smallest and
  * largest values in [fromRange] corresponds to the smallest and largest values in [toRange], and
