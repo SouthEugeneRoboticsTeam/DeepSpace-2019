@@ -70,7 +70,6 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
     var pose = vision.pose
 
     suspend fun updatePath(time: Double, offset: Double) {
-        println("Alive? ${vision.alive}, Found? ${vision.found}")
         if (!vision.alive || !vision.found) return
 
         pose = vision.getMedianPose(0.33, offset = offset)
