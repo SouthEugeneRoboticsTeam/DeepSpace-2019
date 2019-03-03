@@ -19,10 +19,11 @@ import org.sert2521.deepspace.manipulators.claw.release
 import org.sert2521.deepspace.manipulators.conveyor.Conveyor
 import org.sert2521.deepspace.manipulators.conveyor.run
 import org.sert2521.deepspace.manipulators.intakeCargo
-import org.sert2521.deepspace.manipulators.releaseCurrent
+import org.team2471.frc.lib.framework.aPress
 import org.team2471.frc.lib.framework.createMappings
 import org.team2471.frc.lib.framework.leftBumperHold
 import org.team2471.frc.lib.framework.rightBumperHold
+import org.team2471.frc.lib.framework.xPress
 
 val primaryController by lazy { XboxController(Operator.PRIMARY_CONTROLLER) }
 val secondaryJoystick by lazy { Joystick(Operator.SECONDARY_STICK) }
@@ -34,22 +35,25 @@ fun initControls() {
     val logger = Logger("Input")
 
     primaryController.createMappings {
-        rightBumperHold { Manipulators.releaseCurrent() }
+        rightBumperHold { Claw.release(true) }
         leftBumperHold { Manipulators.intakeCargo(2.0) }
 
-        buttonPress(3) { Drivetrain.alignWithVision(VisionSource.Cargo) }
+        aPress { Drivetrain.alignWithVision(VisionSource.Cargo) }
+        xPress { Drivetrain.alignWithVision(VisionSource.Cargo) }
     }
 
     // Secondary joystick mappings
     secondaryJoystick.createMappings {
-        buttonHold(1) { Lift.manualControl() }
-        buttonHold(2) { Manipulators.intakeCargo(2.0) }
-        buttonHold(3) { Conveyor.run() }
-        buttonHold(4) { Conveyor.run(invert = true) }
-        buttonHold(5) { Claw.release() }
-        buttonPress(6) { Bucket.open() }
-        buttonHold(7) { Manipulators.releaseCurrent() }
+        // Bucket
+        buttonPress(2) { Bucket.open() }
 
+        // Conveyor
+        buttonHold(4) { Conveyor.run() }
+        buttonHold(16) { Conveyor.run(invert = true) }
+
+        // Lift
+        buttonHold(1) { Lift.manualControl() }
+        buttonPress(7) { Lift.elevateTo(LiftState.CARGO_SHIP) }
         buttonPress(8) { Lift.elevateTo(LiftState.LOW) }
         buttonPress(9) { Lift.elevateTo(LiftState.MIDDLE) }
         buttonPress(10) { Lift.elevateTo(LiftState.HIGH) }
