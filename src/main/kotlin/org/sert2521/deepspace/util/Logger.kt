@@ -7,14 +7,23 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.RobotController
 import org.sert2521.deepspace.Robot
 import org.team2471.frc.lib.framework.Subsystem
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.function.Supplier
 
 private var startTime = 0.0
-private val pathPrefix = if (RobotBase.isReal()) "/media/sda1" else "."
-val logger = BadLog.init("$pathPrefix/${System.currentTimeMillis()}.bag")!!
+private val pathPrefix get() = if (RobotBase.isReal()) "/media/sda1" else "."
+
+val logger by lazy {
+    val path = File(pathPrefix)
+    if (path.exists() && path.canWrite()) {
+        BadLog.init("$pathPrefix/${System.currentTimeMillis()}.bag")
+    } else {
+        BadLog.init("/home/lvuser/${System.currentTimeMillis()}.bag")
+    }!!
+}
 
 private val dateFormat = SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US)
 
