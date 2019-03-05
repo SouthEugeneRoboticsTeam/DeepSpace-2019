@@ -69,7 +69,8 @@ class Telemetry {
     /**
      * Publishes all values to NetworkTables.
      */
-    fun tick() = bindings.toList().forEach { put(it.name, it.body()) }
+    @Synchronized
+    fun tick() = bindings.forEach { put(it.name, it.body()) }
 
     /**
      * Adds a new value to publish.
@@ -77,6 +78,7 @@ class Telemetry {
      * @param name the name of the telemetry value
      * @param body a function which returns the telemetry value
      */
+    @Synchronized
     fun add(name: String, body: () -> Any) = bindings.add(Binding(name, body))
 
     /**
@@ -84,6 +86,7 @@ class Telemetry {
      *
      * @param name the name of the telemetry value
      */
+    @Synchronized
     fun remove(name: String) = bindings.removeIf { it.name == name }
 
     /**
@@ -117,7 +120,7 @@ class Telemetry {
     }
 
     init {
-        instances += this
+        synchronized(instances) { instances += this }
 
         launchTelemetry()
     }
@@ -132,9 +135,7 @@ fun launchTelemetry() {
             periodic(0.1, false) {
                 log()
 
-                instances.toList().forEach {
-                    it.tick()
-                }
+                synchronized(instances) { instances.forEach { it.tick() } }
 
                 SmartDashboard.updateValues()
             }
