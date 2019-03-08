@@ -1,6 +1,5 @@
 package org.sert2521.deepspace.util
 
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Preferences
 import org.sert2521.deepspace.Operator
 import org.sert2521.deepspace.drivetrain.Drivetrain
@@ -29,8 +28,6 @@ val driveSpeedScalar get() = Preferences.getInstance().getDouble("drive_speed_sc
 val liftSpeedScalar get() = Preferences.getInstance().getDouble("lift_speed_scalar", 1.0)
 
 fun initControls() {
-    val logger = Logger("Input")
-
     primaryController.run {
         // Manipulators
         ({ rightBumper }).whileTrue { Claw.release(true) }
@@ -54,11 +51,6 @@ fun initControls() {
         ({ getButton(8) }).whenTrue { Lift.elevateTo(LiftState.LOW) }
         ({ getButton(9) }).whenTrue { Lift.elevateTo(LiftState.MIDDLE) }
         ({ getButton(10) }).whenTrue { Lift.elevateTo(LiftState.HIGH) }
-    }
-
-    for (i in 0 until DriverStation.kJoystickPorts) {
-        logger.addValue("Controller $i Type",
-                        DriverStation.getInstance().getJoystickName(i) ?: "")
     }
 }
 

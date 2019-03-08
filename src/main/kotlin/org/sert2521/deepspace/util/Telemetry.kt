@@ -121,8 +121,6 @@ class Telemetry {
 
     init {
         synchronized(instances) { instances += this }
-
-        launchTelemetry()
     }
 }
 

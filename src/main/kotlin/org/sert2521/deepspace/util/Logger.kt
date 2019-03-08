@@ -203,11 +203,22 @@ fun initLogs() {
 
     BadLog.createTopicSubscriber("Time", "s", DataInferMode.DEFAULT, "hide", "delta", "xaxis")
 
+    logControls()
+
     try {
         logger.finishInitialization()
     } catch (exception: Exception) {
         println("Error finishing logger initialization!")
         println(exception.toString())
+    }
+}
+
+fun logControls() {
+    val inputLogger = Logger("Input")
+    val ds = DriverStation.getInstance()
+
+    (0..(DriverStation.kJoystickPorts - 1)).forEach {
+        inputLogger.addValue("Controller $it", ds.getJoystickName(it) ?: "")
     }
 }
 

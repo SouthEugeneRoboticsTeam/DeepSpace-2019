@@ -1,5 +1,8 @@
 package org.sert2521.deepspace
 
+import edu.wpi.first.wpilibj.DriverStation
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.sert2521.deepspace.autonomous.AutoLoader
 import org.sert2521.deepspace.autonomous.AutoMode
 import org.sert2521.deepspace.drivetrain.Drivetrain
@@ -14,8 +17,10 @@ import org.sert2521.deepspace.util.VisionSource
 import org.sert2521.deepspace.util.initControls
 import org.sert2521.deepspace.util.initLogs
 import org.sert2521.deepspace.util.initPreferences
+import org.sert2521.deepspace.util.launchTelemetry
 import org.sert2521.deepspace.util.logBuildInfo
 import org.sert2521.deepspace.util.logger
+import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.RobotProgram
 import org.team2471.frc.lib.framework.initializeWpilib
@@ -44,7 +49,14 @@ object Robot : RobotProgram {
         initControls()
         initPreferences()
         logBuildInfo()
-        initLogs()
+
+        // Await communication with driver station before finalizing logs
+        GlobalScope.launch(MeanlibDispatcher) {
+            suspendUntil { DriverStation.getInstance().isDSAttached  }
+
+            initLogs()
+            launchTelemetry()
+        }
     }
 
     override suspend fun enable() {
