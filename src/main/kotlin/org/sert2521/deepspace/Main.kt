@@ -52,7 +52,7 @@ object Robot : RobotProgram {
 
         // Await communication with driver station before finalizing logs
         GlobalScope.launch(MeanlibDispatcher) {
-            suspendUntil { DriverStation.getInstance().isDSAttached  }
+            suspendUntil { DriverStation.getInstance().isDSAttached }
 
             initLogs()
             launchTelemetry()
