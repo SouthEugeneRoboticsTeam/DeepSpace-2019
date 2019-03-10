@@ -42,8 +42,8 @@ fun initControls() {
         ({ getButton(2) }).whenTrue { Bucket.open() }
 
         // Conveyor
-        ({ getButton(4) }).whenTrue { Conveyor.run() }
-        ({ getButton(16) }).whenTrue { Conveyor.run(invert = true) }
+        ({ getButton(4) }).whileTrue { Conveyor.run(override = true) }
+        ({ getButton(16) }).whileTrue { Conveyor.run(invert = true, override = true) }
 
         // Lift
         ({ getButton(1) }).whileTrue { Lift.manualControl() }
