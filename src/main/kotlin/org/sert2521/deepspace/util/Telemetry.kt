@@ -66,6 +66,10 @@ class Telemetry {
         table = NetworkTableInstance.getDefault().getTable(subsystem.name)!!
     }
 
+    init {
+        synchronized(instances) { instances += this }
+    }
+
     /**
      * Publishes all values to NetworkTables.
      */
@@ -117,10 +121,6 @@ class Telemetry {
         statusBox.setText { (body().text ?: "$name ${body().state.name}").toUpperCase() }
         statusBox.setBackgroundColor { body().state.color }
         statusBox.setTextColor { body().state.textColor }
-    }
-
-    init {
-        synchronized(instances) { instances += this }
     }
 }
 

@@ -74,6 +74,16 @@ abstract class Vision(source: VisionSource) {
 
     private val hyp get() = xDistance / sin(Math.toRadians(robotAngle + targetAngle))
 
+    init {
+        val flags = EntryListenerFlags.kImmediate or
+            EntryListenerFlags.kNew or
+            EntryListenerFlags.kUpdate
+
+        table.addEntryListener({ _, _, _, _, _ ->
+            lastUpdate = getFPGATime()
+        }, flags)
+    }
+
     /**
      * Gets the current estimated x distance from target using a specified [offset].
      *
@@ -132,16 +142,6 @@ abstract class Vision(source: VisionSource) {
             robotAngles.median(),
             targetAngles.median()
         )
-    }
-
-    init {
-        val flags = EntryListenerFlags.kImmediate or
-            EntryListenerFlags.kNew or
-            EntryListenerFlags.kUpdate
-
-        table.addEntryListener({ _, _, _, _, _ ->
-            lastUpdate = getFPGATime()
-        }, flags)
     }
 
     companion object {

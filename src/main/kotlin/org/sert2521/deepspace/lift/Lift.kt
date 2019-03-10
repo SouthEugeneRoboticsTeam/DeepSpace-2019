@@ -70,7 +70,7 @@ object Lift : Subsystem("Lift") {
 
         openLoopRamp(0.25)
 
-        pid(0) {
+        pid {
             p(DISTANCE_P)
             i(DISTANCE_I)
         }
@@ -85,27 +85,6 @@ object Lift : Subsystem("Lift") {
 
     val atTop get() = topSwitch.get()
     val atBottom get() = bottomSwitch.get()
-
-    fun calculateOptimalTime(currentPos: Double, targetPos: Double, accl: Double) =
-        sqrt(abs(targetPos - currentPos) / (accl * 0.5))
-
-    fun setSpeed(speed: Double) = motor.setPercentOutput(speed)
-
-    fun setPosition(position: Double) = motor.setPositionSetpoint(position)
-
-    suspend fun followMotionCurve(time: Double, state: LiftState) {
-        motionCurve = MotionCurve()
-        motionCurve.storeValue(0.0, position)
-        motionCurve.storeValue(time, state.position)
-
-        timer(motionCurve.maxValue) {
-            setPosition(motionCurve.getValue(it))
-        }
-    }
-
-    fun stop() = motor.stop()
-
-    override fun reset() = stop()
 
     init {
         telemetry.add("Position") { motor.position }
@@ -130,4 +109,25 @@ object Lift : Subsystem("Lift") {
         bottomSwitch.setUpSourceEdge(true, false)
         bottomSwitch.enableInterrupts()
     }
+
+    fun calculateOptimalTime(currentPos: Double, targetPos: Double, accl: Double) =
+        sqrt(abs(targetPos - currentPos) / (accl * 0.5))
+
+    fun setSpeed(speed: Double) = motor.setPercentOutput(speed)
+
+    fun setPosition(position: Double) = motor.setPositionSetpoint(position)
+
+    suspend fun followMotionCurve(time: Double, state: LiftState) {
+        motionCurve = MotionCurve()
+        motionCurve.storeValue(0.0, position)
+        motionCurve.storeValue(time, state.position)
+
+        timer(motionCurve.maxValue) {
+            setPosition(motionCurve.getValue(it))
+        }
+    }
+
+    fun stop() = motor.stop()
+
+    override fun reset() = stop()
 }
