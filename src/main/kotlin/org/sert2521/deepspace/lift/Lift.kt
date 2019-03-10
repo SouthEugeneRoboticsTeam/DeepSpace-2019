@@ -22,7 +22,7 @@ enum class LiftState(private val height: Double, private val gamePiece: GamePiec
 
     CARGO_LOW(2.292, GamePiece.CARGO),
     CARGO_MIDDLE(4.625, GamePiece.CARGO),
-    CARGO_HIGH(6.958, GamePiece.CARGO),
+    CARGO_HIGH(7.225, GamePiece.CARGO),
 
     CARGO_SHIP(3.417, GamePiece.CARGO);
 
