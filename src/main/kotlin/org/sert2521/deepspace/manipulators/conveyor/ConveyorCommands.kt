@@ -1,29 +1,21 @@
 package org.sert2521.deepspace.manipulators.conveyor
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import org.sert2521.deepspace.lift.Lift
+import org.sert2521.deepspace.manipulators.Manipulators
 import org.sert2521.deepspace.util.timer
-import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.framework.use
 
-suspend fun Conveyor.run(extraTime: Double? = null) = use(this) {
-    try {
-        periodic {
-            Conveyor.runSpeed()
-        }
-    } finally {
-        if (extraTime != null) {
-            GlobalScope.launch(MeanlibDispatcher) {
-                timer(extraTime) {
-                    Conveyor.runSpeed()
-//                    if (Manipulators.hasCargoInConveyor && !Lift.atBottom) stop()
-                }
+suspend fun Conveyor.run(invert: Boolean = false) = use(this) {
+    periodic {
+        Conveyor.spin(CONVEYOR_SPEED * if (invert) -1 else 1)
+        if (Manipulators.hasCargoInConveyor && !Lift.atBottom) stop()
+    }
+}
 
-                Conveyor.stop()
-            }
-        } else {
-            Conveyor.stop()
-        }
+suspend fun Conveyor.runTimed(time: Double, invert: Boolean = false) = use(this) {
+    timer(time) {
+        Conveyor.spin(CONVEYOR_SPEED * if (invert) -1 else 1)
+        if (Manipulators.hasCargoInConveyor && !Lift.atBottom) stop()
     }
 }

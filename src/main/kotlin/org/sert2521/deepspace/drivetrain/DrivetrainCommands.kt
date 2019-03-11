@@ -2,6 +2,12 @@ package org.sert2521.deepspace.drivetrain
 
 import edu.wpi.first.wpilibj.GenericHID
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
+import org.sert2521.deepspace.lift.Lift
+import org.sert2521.deepspace.lift.LiftState
+import org.sert2521.deepspace.manipulators.Manipulators
 import org.sert2521.deepspace.manipulators.claw.Claw
 import org.sert2521.deepspace.manipulators.claw.release
 import org.sert2521.deepspace.util.Vision
@@ -10,6 +16,7 @@ import org.sert2521.deepspace.util.addEasePointToEnd
 import org.sert2521.deepspace.util.addPointToEnd
 import org.sert2521.deepspace.util.driveSpeedScalar
 import org.sert2521.deepspace.util.primaryController
+import org.sert2521.deepspace.util.remap
 import org.team2471.frc.lib.coroutines.delay
 import org.team2471.frc.lib.coroutines.parallel
 import org.team2471.frc.lib.coroutines.periodic
@@ -18,41 +25,54 @@ import org.team2471.frc.lib.math.deadband
 import org.team2471.frc.lib.motion.following.driveAlongPath
 import org.team2471.frc.lib.motion.following.hybridDrive
 import org.team2471.frc.lib.motion_profiling.Path2D
+import kotlin.math.absoluteValue
+
+private val throttle get() = primaryController.getY(GenericHID.Hand.kLeft).deadband(0.02)
+private val turn get() = primaryController.getX(GenericHID.Hand.kRight).deadband(0.02)
 
 /**
  * Allows for teleoperated drive of the robot.
  */
 suspend fun Drivetrain.teleopDrive() = use(this) {
     periodic(watchOverrun = false) {
+        val liftScalar = (1.0 - Lift.position / LiftState.HIGH.position).remap(0.0..1.0, 0.35..1.0)
+
         Drivetrain.hybridDrive(
-            -driveSpeedScalar * primaryController.getY(GenericHID.Hand.kLeft).deadband(0.02),
+            -driveSpeedScalar * liftScalar * throttle,
             0.0,
-            driveSpeedScalar * primaryController.getX(GenericHID.Hand.kRight).deadband(0.02)
+            driveSpeedScalar * liftScalar * turn
         )
     }
 }
 
 suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
+    val context = coroutineContext
+    val cancelJob = launch {
+        periodic {
+            if (throttle.absoluteValue > 0.0 || turn.absoluteValue > 0.0) {
+                context.cancel()
+            }
+        }
+    }
+
+    // Pickup hatch panel if currently does not have game piece
+    val shouldPickup = Manipulators.currentGamePiece == null
+
     val vision = Vision.getFromSource(source)
 
     vision.locked = true
 
     // Wait for light to turn on
-    delay(0.1)
+    delay(0.2)
 
     val path = Path2D()
 
     var pose = vision.pose
 
-    suspend fun updatePath(time: Double) {
-        println("Alive? ${vision.alive}, Found? ${vision.found}")
+    suspend fun updatePath(time: Double, offset: Double) {
         if (!vision.alive || !vision.found) return
 
-        println(vision.pose)
-
-        pose = vision.getMedianPose(0.25)
-
-        println(pose)
+        pose = vision.getMedianPose(0.33, offset = offset)
 
         val xPosition = pose.xDistance / 12.0
         val yPosition = pose.yDistance / 12.0
@@ -60,7 +80,6 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
 
         println("X: $xPosition, Y: $yPosition, Target Angle: ${pose.targetAngle}, Robot Angle: ${pose.robotAngle}")
 
-        val tangent = path.getTangent(time)
         val oldPath = path.easeCurve.getDerivative(time)
         var oldDuration = path.duration
 
@@ -70,7 +89,7 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
         path.addPointToEnd(0.0, 0.0, angle = 0.0, magnitude = yPosition / 3.0)
         path.addPointToEnd(xPosition, yPosition, angle = angle, magnitude = yPosition / 3.0)
 
-        if (oldDuration == 0.0) oldDuration = path.length / 3.0 + 2.0
+        if (oldDuration == 0.0) oldDuration = path.length / 4.0 + 1.0
 
         path.addEasePointToEnd(time, 0.0, slope = oldPath, magnitude = 1.0)
         path.addEasePointToEnd(oldDuration, 1.0, slope = 0.0, magnitude = 1.0)
@@ -93,19 +112,21 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
         """.trimIndent())
     }
 
-    updatePath(0.0)
+    updatePath(0.0, 16.0 + 28.0)
 
-    GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.5) }, {
-        delay(0.5)
-        Claw.release(true) {
-            println(!Drivetrain.followingPath)
-            !Drivetrain.followingPath
-        }
-    })
+    driveAlongPath(path, extraTime = 0.1)
 
-    println("(${pose.xDistance}, ${pose.yDistance}, ${pose.robotAngle}, ${pose.targetAngle})")
+    updatePath(0.0, 16.0 + 3.0)
 
     vision.locked = false
 
-    delay(10.0)
+    when {
+        shouldPickup -> GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.25) }, {
+            delay(0.25)
+            Claw.release(true) { !Drivetrain.followingPath }
+        })
+        else -> driveAlongPath(path, extraTime = 0.25)
+    }
+
+    cancelJob.cancelAndJoin()
 }

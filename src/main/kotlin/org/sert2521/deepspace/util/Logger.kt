@@ -12,8 +12,11 @@ import java.util.Date
 import java.util.Locale
 import java.util.function.Supplier
 
+private var startTime = 0.0
 private val pathPrefix = if (RobotBase.isReal()) "/media/sda1" else "."
 val logger = BadLog.init("$pathPrefix/${System.currentTimeMillis()}.bag")!!
+
+private val dateFormat = SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US)
 
 class Logger {
     private val subsystemName: String
@@ -51,9 +54,41 @@ class Logger {
     fun addNumberTopic(
         name: String,
         unit: String = BadLog.UNITLESS,
-        body: () -> Number,
-        vararg attrs: String
+        vararg attrs: String,
+        body: () -> Number
     ) = BadLog.createTopic("$subsystemName/$name", unit, Supplier { body().toDouble() }, *attrs)
+
+    /**
+     * Creates a named topic that logs a Boolean.
+     *
+     * @param name name of the topic
+     * @param unit unit to assign values in this topic
+     * @param body the function to be called to return the logged data
+     * @see BadLog.createTopicStr
+     */
+    fun addBooleanTopic(name: String, unit: String = BadLog.UNITLESS, body: () -> Boolean) =
+        BadLog.createTopic("$subsystemName/$name", unit, Supplier { if (body()) 1.0 else 0.0 })
+
+    /**
+     * Creates a named topic that logs a Boolean.
+     *
+     * @param name name of the topic
+     * @param unit unit to assign values in this topic
+     * @param body the function to be called to return the logged data
+     * @param attrs array of topic attributes
+     * @see BadLog.createTopicStr
+     */
+    fun addBooleanTopic(
+        name: String,
+        unit: String = BadLog.UNITLESS,
+        vararg attrs: String,
+        body: () -> Boolean
+    ) = BadLog.createTopic(
+        "$subsystemName/$name",
+        unit,
+        Supplier { if (body()) 1.0 else 0.0 },
+        *attrs
+    )
 
     /**
      * Creates a named topic that logs a String. Non-String values returned from the body will be
@@ -80,8 +115,8 @@ class Logger {
     fun addTopic(
         name: String,
         unit: String = BadLog.UNITLESS,
-        body: () -> Any,
-        vararg attrs: String
+        vararg attrs: String,
+        body: () -> Any
     ) = BadLog.createTopicStr(
         "$subsystemName/$name",
         unit,
@@ -131,14 +166,18 @@ class Logger {
 val SystemLogger = Logger("System")
 
 fun log() {
-    BadLog.publish("Time", System.nanoTime().toDouble())
+    try {
+        BadLog.publish("Time", (System.nanoTime().toDouble() - startTime) / 1000000000.0)
 
-    logger.updateTopics()
-    logger.log()
+        logger.updateTopics()
+        logger.log()
+    } catch (exception: Exception) {
+        // Logger could not update... Do nothing.
+    }
 }
 
 fun initLogs() {
-    val dateFormat = SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US)
+    startTime = System.nanoTime().toDouble()
 
     BadLog.createValue("Start Time", dateFormat.format(Date()))
     BadLog.createValue("Event Name", DriverStation.getInstance().eventName)
@@ -150,16 +189,17 @@ fun initLogs() {
     BadLog.createTopic("Match Time", "s", Supplier { DriverStation.getInstance().matchTime })
 
     SystemLogger.addNumberTopic("Battery Voltage", "V") { RobotController.getBatteryVoltage() }
-    SystemLogger.addTopic("Browned Out", "bool") {
-        if (RobotController.isBrownedOut()) "1" else "0"
-    }
-    SystemLogger.addTopic("FPGA Active", "bool") {
-        if (RobotController.isSysActive()) "1" else "0"
-    }
+    SystemLogger.addBooleanTopic("Browned Out") { RobotController.isBrownedOut() }
+    SystemLogger.addBooleanTopic("FPGA Active") { RobotController.isSysActive() }
 
     BadLog.createTopicSubscriber("Time", "s", DataInferMode.DEFAULT, "hide", "delta", "xaxis")
 
-    logger.finishInitialization()
+    try {
+        logger.finishInitialization()
+    } catch (exception: Exception) {
+        println("Error finishing logger initialization!")
+        println(exception.toString())
+    }
 }
 
 fun logBuildInfo() {
@@ -184,9 +224,13 @@ fun logBuildInfo() {
     }
 
     "buildtime.txt".asResource {
-        println("Build Time: $it")
-        GlobalTelemetry.put("Build Time", it)
-        BadLog.createValue("Build Time", it)
+        val date = dateFormat.format(
+            SimpleDateFormat("dd'-'MM'-'yyyy' 'HH:mm:ss", Locale.US).parse(it)
+        )
+
+        println("Build Time: $date")
+        GlobalTelemetry.put("Build Time", date)
+        BadLog.createValue("Build Time", date)
     }
 
     println("----------------------------------------------------\n")

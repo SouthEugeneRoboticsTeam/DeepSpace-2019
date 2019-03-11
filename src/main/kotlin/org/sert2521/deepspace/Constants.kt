@@ -44,6 +44,9 @@ object Sensors {
 
     // Conveyor
     const val CONVEYOR_SWITCH = 0
+
+    // Lights
+    const val TARGET_LEDS = 4
 }
 
 object Pneumatics {
@@ -53,7 +56,7 @@ object Pneumatics {
 
     // Cargo
     const val CARGO_RAISE = 3
-    const val CARGO_LOWER = 4
+    const val CARGO_LOWER = 7
 
     // Intake
     const val INTAKE_LOWER = 5
@@ -61,12 +64,8 @@ object Pneumatics {
 }
 
 object Operator {
-    const val PRIMARY_STICK = 0
+    const val PRIMARY_CONTROLLER = 0
     const val SECONDARY_STICK = 1
-
-    const val TARGET_LEDS = 4
-
-    const val STATUS_LEDS = 0
 }
 
 object Characteristics {

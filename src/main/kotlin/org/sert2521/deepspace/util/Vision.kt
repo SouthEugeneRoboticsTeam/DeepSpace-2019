@@ -5,14 +5,12 @@ import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DigitalOutput
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.RobotController.getFPGATime
+import org.sert2521.deepspace.Sensors
 import kotlin.math.cos
 import kotlin.math.sin
 
-private const val cameraToCenter = 13.25
-private val lights = DigitalOutput(4)
-
 enum class VisionSource(val path: String) {
-    HatchPanel("hatch"), Cargo("cargo")
+    Cargo("cargo")
 }
 
 /**
@@ -70,8 +68,8 @@ abstract class Vision(source: VisionSource) {
         set(value) {
             field = value
             println("Setting locked to $value")
-//            table.getEntry("locked").setBoolean(value)
-            // TODO: enable LEDs
+            table.getEntry("locked").setBoolean(value)
+            light = value
         }
 
     private val hyp get() = xDistance / sin(Math.toRadians(robotAngle + targetAngle))
@@ -147,18 +145,18 @@ abstract class Vision(source: VisionSource) {
     }
 
     companion object {
-        // TODO: remove one of these if we're only using one camera
-        object HatchPanel : Vision(VisionSource.HatchPanel)
+        private const val cameraToCenter = 13.25
+        private val lights = DigitalOutput(Sensors.TARGET_LEDS)
+
         object Cargo : Vision(VisionSource.Cargo)
 
         var light: Boolean = false
             set(value) {
                 field = value
-                lights.set(!value)
+                lights.set(value)
             }
 
         fun getFromSource(source: VisionSource) = when (source) {
-            VisionSource.HatchPanel -> HatchPanel
             VisionSource.Cargo -> Cargo
         }
     }

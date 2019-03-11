@@ -16,7 +16,7 @@ import org.team2471.frc.lib.motion.following.ArcadeDrive
 object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
     override val parameters = drivetrainConfig
 
-    val leftDrive = MotorController(
+    private val leftDrive = MotorController(
         MotorControllers.DRIVE_LEFT_FRONT,
         MotorControllers.DRIVE_LEFT_REAR
     ).config {
@@ -30,7 +30,7 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
         }
     }
 
-    val rightDrive = MotorController(
+    private val rightDrive = MotorController(
         MotorControllers.DRIVE_RIGHT_FRONT,
         MotorControllers.DRIVE_RIGHT_REAR
     ).config {
@@ -45,8 +45,8 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
         }
     }
 
-    val telemetry = Telemetry(this)
-    val logger = Logger(this)
+    private val telemetry = Telemetry(this)
+    private val logger = Logger(this)
 
     private val ahrs = AHRS(I2C.Port.kMXP)
     override val heading get() = ahrs.angle
@@ -72,10 +72,34 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
         telemetry.add("Distance") { distance }
         telemetry.add("Left Distance") { leftDistance }
         telemetry.add("Right Distance") { rightDistance }
+        telemetry.add("Following Path") { followingPath }
 
         logger.addNumberTopic("Angle", "deg") { ahrs.angle }
-        logger.addNumberTopic("Left Output") { leftDrive.output }
-        logger.addNumberTopic("Right Output") { rightDrive.output }
+        logger.addBooleanTopic("Following Path") { followingPath }
+
+        logger.addNumberTopic("Left Output", "%", "hide", "join:Drivetrain/Percent") {
+            leftDrive.output
+        }
+        logger.addNumberTopic("Right Output", "%", "hide", "join:Drivetrain/Percent") {
+            rightDrive.output
+        }
+
+        logger.addNumberTopic("Left Distance", "ft", "hide", "join:Drivetrain/Distances") {
+            leftDistance
+        }
+        logger.addNumberTopic("Right Distance", "ft", "hide", "join:Drivetrain/Distances") {
+            rightDistance
+        }
+
+        logger.addNumberTopic("Left Speed", "ft/s", "hide", "join:Drivetrain/Speeds") {
+            leftSpeed
+        }
+        logger.addNumberTopic("Right Speed", "ft/s", "hide", "join:Drivetrain/Speeds") {
+            rightSpeed
+        }
+        logger.addNumberTopic("Average Speed", "ft/s", "hide", "join:Drivetrain/Speeds") {
+            speed
+        }
 
         zeroEncoders()
         zeroGyro()
@@ -134,4 +158,6 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
     }
 
     override suspend fun default() = Drivetrain.teleopDrive()
+
+    override fun reset() = stop()
 }

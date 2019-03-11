@@ -1,14 +1,19 @@
 package org.sert2521.deepspace.lift
 
+import edu.wpi.first.wpilibj.InterruptHandlerFunction
 import org.sert2521.deepspace.MotorControllers
 import org.sert2521.deepspace.Sensors
 import org.sert2521.deepspace.manipulators.GamePiece
+import org.sert2521.deepspace.manipulators.Manipulators
+import org.sert2521.deepspace.util.Logger
 import org.sert2521.deepspace.util.Telemetry
 import org.sert2521.deepspace.util.timer
 import org.sertain.hardware.DigitalInput
 import org.team2471.frc.lib.actuators.MotorController
 import org.team2471.frc.lib.framework.Subsystem
 import org.team2471.frc.lib.motion_profiling.MotionCurve
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 enum class LiftState(private val height: Double, private val gamePiece: GamePiece? = null) {
     HATCH_LOW(1.583, GamePiece.HATCH_PANEL),
@@ -17,7 +22,9 @@ enum class LiftState(private val height: Double, private val gamePiece: GamePiec
 
     CARGO_LOW(2.292, GamePiece.CARGO),
     CARGO_MIDDLE(4.625, GamePiece.CARGO),
-    CARGO_HIGH(6.958, GamePiece.CARGO);
+    CARGO_HIGH(6.958, GamePiece.CARGO),
+
+    CARGO_SHIP(3.417, GamePiece.CARGO);
 
     /**
      * The absolute position the lift should be at.
@@ -31,10 +38,17 @@ enum class LiftState(private val height: Double, private val gamePiece: GamePiec
     companion object {
         val BOTTOM = HATCH_LOW
         val TOP = CARGO_HIGH
+
+        val LOW get() = if (Manipulators.hasHatchPanel) HATCH_LOW else CARGO_LOW
+        val MIDDLE get() = if (Manipulators.hasHatchPanel) HATCH_MIDDLE else CARGO_MIDDLE
+        val HIGH get() = if (Manipulators.hasHatchPanel) HATCH_HIGH else CARGO_HIGH
     }
 }
 
 object Lift : Subsystem("Lift") {
+    private val telemetry = Telemetry(this)
+    private val logger = Logger(this)
+
     private val motor = MotorController(
         MotorControllers.LIFT_RIGHT,
         MotorControllers.LIFT_LEFT
@@ -42,26 +56,24 @@ object Lift : Subsystem("Lift") {
         ctreController.configNeutralDeadband(0.0)
         ctreFollowers.forEach { it.inverted = true }
 
-//        currentLimit()
-
-        feedbackCoefficient = 1.0
-
-//        peakOutput(0.25)
         brakeMode()
+        sensorPhase(true)
 
-        closedLoopRamp(0.25)
+        feedbackCoefficient = 1.0 / 7156.0
+
+        // If current exceeds 15A for more than 5s, cut power back to 5A
+        currentLimit(5, 15, 5)
+
+        // Limit % output to [-0.35, 0.35]
+        peakOutputRange(-0.35..0.35)
+        nominalOutputRange(0.0..0.0)
+
+        openLoopRamp(0.25)
+
         pid(0) {
             p(DISTANCE_P)
+            i(DISTANCE_I)
         }
-    }
-
-    val telemetry = Telemetry(this)
-
-    init {
-        telemetry.add("Position") { motor.position }
-        telemetry.add("Top Switch") { topSwitch.get() }
-        telemetry.add("Bottom Switch") { bottomSwitch.get() }
-        telemetry.add("Current") { motor.current }
     }
 
     private var motionCurve = MotionCurve()
@@ -73,6 +85,9 @@ object Lift : Subsystem("Lift") {
 
     val atTop get() = topSwitch.get()
     val atBottom get() = bottomSwitch.get()
+
+    fun calculateOptimalTime(currentPos: Double, targetPos: Double, accl: Double) =
+        sqrt(abs(targetPos - currentPos) / (accl * 0.5))
 
     fun setSpeed(speed: Double) = motor.setPercentOutput(speed)
 
@@ -88,5 +103,31 @@ object Lift : Subsystem("Lift") {
         }
     }
 
-    override suspend fun default() = Lift.manualControl()
+    fun stop() = motor.stop()
+
+    override fun reset() = stop()
+
+    init {
+        telemetry.add("Position") { motor.position }
+        telemetry.add("Current") { motor.current }
+        telemetry.add("Closed Loop Error") { motor.closedLoopError }
+        telemetry.add("Top Switch") { topSwitch.get() }
+        telemetry.add("Bottom Switch") { bottomSwitch.get() }
+
+        logger.addNumberTopic("Position") { motor.position }
+        logger.addNumberTopic("Current") { motor.current }
+        logger.addNumberTopic("Closed Loop Error") { motor.closedLoopError }
+        logger.addBooleanTopic("Top Switch") { topSwitch.get() }
+        logger.addBooleanTopic("Bottom Switch") { bottomSwitch.get() }
+
+        bottomSwitch.requestInterrupts(object : InterruptHandlerFunction<Boolean>() {
+            override fun interruptFired(interruptAssertedMask: Int, param: Boolean?) {
+                println("Interrupted!")
+                motor.position = 0.0
+            }
+        })
+
+        bottomSwitch.setUpSourceEdge(true, false)
+        bottomSwitch.enableInterrupts()
+    }
 }

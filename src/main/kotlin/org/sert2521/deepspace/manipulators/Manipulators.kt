@@ -1,46 +1,60 @@
 package org.sert2521.deepspace.manipulators
 
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.InterruptHandlerFunction
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.sert2521.deepspace.Sensors
 import org.sert2521.deepspace.manipulators.bucket.Bucket
-import org.sert2521.deepspace.manipulators.bucket.close
+import org.sert2521.deepspace.manipulators.bucket.BucketState
+import org.sert2521.deepspace.manipulators.conveyor.Conveyor
+import org.sert2521.deepspace.util.Logger
 import org.sert2521.deepspace.util.Telemetry
 import org.sertain.hardware.DigitalInput
-import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 
 enum class GamePiece {
     CARGO, HATCH_PANEL
 }
 
 object Manipulators {
-    val hatchPanelSwitch = DigitalInput(Sensors.CLAW_SWITCH).invert()
-    val conveyorSwitch = DigitalInput(Sensors.CONVEYOR_SWITCH).invert()
+    private val telemetry = Telemetry("Manipulators")
+    private val logger = Logger("Manipulators")
+
+    private val hatchPanelSwitch = DigitalInput(Sensors.CLAW_SWITCH).invert()
+    private val conveyorSwitch = DigitalInput(Sensors.CONVEYOR_SWITCH).invert()
 
     val hasCargoInConveyor get() = conveyorSwitch.get()
     val hasHatchPanel get() = hatchPanelSwitch.get()
 
     var hasCargo = false
 
-    internal val currentGamePiece
+    val currentGamePiece
         get() = when {
             hasHatchPanel -> GamePiece.HATCH_PANEL
             hasCargo -> GamePiece.CARGO
             else -> null
         }
 
-    val telemetry = Telemetry("Manipulators")
-
     init {
-        telemetry.add("Conveyor Switch") { hasCargoInConveyor }
-        telemetry.add("Hatch Panel Switch") { hasHatchPanel }
+        telemetry.add("Has Cargo in Conveyor") { hasCargoInConveyor }
+        telemetry.add("Has Cargo") { hasCargo }
+        telemetry.add("Has Hatch Panel") { hasHatchPanel }
+        telemetry.add("Current Game Piece") { currentGamePiece?.name ?: "None" }
+
+        logger.addBooleanTopic("Has Cargo in Conveyor") { hasCargoInConveyor }
+        logger.addBooleanTopic("Has Cargo") { hasCargo }
+        logger.addBooleanTopic("Has Hatch Panel") { hasHatchPanel }
+        logger.addNumberTopic("Current Game Piece") {
+            when (currentGamePiece) {
+                GamePiece.HATCH_PANEL -> 1
+                GamePiece.CARGO -> 2
+                null -> 0
+            }
+        }
 
         conveyorSwitch.requestInterrupts(object : InterruptHandlerFunction<Boolean>() {
             override fun interruptFired(interruptAssertedMask: Int, param: Boolean?) {
-                hasCargo = true
-                GlobalScope.launch(MeanlibDispatcher) {
-                    Bucket.close(true)
+                if (DriverStation.getInstance().isEnabled && Conveyor.isRunning) {
+                    hasCargo = true
+                    Bucket.state = BucketState.CLOSED
                 }
             }
         })
