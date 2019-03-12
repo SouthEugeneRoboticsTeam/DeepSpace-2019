@@ -7,14 +7,23 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.RobotController
 import org.sert2521.deepspace.Robot
 import org.team2471.frc.lib.framework.Subsystem
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.function.Supplier
 
 private var startTime = 0.0
-private val pathPrefix = if (RobotBase.isReal()) "/media/sda1" else "."
-val logger = BadLog.init("$pathPrefix/${System.currentTimeMillis()}.bag")!!
+private val pathPrefix get() = if (RobotBase.isReal()) "/media/sda1" else "."
+
+val logger by lazy {
+    val path = File(pathPrefix)
+    if (path.exists() && path.canWrite()) {
+        BadLog.init("$pathPrefix/${System.currentTimeMillis()}.bag")
+    } else {
+        BadLog.init("/home/lvuser/${System.currentTimeMillis()}.bag")
+    }!!
+}
 
 private val dateFormat = SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US)
 
@@ -194,11 +203,22 @@ fun initLogs() {
 
     BadLog.createTopicSubscriber("Time", "s", DataInferMode.DEFAULT, "hide", "delta", "xaxis")
 
+    logControls()
+
     try {
         logger.finishInitialization()
     } catch (exception: Exception) {
         println("Error finishing logger initialization!")
         println(exception.toString())
+    }
+}
+
+fun logControls() {
+    val inputLogger = Logger("Input")
+    val ds = DriverStation.getInstance()
+
+    (0..(DriverStation.kJoystickPorts - 1)).forEach {
+        inputLogger.addValue("Controller $it", ds.getJoystickName(it) ?: "")
     }
 }
 

@@ -1,6 +1,5 @@
 package org.sert2521.deepspace.drivetrain
 
-import edu.wpi.first.wpilibj.GenericHID
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
@@ -27,8 +26,8 @@ import org.team2471.frc.lib.motion.following.hybridDrive
 import org.team2471.frc.lib.motion_profiling.Path2D
 import kotlin.math.absoluteValue
 
-private val throttle get() = primaryController.getY(GenericHID.Hand.kLeft).deadband(0.02)
-private val turn get() = primaryController.getX(GenericHID.Hand.kRight).deadband(0.02)
+private val throttle get() = primaryController.leftThumbstick.y.deadband(0.02)
+private val turn get() = primaryController.rightThumbstick.x.deadband(0.02)
 
 /**
  * Allows for teleoperated drive of the robot.

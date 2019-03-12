@@ -1,9 +1,6 @@
 package org.sert2521.deepspace.util
 
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.Preferences
-import edu.wpi.first.wpilibj.XboxController
 import org.sert2521.deepspace.Operator
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.drivetrain.alignWithVision
@@ -19,11 +16,10 @@ import org.sert2521.deepspace.manipulators.claw.release
 import org.sert2521.deepspace.manipulators.conveyor.Conveyor
 import org.sert2521.deepspace.manipulators.conveyor.run
 import org.sert2521.deepspace.manipulators.intakeCargo
-import org.team2471.frc.lib.framework.aPress
-import org.team2471.frc.lib.framework.createMappings
-import org.team2471.frc.lib.framework.leftBumperHold
-import org.team2471.frc.lib.framework.rightBumperHold
-import org.team2471.frc.lib.framework.xPress
+import org.team2471.frc.lib.input.Joystick
+import org.team2471.frc.lib.input.XboxController
+import org.team2471.frc.lib.input.whenTrue
+import org.team2471.frc.lib.input.whileTrue
 
 val primaryController by lazy { XboxController(Operator.PRIMARY_CONTROLLER) }
 val secondaryJoystick by lazy { Joystick(Operator.SECONDARY_STICK) }
@@ -32,36 +28,29 @@ val driveSpeedScalar get() = Preferences.getInstance().getDouble("drive_speed_sc
 val liftSpeedScalar get() = Preferences.getInstance().getDouble("lift_speed_scalar", 1.0)
 
 fun initControls() {
-    val logger = Logger("Input")
+    primaryController.run {
+        // Manipulators
+        ({ rightBumper }).whileTrue { Claw.release(true) }
+        ({ leftBumper }).whileTrue { Manipulators.intakeCargo(2.0) }
 
-    primaryController.createMappings {
-        rightBumperHold { Claw.release(true) }
-        leftBumperHold { Manipulators.intakeCargo(2.0) }
-
-        aPress { Drivetrain.alignWithVision(VisionSource.Cargo) }
-        xPress { Drivetrain.alignWithVision(VisionSource.Cargo) }
+        // Alignment
+        ({ a || x }).whenTrue { Drivetrain.alignWithVision(VisionSource.Cargo) }
     }
 
-    // Secondary joystick mappings
-    secondaryJoystick.createMappings {
+    secondaryJoystick.run {
         // Bucket
-        buttonPress(2) { Bucket.open() }
+        ({ getButton(2) }).whenTrue { Bucket.open() }
 
         // Conveyor
-        buttonHold(4) { Conveyor.run() }
-        buttonHold(16) { Conveyor.run(invert = true) }
+        ({ getButton(4) }).whileTrue { Conveyor.run(override = true) }
+        ({ getButton(16) }).whileTrue { Conveyor.run(invert = true, override = true) }
 
         // Lift
-        buttonHold(1) { Lift.manualControl() }
-        buttonPress(7) { Lift.elevateTo(LiftState.CARGO_SHIP) }
-        buttonPress(8) { Lift.elevateTo(LiftState.LOW) }
-        buttonPress(9) { Lift.elevateTo(LiftState.MIDDLE) }
-        buttonPress(10) { Lift.elevateTo(LiftState.HIGH) }
-    }
-
-    for (i in 0 until DriverStation.kJoystickPorts) {
-        logger.addValue("Controller $i Type",
-                        DriverStation.getInstance().getJoystickName(i) ?: "")
+        ({ getButton(1) }).whileTrue { Lift.manualControl() }
+        ({ getButton(7) }).whenTrue { Lift.elevateTo(LiftState.CARGO_SHIP) }
+        ({ getButton(8) }).whenTrue { Lift.elevateTo(LiftState.LOW) }
+        ({ getButton(9) }).whenTrue { Lift.elevateTo(LiftState.MIDDLE) }
+        ({ getButton(10) }).whenTrue { Lift.elevateTo(LiftState.HIGH) }
     }
 }
 
