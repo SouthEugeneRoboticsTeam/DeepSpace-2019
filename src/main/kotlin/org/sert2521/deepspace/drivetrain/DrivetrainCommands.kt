@@ -16,6 +16,7 @@ import org.sert2521.deepspace.util.addPointToEnd
 import org.sert2521.deepspace.util.driveSpeedScalar
 import org.sert2521.deepspace.util.primaryController
 import org.sert2521.deepspace.util.remap
+import org.sert2521.deepspace.util.timer
 import org.team2471.frc.lib.coroutines.delay
 import org.team2471.frc.lib.coroutines.parallel
 import org.team2471.frc.lib.coroutines.periodic
@@ -30,7 +31,7 @@ private val throttle get() = primaryController.leftThumbstick.y.deadband(0.02)
 private val turn get() = primaryController.rightThumbstick.x.deadband(0.02)
 
 /**
- * Allows for teleoperated drive of the robot.
+ * Allows for teleoperated driveOpenLoop of the robot.
  */
 suspend fun Drivetrain.teleopDrive() = use(this) {
     periodic(watchOverrun = false) {
@@ -41,6 +42,18 @@ suspend fun Drivetrain.teleopDrive() = use(this) {
             0.0,
             driveSpeedScalar * liftScalar * turn
         )
+    }
+}
+
+suspend fun Drivetrain.drive(speed: Double) = use(this) {
+    periodic {
+        Drivetrain.driveOpenLoop(speed, speed)
+    }
+}
+
+suspend fun Drivetrain.driveTimed(time: Double, speed: Double) = use(this) {
+    timer(time) {
+        Drivetrain.driveOpenLoop(speed, speed)
     }
 }
 

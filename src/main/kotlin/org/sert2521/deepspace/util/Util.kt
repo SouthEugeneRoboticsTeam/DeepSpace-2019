@@ -5,6 +5,9 @@ import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.math.DoubleRange
 import org.team2471.frc.lib.util.Timer
 import java.awt.Color
+import kotlin.math.abs
+import kotlin.math.sqrt
+import edu.wpi.first.wpilibj.Timer as WPI_Timer
 
 class TimerScope internal constructor(var time: Double) {
     var periodicScope: PeriodicScope? = null
@@ -61,6 +64,44 @@ infix fun Int.tol(error: Int) = (this - error)..(this + error)
  * @return a range of the specified number +/- error
  */
 infix fun Double.tol(error: Double) = (this - error)..(this + error)
+
+class PIDFController(
+    private val kp: Double = 0.0,
+    private val ki: Double = 0.0,
+    private val kd: Double = 0.0,
+    private val kf: Double = 0.0,
+    private val offset: Double = 0.0
+) {
+    private var integral = 0.0
+    private var lastError: Double? = null
+    private var lastTime: Double? = null
+
+    fun update(setpoint: Double, actual: Double): Double {
+        val time = WPI_Timer.getFPGATimestamp()
+        val error = setpoint - actual
+        val dt = time - (lastTime ?: 0.0)
+
+        if (lastError == null) {
+            lastError = error
+            lastTime = time
+            return 0.0
+        }
+
+        integral += error * dt
+        lastError = error
+        lastTime = time
+
+        val p = kp * error
+        val i = ki * integral
+        val d = kd * ((error - (lastError ?: 0.0)) / dt)
+        val f = kf * setpoint
+        return p + i + d + f + offset
+    }
+}
+
+// Function for finding fastest safe time to run lift
+fun getOptimalTime(lastPos: Double, nextPos: Double, accl: Double) =
+    sqrt(abs(nextPos - lastPos) / (.5 * accl))
 
 /**
  * Re-maps a number from a specified [fromRange] to a new [toRange] such that the smallest and

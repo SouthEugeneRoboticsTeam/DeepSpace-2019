@@ -17,8 +17,8 @@ object MotorControllers {
     // Climber
     val CLIMBER_RIGHT_REAR = TalonID(17)
     val CLIMBER_LEFT_REAR = TalonID(18)
-    val CLIMBER_FRONT = VictorID(19)
-    val CLIMBER_DRIVE = TalonID(20)
+    val CLIMBER_FRONT = TalonID(19)
+    val CLIMBER_DRIVE = VictorID(20)
 
     // Conveyor
     val CONVEYOR_RIGHT = VictorID(21)
@@ -29,15 +29,25 @@ object MotorControllers {
     val INTAKE_LEFT = VictorID(24)
 }
 
+object Servos {
+    // Climber
+    const val CLIMBER_LOCK_RIGHT_FRONT = 3
+    const val CLIMBER_LOCK_RIGHT_REAR = 2
+    const val CLIMBER_LOCK_LEFT_FRONT = 4
+    const val CLIMBER_LOCK_LEFT_REAR = 1
+}
+
 object Sensors {
     // Lift
     const val LIFT_SWITCH_TOP = 9
     const val LIFT_SWITCH_BOTTOM = 5
 
     // Climber
-    const val CLIMBER_FRONT_POT = -1
-    const val CLIMBER_REAR_POT = -1
-    const val CLIMBER_LIDAR = -1
+    const val CLIMBER_FRONT_POT = 3
+    const val CLIMBER_REAR_POT = 2
+
+    const val CLIMBER_FRONT_LIDAR = 1
+    const val CLIMBER_REAR_LIDAR = 0
 
     // Claw
     const val CLAW_SWITCH = 2

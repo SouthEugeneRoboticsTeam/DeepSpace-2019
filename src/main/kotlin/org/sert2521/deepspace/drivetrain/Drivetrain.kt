@@ -11,7 +11,7 @@ import org.team2471.frc.lib.framework.Subsystem
 import org.team2471.frc.lib.motion.following.ArcadeDrive
 
 /**
- * The robot's drive system.
+ * The robot's driveOpenLoop system.
  */
 object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
     override val parameters = drivetrainConfig

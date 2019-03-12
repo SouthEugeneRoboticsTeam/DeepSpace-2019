@@ -5,6 +5,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.sert2521.deepspace.autonomous.AutoLoader
 import org.sert2521.deepspace.autonomous.AutoMode
+import org.sert2521.deepspace.climber.Climber
+import org.sert2521.deepspace.climber.ClimberDrive
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.lift.Lift
 import org.sert2521.deepspace.manipulators.Manipulators
@@ -28,7 +30,7 @@ import org.team2471.frc.lib.framework.runRobotProgram
 
 object Robot : RobotProgram {
     private val subsystems by lazy {
-        arrayOf(Drivetrain, Lift, Intake, Conveyor, Claw, Bucket)
+        arrayOf(Drivetrain, Lift, Intake, Conveyor, Claw, Climber, ClimberDrive, Bucket)
     }
 
     private val vision = Vision.getFromSource(VisionSource.Cargo)

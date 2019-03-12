@@ -2,6 +2,9 @@ package org.sert2521.deepspace.util
 
 import edu.wpi.first.wpilibj.Preferences
 import org.sert2521.deepspace.Operator
+import org.sert2521.deepspace.climber.Climber
+import org.sert2521.deepspace.climber.ClimberState
+import org.sert2521.deepspace.climber.runClimbSequence
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.drivetrain.alignWithVision
 import org.sert2521.deepspace.lift.Lift
@@ -51,6 +54,11 @@ fun initControls() {
         ({ getButton(8) }).whenTrue { Lift.elevateTo(LiftState.LOW) }
         ({ getButton(9) }).whenTrue { Lift.elevateTo(LiftState.MIDDLE) }
         ({ getButton(10) }).whenTrue { Lift.elevateTo(LiftState.HIGH) }
+
+        // Climber
+        ({ getButton(11) }).whenTrue { Climber.cancelActive() }
+        ({ getButton(14) }).whenTrue { Climber.runClimbSequence(ClimberState.LEVEL_3) }
+        ({ getButton(15) }).whenTrue { Climber.runClimbSequence(ClimberState.LEVEL_2) }
     }
 }
 
