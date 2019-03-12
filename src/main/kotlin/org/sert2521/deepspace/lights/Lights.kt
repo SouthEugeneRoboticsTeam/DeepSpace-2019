@@ -2,14 +2,14 @@ package org.sert2521.deepspace.lights
 
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Servo
-import org.sert2521.deepspace.Operator.STATUS_LEDS
+import org.sert2521.deepspace.Sensors.TARGET_LEDS
 import org.sert2521.deepspace.manipulators.Manipulators
 import org.sert2521.deepspace.util.Vision
 import org.sert2521.deepspace.util.VisionSource
 
 object Lights {
 
-    private val statusLights  = Servo(STATUS_LEDS)
+    private val statusLights  = Servo(TARGET_LEDS)
 
     fun colorMap(hue: Double) : Double {
             return (hue%360.0)/360.0*.8+.2
@@ -21,7 +21,7 @@ object Lights {
     }
 
     fun runLights() {
-        if(Vision.getFromSource(VisionSource.Cargo).locked || Vision.getFromSource(VisionSource.HatchPanel).locked) {
+        if(Vision.getFromSource(VisionSource.Cargo).locked) {
             statusLights.set(LightMode.TARGETING.value)
         }
         else if(Manipulators.hasCargo){
