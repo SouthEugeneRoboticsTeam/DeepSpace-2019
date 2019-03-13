@@ -99,7 +99,6 @@ object Lift : Subsystem("Lift") {
 
         bottomSwitch.requestInterrupts(object : InterruptHandlerFunction<Boolean>() {
             override fun interruptFired(interruptAssertedMask: Int, param: Boolean?) {
-                println("Interrupted!")
                 motor.position = 0.0
             }
         })

@@ -67,7 +67,6 @@ abstract class Vision(source: VisionSource) {
     var locked = false
         set(value) {
             field = value
-            println("Setting locked to $value")
             table.getEntry("locked").setBoolean(value)
             light = value
         }

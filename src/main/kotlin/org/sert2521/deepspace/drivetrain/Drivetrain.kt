@@ -117,7 +117,6 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
         rightDistance: Double,
         rightFeedForward: Double
     ) {
-        println("Actual left: ${this.leftDistance}, Actual right: ${this.rightDistance}, Actual heading: $heading")
         leftDrive.setPositionSetpoint(leftDistance, leftFeedForward)
         rightDrive.setPositionSetpoint(rightDistance, rightFeedForward)
     }

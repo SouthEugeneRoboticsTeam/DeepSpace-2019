@@ -47,7 +47,6 @@ suspend fun Climber.elevateFrontTo(position: Double) = use(this) {
         if (Climber.frontLegPosition !in (position tol ALLOWED_CLIMBER_ERROR)) {
             Climber.setFrontSpeed(if (Climber.frontLegPosition < position) CLIMBER_SPEED else -CLIMBER_SPEED)
         } else {
-            println("DONE, STOPPING ELEVATE FRONT")
             Climber.setFrontSpeed(0.0)
             stop()
         }

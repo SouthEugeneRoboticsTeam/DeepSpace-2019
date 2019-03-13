@@ -80,18 +80,14 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
 
     val path = Path2D()
 
-    var pose = vision.pose
-
     suspend fun updatePath(time: Double, offset: Double) {
         if (!vision.alive || !vision.found) return
 
-        pose = vision.getMedianPose(0.33, offset = offset)
+        val pose = vision.getMedianPose(0.33, offset = offset)
 
         val xPosition = pose.xDistance / 12.0
         val yPosition = pose.yDistance / 12.0
         val angle = (pose.targetAngle + pose.robotAngle) * -1
-
-        println("X: $xPosition, Y: $yPosition, Target Angle: ${pose.targetAngle}, Robot Angle: ${pose.robotAngle}")
 
         val oldPath = path.easeCurve.getDerivative(time)
         var oldDuration = path.duration
@@ -112,17 +108,17 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
 
         path.duration = oldDuration
 
-        println("""
-            ----------------------------------------------------
-            PATH UPDATED
-            ----------------------------------------------------
-            Length: ${path.length}, Tangent: ${path.getTangent(time)}
-            Head: ${path.xyCurve.headPoint}, Tail: ${path.xyCurve.tailPoint}
-            Duration (w/ Speed): ${path.durationWithSpeed}, (w/o Speed): ${path.duration}
-            Ease head: ${path.easeCurve.headKey}, Tail: ${path.easeCurve.tailKey}
-            Slope: $oldPath, ${path.easeCurve.getDerivative(time)}
-            ----------------------------------------------------
-        """.trimIndent())
+//        println("""
+//            ----------------------------------------------------
+//            PATH UPDATED
+//            ----------------------------------------------------
+//            Length: ${path.length}, Tangent: ${path.getTangent(time)}
+//            Head: ${path.xyCurve.headPoint}, Tail: ${path.xyCurve.tailPoint}
+//            Duration (w/ Speed): ${path.durationWithSpeed}, (w/o Speed): ${path.duration}
+//            Ease head: ${path.easeCurve.headKey}, Tail: ${path.easeCurve.tailKey}
+//            Slope: $oldPath, ${path.easeCurve.getDerivative(time)}
+//            ----------------------------------------------------
+//        """.trimIndent())
     }
 
     updatePath(0.0, 16.0 + 28.0)
