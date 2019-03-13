@@ -57,8 +57,8 @@ fun initControls() {
 
         // Climber
         ({ getButton(11) }).whenTrue { Climber.cancelActive() }
-        ({ getButton(14) }).whenTrue { Climber.runClimbSequence(ClimberState.LEVEL_3) }
-        ({ getButton(15) }).whenTrue { Climber.runClimbSequence(ClimberState.LEVEL_2) }
+        ({ getButton(13) && getButton(14) }).whenTrue { Climber.runClimbSequence(ClimberState.LEVEL_2) }
+        ({ getButton(13) && getButton(15) }).whenTrue { Climber.runClimbSequence(ClimberState.LEVEL_3) }
     }
 }
 
