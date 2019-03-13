@@ -15,11 +15,17 @@ import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.use
 
 private suspend fun Climber.elevateWithPidTo(state: ClimberState) = use(Climber) {
-    val frontPid = PIDFController(kp = 1.0, ki = 0.01, offset = 0.55)
-    val rearPid = PIDFController(kp = 0.60, ki = 0.001, offset = 0.25)
+    val frontPid = PIDFController(kp = 0.57, ki = 0.0065, offset = 0.275)
+    val rearPid = PIDFController(kp = 0.55, ki = 0.005, offset = 0.20)
+
+    val offset = when (state) {
+        ClimberState.LEVEL_2 -> 1.0 / 12.0
+        ClimberState.LEVEL_3 -> 2.0 / 12.0
+        else -> 0.0
+    }
 
     periodic {
-        if (rearLegPosition >= 0.0) setFrontSpeed(frontPid.update(state.position + (0.5 / 12.0), frontLegPosition))
+        if (rearLegPosition >= 0.0) setFrontSpeed(frontPid.update(state.position + offset, frontLegPosition))
         setRearSpeed(rearPid.update(state.position, rearLegPosition))
     }
 }

@@ -14,7 +14,7 @@ import org.team2471.frc.lib.framework.Subsystem
 enum class ClimberState(val position: Double) {
     UP(-0.5 / 12.0),
     LEVEL_2(6.0 / 12.0),
-    LEVEL_3(13.0 / 12.0)
+    LEVEL_3(19.0 / 12.0)
 }
 
 object Climber : Subsystem("Climber") {
@@ -47,8 +47,8 @@ object Climber : Subsystem("Climber") {
     val frontLegPosition get() = (-0.0264591 * Math.pow(frontPot.averageValue.toDouble(), 0.858003) + 22.8938) / 12.0
     val rearLegPosition get() = (-0.0148318 * Math.pow(rearPot.averageValue.toDouble(), 0.926422) + 25.7399) / 12.0
 
-    val frontOverStep get() = frontLidar.averageValue > 1000
-    val rearOverStep get() = rearLidar.averageValue > 1000
+    val frontOverStep get() = frontLidar.averageValue > 800
+    val rearOverStep get() = rearLidar.averageValue > 800
 
     /**
      * Whether the legs are within a specified tolerance.
