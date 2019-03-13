@@ -11,7 +11,7 @@ import org.team2471.frc.lib.framework.Subsystem
 import org.team2471.frc.lib.motion.following.ArcadeDrive
 
 /**
- * The robot's driveOpenLoop system.
+ * The robot's drive system.
  */
 object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
     override val parameters = drivetrainConfig
@@ -54,11 +54,11 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
 
     var followingPath = false
 
-    val speed: Double get() = (leftDrive.velocity + rightDrive.velocity) / 2.0
-
     val leftSpeed: Double get() = leftDrive.velocity
 
     val rightSpeed: Double get() = rightDrive.velocity
+
+    val speed: Double get() = (leftSpeed + rightSpeed) / 2.0
 
     val leftDistance get() = leftDrive.position
 
@@ -68,37 +68,23 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
 
     init {
         telemetry.add("Gyro") { ahrs.angle }
-        telemetry.add("Speed") { speed }
-        telemetry.add("Distance") { distance }
         telemetry.add("Left Distance") { leftDistance }
         telemetry.add("Right Distance") { rightDistance }
         telemetry.add("Following Path") { followingPath }
 
         logger.addNumberTopic("Angle", "deg") { ahrs.angle }
         logger.addBooleanTopic("Following Path") { followingPath }
-
         logger.addNumberTopic("Left Output", "%", "hide", "join:Drivetrain/Percent") {
             leftDrive.output
         }
         logger.addNumberTopic("Right Output", "%", "hide", "join:Drivetrain/Percent") {
             rightDrive.output
         }
-
         logger.addNumberTopic("Left Distance", "ft", "hide", "join:Drivetrain/Distances") {
             leftDistance
         }
         logger.addNumberTopic("Right Distance", "ft", "hide", "join:Drivetrain/Distances") {
             rightDistance
-        }
-
-        logger.addNumberTopic("Left Speed", "ft/s", "hide", "join:Drivetrain/Speeds") {
-            leftSpeed
-        }
-        logger.addNumberTopic("Right Speed", "ft/s", "hide", "join:Drivetrain/Speeds") {
-            rightSpeed
-        }
-        logger.addNumberTopic("Average Speed", "ft/s", "hide", "join:Drivetrain/Speeds") {
-            speed
         }
 
         zeroEncoders()

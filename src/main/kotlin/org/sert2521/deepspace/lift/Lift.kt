@@ -89,15 +89,13 @@ object Lift : Subsystem("Lift") {
     init {
         telemetry.add("Position") { motor.position }
         telemetry.add("Current") { motor.current }
-        telemetry.add("Closed Loop Error") { motor.closedLoopError }
-        telemetry.add("Top Switch") { topSwitch.get() }
-        telemetry.add("Bottom Switch") { bottomSwitch.get() }
+        telemetry.add("Top Switch") { atTop }
+        telemetry.add("Bottom Switch") { atBottom }
 
         logger.addNumberTopic("Position") { motor.position }
         logger.addNumberTopic("Current") { motor.current }
-        logger.addNumberTopic("Closed Loop Error") { motor.closedLoopError }
-        logger.addBooleanTopic("Top Switch") { topSwitch.get() }
-        logger.addBooleanTopic("Bottom Switch") { bottomSwitch.get() }
+        logger.addBooleanTopic("Top Switch") { atTop }
+        logger.addBooleanTopic("Bottom Switch") { atBottom }
 
         bottomSwitch.requestInterrupts(object : InterruptHandlerFunction<Boolean>() {
             override fun interruptFired(interruptAssertedMask: Int, param: Boolean?) {

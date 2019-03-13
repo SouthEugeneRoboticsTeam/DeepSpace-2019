@@ -188,18 +188,22 @@ fun log() {
 fun initLogs() {
     startTime = System.nanoTime().toDouble()
 
+    val ds = DriverStation.getInstance()
+
     BadLog.createValue("Start Time", dateFormat.format(Date()))
-    BadLog.createValue("Event Name", DriverStation.getInstance().eventName)
-    BadLog.createValue("Match Type", DriverStation.getInstance().matchType.toString())
-    BadLog.createValue("Match Number", DriverStation.getInstance().matchNumber.toString())
-    BadLog.createValue("Alliance", DriverStation.getInstance().alliance.toString())
-    BadLog.createValue("Location", DriverStation.getInstance().location.toString())
+    BadLog.createValue("Event Name", ds.eventName)
+    BadLog.createValue("Match Type", ds.matchType.toString())
+    BadLog.createValue("Match Number", ds.matchNumber.toString())
+    BadLog.createValue("Alliance", ds.alliance.toString())
+    BadLog.createValue("Location", ds.location.toString())
 
     BadLog.createTopic("Match Time", "s", Supplier { DriverStation.getInstance().matchTime })
 
     SystemLogger.addNumberTopic("Battery Voltage", "V") { RobotController.getBatteryVoltage() }
     SystemLogger.addBooleanTopic("Browned Out") { RobotController.isBrownedOut() }
     SystemLogger.addBooleanTopic("FPGA Active") { RobotController.isSysActive() }
+    SystemLogger.addBooleanTopic("DS Connected") { ds.isDSAttached }
+    SystemLogger.addBooleanTopic("FMS Connected") { ds.isFMSAttached }
 
     BadLog.createTopicSubscriber("Time", "s", DataInferMode.DEFAULT, "hide", "delta", "xaxis")
 

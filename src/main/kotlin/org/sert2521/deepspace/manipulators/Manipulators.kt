@@ -37,18 +37,10 @@ object Manipulators {
         telemetry.add("Has Cargo in Conveyor") { hasCargoInConveyor }
         telemetry.add("Has Cargo") { hasCargo }
         telemetry.add("Has Hatch Panel") { hasHatchPanel }
-        telemetry.add("Current Game Piece") { currentGamePiece?.name ?: "None" }
 
         logger.addBooleanTopic("Has Cargo in Conveyor") { hasCargoInConveyor }
         logger.addBooleanTopic("Has Cargo") { hasCargo }
         logger.addBooleanTopic("Has Hatch Panel") { hasHatchPanel }
-        logger.addNumberTopic("Current Game Piece") {
-            when (currentGamePiece) {
-                GamePiece.HATCH_PANEL -> 1
-                GamePiece.CARGO -> 2
-                null -> 0
-            }
-        }
 
         conveyorSwitch.requestInterrupts(object : InterruptHandlerFunction<Boolean>() {
             override fun interruptFired(interruptAssertedMask: Int, param: Boolean?) {

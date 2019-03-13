@@ -5,9 +5,9 @@ import edu.wpi.first.wpilibj.AnalogInput
 import org.sert2521.deepspace.MotorControllers
 import org.sert2521.deepspace.Sensors
 import org.sert2521.deepspace.Servos
+import org.sert2521.deepspace.util.Logger
 import org.sert2521.deepspace.util.Servo
 import org.sert2521.deepspace.util.Telemetry
-import org.sert2521.deepspace.util.tol
 import org.team2471.frc.lib.actuators.MotorController
 import org.team2471.frc.lib.framework.Subsystem
 
@@ -19,6 +19,7 @@ enum class ClimberState(val position: Double) {
 
 object Climber : Subsystem("Climber") {
     private val telemetry = Telemetry(this)
+    private val logger = Logger(this)
 
     private val frontLegs = MotorController(MotorControllers.CLIMBER_FRONT).config { brakeMode() }
     private val rearLegs = MotorController(
@@ -50,11 +51,6 @@ object Climber : Subsystem("Climber") {
     val frontOverStep get() = frontLidar.averageValue > 800
     val rearOverStep get() = rearLidar.averageValue > 800
 
-    /**
-     * Whether the legs are within a specified tolerance.
-     */
-    val synced get() = frontLegPosition in (rearLegPosition tol ALLOWED_CLIMBER_ERROR)
-
     var frontLocked = false
         set(value) {
             field = value
@@ -79,12 +75,13 @@ object Climber : Subsystem("Climber") {
     init {
         telemetry.add("Front Leg Position") { frontLegPosition }
         telemetry.add("Rear Leg Position") { rearLegPosition }
-        telemetry.add("Front Lidar Voltage") { frontLidar.averageValue }
-        telemetry.add("Rear Lidar Voltage") { rearLidar.averageValue }
-        telemetry.add("Front Current") { frontLegs.current }
-        telemetry.add("Rear Current") { rearLegs.current }
-        telemetry.add("Front Over Step") { frontOverStep }
-        telemetry.add("Rear Over Step") { rearOverStep }
+        telemetry.add("Front LiDAR Value") { frontLidar.averageValue }
+        telemetry.add("Rear LiDAR Value") { rearLidar.averageValue }
+
+        logger.addNumberTopic("Front Leg Position") { frontLegPosition }
+        logger.addNumberTopic("Rear Leg Position") { rearLegPosition }
+        logger.addNumberTopic("Front LiDAR Value") { frontLidar.averageValue }
+        logger.addNumberTopic("Rear LiDAR Value") { rearLidar.averageValue }
 
         locked = true
     }
