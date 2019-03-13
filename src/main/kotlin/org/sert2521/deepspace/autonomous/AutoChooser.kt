@@ -98,7 +98,8 @@ enum class AutoMode(val command: suspend () -> Unit) {
             logger.publish("Constraint", "<b>using: ${constraint.name}</b>")
 
             val autoMode = calculateAuto()
-            logger.publish("Calculated Mode", autoMode.name)
+            logger.publish("Calculated Mode", "start: ${start.name}, objective: " +
+                "${objective.name}, constraint: ${constraint.name}, calculated: ${autoMode.name}")
 
             autoMode.command()
         }
@@ -109,9 +110,6 @@ object AutoLoader {
     private val cacheFile = File("/home/lvuser/autonomi.json")
 
     init {
-        logger.addSubscriber("Start Position", BadLog.UNITLESS, DataInferMode.DEFAULT, "log")
-        logger.addSubscriber("Objective", BadLog.UNITLESS, DataInferMode.DEFAULT, "log")
-        logger.addSubscriber("Constraint", BadLog.UNITLESS, DataInferMode.DEFAULT, "log")
         logger.addSubscriber("Calculated Mode", BadLog.UNITLESS, DataInferMode.DEFAULT, "log")
 
         SmartDashboard.putData("Auto Start Position", AutoMode.startChooser)
@@ -147,31 +145,13 @@ object AutoLoader {
             }
         }
 
-        val autoFlags = EntryListenerFlags.kImmediate or
+        val flags = EntryListenerFlags.kImmediate or
             EntryListenerFlags.kNew or
             EntryListenerFlags.kUpdate
 
         NetworkTableInstance.getDefault()
             .getTable("PathVisualizer")
             .getEntry("Autonomi")
-            .addListener(handler, autoFlags)
-
-        val modeFlags = EntryListenerFlags.kNew or
-            EntryListenerFlags.kUpdate
-
-        NetworkTableInstance.getDefault()
-            .getTable("SmartDashboard/Auto Start Position")
-            .getEntry("selected")
-            .addListener({ logger.publish("Start Position", AutoMode.start.name) }, modeFlags)
-
-        NetworkTableInstance.getDefault()
-            .getTable("SmartDashboard/Auto Objective")
-            .getEntry("selected")
-            .addListener({ logger.publish("Objective", AutoMode.objective.name) }, modeFlags)
-
-        NetworkTableInstance.getDefault()
-            .getTable("SmartDashboard/Auto Constraint")
-            .getEntry("selected")
-            .addListener({ logger.publish("Constraint", AutoMode.constraint.name) }, modeFlags)
+            .addListener(handler, flags)
     }
 }

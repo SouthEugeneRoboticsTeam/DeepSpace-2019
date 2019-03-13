@@ -1,5 +1,7 @@
 package org.sert2521.deepspace.climber
 
+import badlog.lib.BadLog
+import badlog.lib.DataInferMode
 import com.ctre.phoenix.motorcontrol.NeutralMode
 import edu.wpi.first.wpilibj.AnalogInput
 import org.sert2521.deepspace.MotorControllers
@@ -82,9 +84,12 @@ object Climber : Subsystem("Climber") {
         logger.addNumberTopic("Rear Leg Position") { rearLegPosition }
         logger.addNumberTopic("Front LiDAR Value") { frontLidar.averageValue }
         logger.addNumberTopic("Rear LiDAR Value") { rearLidar.averageValue }
+        logger.addSubscriber("Target State", BadLog.UNITLESS, DataInferMode.DEFAULT, "log")
 
         locked = true
     }
+
+    fun logTargetState(state: ClimberState) = logger.publish("Target State", state.name)
 
     fun setFrontSpeed(speed: Double) {
         // Unlock legs if attempting to retract

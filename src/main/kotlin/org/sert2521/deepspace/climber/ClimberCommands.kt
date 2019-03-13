@@ -90,6 +90,8 @@ suspend fun ClimberDrive.driveTimed(time: Double, reverse: Boolean = false) = us
 }
 
 suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, ClimberDrive, Drivetrain) {
+    Climber.logTargetState(state)
+
     // Elevate the robot to the desired state
     val elevateRobot = launch(MeanlibDispatcher) { Climber.elevateWithPidTo(state) }
 
