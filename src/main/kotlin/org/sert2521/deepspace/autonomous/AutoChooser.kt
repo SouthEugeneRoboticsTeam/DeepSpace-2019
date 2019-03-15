@@ -93,10 +93,6 @@ enum class AutoMode(val command: suspend () -> Unit) {
         }
 
         suspend fun runAuto() {
-            logger.publish("Start Position", "<b>using: ${start.name}</b>")
-            logger.publish("Objective", "<b>using: ${objective.name}</b>")
-            logger.publish("Constraint", "<b>using: ${constraint.name}</b>")
-
             val autoMode = calculateAuto()
             logger.publish("Calculated Mode", "start: ${start.name}, objective: " +
                 "${objective.name}, constraint: ${constraint.name}, calculated: ${autoMode.name}")
