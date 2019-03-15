@@ -29,7 +29,7 @@ import kotlin.math.absoluteValue
 
 private val throttle get() = primaryController.leftThumbstick.y.deadband(0.02)
 private val turn get() = primaryController.rightThumbstick.x.deadband(0.02)
-private val scale get() = 1.0 - primaryController.rightTrigger.deadband(0.02).remap(0.0..1.0, 0.0..0.5)
+private val scale get() = 1.0 - primaryController.leftTrigger.deadband(0.02).remap(0.0..1.0, 0.0..0.5)
 
 /**
  * Allows for teleoperated drive of the robot.
@@ -62,7 +62,7 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
     val context = coroutineContext
     val cancelJob = launch {
         periodic {
-            if (throttle.absoluteValue > 0.0 || turn.absoluteValue > 0.0) {
+            if (throttle.absoluteValue > 0.2 || turn.absoluteValue > 0.2) {
                 context.cancel()
             }
         }

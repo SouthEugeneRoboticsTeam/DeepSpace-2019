@@ -13,6 +13,7 @@ import org.sert2521.deepspace.lift.elevateTo
 import org.sert2521.deepspace.lift.manualControl
 import org.sert2521.deepspace.manipulators.Manipulators
 import org.sert2521.deepspace.manipulators.bucket.Bucket
+import org.sert2521.deepspace.manipulators.bucket.close
 import org.sert2521.deepspace.manipulators.bucket.open
 import org.sert2521.deepspace.manipulators.claw.Claw
 import org.sert2521.deepspace.manipulators.claw.release
@@ -43,6 +44,7 @@ fun initControls() {
     secondaryJoystick.run {
         // Bucket
         ({ getButton(2) }).whenTrue { Bucket.open() }
+        ({ getButton(3) }).whenTrue { Bucket.close() }
 
         // Conveyor
         ({ getButton(4) }).whileTrue { Conveyor.run(override = true) }
