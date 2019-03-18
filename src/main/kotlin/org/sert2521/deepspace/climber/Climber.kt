@@ -16,7 +16,7 @@ import org.team2471.frc.lib.framework.Subsystem
 enum class ClimberState(val position: Double) {
     UP(-0.5 / 12.0),
     LEVEL_2(6.0 / 12.0),
-    LEVEL_3(19.0 / 12.0)
+    LEVEL_3(19.25 / 12.0)
 }
 
 object Climber : Subsystem("Climber") {
@@ -84,12 +84,12 @@ object Climber : Subsystem("Climber") {
         logger.addNumberTopic("Rear Leg Position") { rearLegPosition }
         logger.addNumberTopic("Front LiDAR Value") { frontLidar.averageValue }
         logger.addNumberTopic("Rear LiDAR Value") { rearLidar.averageValue }
-        logger.addSubscriber("Target State", BadLog.UNITLESS, DataInferMode.DEFAULT, "log")
+        logger.addSubscriber("Critical Events", BadLog.UNITLESS, DataInferMode.DEFAULT, "log")
 
         locked = true
     }
 
-    fun logTargetState(state: ClimberState) = logger.publish("Target State", state.name)
+    fun logEvent(event: String) = logger.publish("Critical Events", event)
 
     fun setFrontSpeed(speed: Double) {
         // Unlock legs if attempting to retract

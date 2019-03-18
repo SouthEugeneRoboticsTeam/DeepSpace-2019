@@ -15,18 +15,54 @@ import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.use
 
 private suspend fun Climber.elevateWithPidTo(state: ClimberState) = use(Climber) {
-    val frontPid = PIDFController(kp = 0.57, ki = 0.0065, offset = 0.275)
-    val rearPid = PIDFController(kp = 0.55, ki = 0.005, offset = 0.20)
+    val frontPid = when (state) {
+        ClimberState.LEVEL_2 -> PIDFController(kp = 0.57, ki = 0.0065, offset = 0.275)
+        ClimberState.LEVEL_3 -> PIDFController(kp = 0.525, ki = 0.0065, offset = 0.275)
+        else -> PIDFController()
+    }
+    val rearPid = when (state) {
+        ClimberState.LEVEL_2 -> PIDFController(kp = 0.55, ki = 0.005, offset = 0.20)
+        ClimberState.LEVEL_3 -> PIDFController(kp = 0.625, ki = 0.005, offset = 0.17)
+        else -> PIDFController()
+    }
 
-    val offset = when (state) {
+    val highPowerScalar = when (state) {
+        ClimberState.LEVEL_2 -> 0.75
+        ClimberState.LEVEL_3 -> 0.6
+        else -> 0.0
+    }
+
+    val frontOffset = when (state) {
         ClimberState.LEVEL_2 -> 1.0 / 12.0
         ClimberState.LEVEL_3 -> 2.0 / 12.0
         else -> 0.0
     }
 
     periodic {
-        if (rearLegPosition >= 0.0) setFrontSpeed(frontPid.update(state.position + offset, frontLegPosition))
-        setRearSpeed(rearPid.update(state.position, rearLegPosition))
+        // Lower value to 80% of its PID output if leg is too high
+        val frontScalar = if (frontLegPosition > rearLegPosition + 1.0 / 12.0) {
+            highPowerScalar
+        } else {
+            1.0
+        }
+        val rearScalar = if (rearLegPosition > frontLegPosition + 1.0 / 12.0) {
+            highPowerScalar
+        } else {
+            1.0
+        }
+
+        // Ensure the legs don't sink by forcing the value to be at least the PID holding offset
+        val frontValue = Math.max(
+            frontPid.update(state.position + frontOffset, frontLegPosition) * frontScalar,
+            frontPid.offset
+        )
+        val rearValue = Math.max(
+            rearPid.update(state.position, rearLegPosition) * rearScalar,
+            rearPid.offset
+        )
+
+        if (rearLegPosition >= 0.0) setFrontSpeed(frontValue)
+        setRearSpeed(rearValue)
     }
 }
 
@@ -89,7 +125,7 @@ suspend fun ClimberDrive.driveTimed(time: Double, reverse: Boolean = false) = us
 }
 
 suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, ClimberDrive, Drivetrain) {
-    Climber.logTargetState(state)
+    Climber.logEvent("Elevating to ${state.name}")
 
     // Elevate the robot to the desired state
     val elevateRobot = launch(MeanlibDispatcher) { Climber.elevateWithPidTo(state) }
@@ -100,10 +136,12 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
         Climber.rearLegPosition >= state.position - ALLOWED_CLIMBER_ERROR
     }
 
+    Climber.logEvent("Done elevating, driving")
+
     // Drive the robot forwards indefinitely
     val runForwardUntilRearLidar = launch(MeanlibDispatcher) {
         parallel(
-            { Drivetrain.drive(-0.15) },
+            { Drivetrain.drive(-0.20) },
             { ClimberDrive.drive() }
         )
     }
@@ -115,6 +153,8 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
     runForwardUntilRearLidar.cancelAndJoin()
     elevateRobot.cancelAndJoin()
 
+    Climber.logEvent("Retracting rear legs")
+
     // Raise the rear legs, while keeping the front at the desired state
     val raiseRear = launch(MeanlibDispatcher) {
         parallel(
@@ -125,6 +165,8 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
 
     // Wait until the rear leg is up
     suspendUntil { Climber.rearLegPosition <= 0 }
+
+    Climber.logEvent("Done retracting rear legs, driving")
 
     // Drive forwards using the drivetrain and climber driveOpenLoop motor
     val runForwardUntilFrontLidar = launch(MeanlibDispatcher) {
@@ -141,6 +183,8 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
     runForwardUntilFrontLidar.cancelAndJoin()
     raiseRear.cancelAndJoin()
 
+    Climber.logEvent("Retracting front legs")
+
     // Raise front legs and jerk the drivetrain to ensure legs don't catch
     val raiseFront = launch(MeanlibDispatcher) {
         parallel(
@@ -155,10 +199,14 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
     // Stop raising
     raiseFront.cancelAndJoin()
 
+    Climber.logEvent("Done retracting front legs, driving")
+
     // Finish driving onto platform
     parallel({
         Drivetrain.driveTimed(0.75, -0.35)
     }, {
         ClimberDrive.driveTimed(0.75)
     })
+
+    Climber.logEvent("Climb complete")
 }

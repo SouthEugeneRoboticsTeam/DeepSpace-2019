@@ -66,11 +66,11 @@ infix fun Int.tol(error: Int) = (this - error)..(this + error)
 infix fun Double.tol(error: Double) = (this - error)..(this + error)
 
 class PIDFController(
-    private val kp: Double = 0.0,
-    private val ki: Double = 0.0,
-    private val kd: Double = 0.0,
-    private val kf: Double = 0.0,
-    private val offset: Double = 0.0
+    val kp: Double = 0.0,
+    val ki: Double = 0.0,
+    val kd: Double = 0.0,
+    val kf: Double = 0.0,
+    val offset: Double = 0.0
 ) {
     private var integral = 0.0
     private var lastError: Double? = null
