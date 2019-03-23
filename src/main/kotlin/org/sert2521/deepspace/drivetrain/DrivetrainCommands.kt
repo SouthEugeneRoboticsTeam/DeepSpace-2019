@@ -17,6 +17,7 @@ import org.sert2521.deepspace.util.driveSpeedScalar
 import org.sert2521.deepspace.util.primaryController
 import org.sert2521.deepspace.util.remap
 import org.sert2521.deepspace.util.timer
+import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.delay
 import org.team2471.frc.lib.coroutines.parallel
 import org.team2471.frc.lib.coroutines.periodic
@@ -59,10 +60,13 @@ suspend fun Drivetrain.driveTimed(time: Double, speed: Double) = use(this, name 
 }
 
 suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean = false) = use(this, name = "Vision Align") {
+    val vision = Vision.getFromSource(source)
+
     val context = coroutineContext
-    val cancelJob = launch {
+    val cancelJob = launch(MeanlibDispatcher) {
         periodic {
             if (throttle.absoluteValue > 0.2 || turn.absoluteValue > 0.2) {
+                vision.locked = false
                 context.cancel()
             }
         }
@@ -70,8 +74,6 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean 
 
     // Pickup hatch panel if currently does not have game piece
     val shouldPickup = Manipulators.currentGamePiece == null
-
-    val vision = Vision.getFromSource(source)
 
     vision.locked = true
 
