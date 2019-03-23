@@ -58,7 +58,7 @@ suspend fun Drivetrain.driveTimed(time: Double, speed: Double) = use(this, name 
     Drivetrain.reset()
 }
 
-suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this, name = "Vision Align") {
+suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean = false) = use(this, name = "Vision Align") {
     val context = coroutineContext
     val cancelJob = launch {
         periodic {
@@ -121,20 +121,22 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this, name = 
 //        """.trimIndent())
     }
 
-    updatePath(0.0, 16.0 + 28.0)
+    updatePath(0.0, Vision.getOffset(24.0))
 
     driveAlongPath(path, extraTime = 0.1)
 
-    updatePath(0.0, 16.0 + 3.0)
+    if (!alignOnly) {
+        updatePath(0.0, Vision.getOffset(0.0))
 
-    vision.locked = false
+        vision.locked = false
 
-    when {
-        shouldPickup -> GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.25) }, {
-            delay(0.25)
-            Claw.release(true) { !Drivetrain.followingPath }
-        })
-        else -> driveAlongPath(path, extraTime = 0.25)
+        when {
+            shouldPickup -> GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.25) }, {
+                delay(0.25)
+                Claw.release(true) { !Drivetrain.followingPath }
+            })
+            else -> driveAlongPath(path, extraTime = 0.25)
+        }
     }
 
     cancelJob.cancelAndJoin()

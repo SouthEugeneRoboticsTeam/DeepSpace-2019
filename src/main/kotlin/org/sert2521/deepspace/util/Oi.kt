@@ -38,7 +38,7 @@ fun initControls() {
         ({ leftBumper }).whileTrue { Manipulators.intakeCargo(2.0) }
 
         // Alignment
-        ({ a }).whenTrue { Drivetrain.alignWithVision(VisionSource.Cargo) }
+        ({ a }).whenTrue { Drivetrain.alignWithVision(VisionSource.Cargo, alignOnly = true) }
     }
 
     secondaryJoystick.run {

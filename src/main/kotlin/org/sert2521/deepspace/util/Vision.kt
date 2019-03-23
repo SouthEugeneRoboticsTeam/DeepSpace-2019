@@ -4,6 +4,7 @@ import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DigitalOutput
 import edu.wpi.first.wpilibj.RobotController
 import org.sert2521.deepspace.Sensors
+import org.sert2521.deepspace.drivetrain.robotConfig
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -138,5 +139,7 @@ abstract class Vision(source: VisionSource) {
         fun getFromSource(source: VisionSource) = when (source) {
             VisionSource.Cargo -> Cargo
         }
+
+        fun getOffset(offset: Double) = (robotConfig.robotLength * 12 / 2) + offset
     }
 }
