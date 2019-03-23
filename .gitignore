@@ -5,6 +5,7 @@
 *.iml
 *.bag
 build
+out
 local.properties
 src/main/resources/branch.txt
 src/main/resources/buildtime.txt
