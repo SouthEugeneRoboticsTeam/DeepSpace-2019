@@ -60,6 +60,9 @@ object Robot : RobotProgram {
     override suspend fun disable() {
         subsystems.forEach { it.disable() }
 
+        // Turn off light
+        vision.locked = false
+
         suspendUntil { Math.abs(Drivetrain.speed) < 0.25 }
         Drivetrain.coast()
     }

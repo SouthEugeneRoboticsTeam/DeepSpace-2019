@@ -2,7 +2,6 @@ package org.sert2521.deepspace.util
 
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DigitalOutput
-import edu.wpi.first.wpilibj.RobotController
 import org.sert2521.deepspace.Sensors
 import org.sert2521.deepspace.drivetrain.robotConfig
 import kotlin.math.cos
@@ -23,7 +22,7 @@ enum class VisionSource(val path: String) {
  *
  * @see https://www.chiefdelphi.com/t/a-step-by-step-run-through-of-frc-vision-processing/341012
  */
-class CameraPose(
+data class CameraPose(
     val xDistance: Double,
     val yDistance: Double,
     val robotAngle: Double,
@@ -80,7 +79,6 @@ abstract class Vision(source: VisionSource) {
      * @return the estimated x distance from camera
      */
     private fun getYDistance(offset: Double = defaultOffset): Double {
-        RobotController.getBatteryVoltage()
         val cosAngle = cos(Math.toRadians(robotAngle + targetAngle))
         return yDistance - cosAngle * hyp + cosAngle * (hyp - offset) + cameraToCenter
     }

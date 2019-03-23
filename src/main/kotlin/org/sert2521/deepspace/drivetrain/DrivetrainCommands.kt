@@ -65,7 +65,7 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean 
     val context = coroutineContext
     val cancelJob = launch(MeanlibDispatcher) {
         periodic {
-            if (throttle.absoluteValue > 0.2 || turn.absoluteValue > 0.2) {
+            if (throttle.absoluteValue > 0.1 || turn.absoluteValue > 0.1) {
                 vision.locked = false
                 context.cancel()
             }
@@ -140,6 +140,8 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean 
             else -> driveAlongPath(path, extraTime = 0.25)
         }
     }
+
+    vision.locked = false
 
     cancelJob.cancelAndJoin()
 }
