@@ -1,10 +1,8 @@
 package org.sert2521.deepspace.util
 
-import edu.wpi.first.networktables.EntryListenerFlags
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DigitalOutput
 import edu.wpi.first.wpilibj.RobotController
-import edu.wpi.first.wpilibj.RobotController.getFPGATime
 import org.sert2521.deepspace.Sensors
 import kotlin.math.cos
 import kotlin.math.sin
@@ -40,18 +38,10 @@ abstract class Vision(source: VisionSource) {
     private val robotAngle get() = table.getEntry("robot_angle").getNumber(0.0).toDouble()
     private val targetAngle get() = table.getEntry("target_angle").getNumber(0.0).toDouble()
 
-    private var lastUpdate = 0L
-
     /**
      * Whether or not the target is currently found.
      */
     val found get() = table.getEntry("found").getBoolean(false)
-
-    /**
-     * Whether the vision system is currently alive (has received value in last 2s).
-     */
-//    val alive get() = getFPGATime() - lastUpdate > 2.0e+6
-    val alive = true
 
     /**
      * The time at which the last value was read. Note that this time is sent from the Jetson, so it
@@ -72,16 +62,6 @@ abstract class Vision(source: VisionSource) {
         }
 
     private val hyp get() = xDistance / sin(Math.toRadians(robotAngle + targetAngle))
-
-    init {
-        val flags = EntryListenerFlags.kImmediate or
-            EntryListenerFlags.kNew or
-            EntryListenerFlags.kUpdate
-
-        table.addEntryListener({ _, _, _, _, _ ->
-            lastUpdate = getFPGATime()
-        }, flags)
-    }
 
     /**
      * Gets the current estimated x distance from target using a specified [offset].

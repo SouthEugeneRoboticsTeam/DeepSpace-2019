@@ -81,7 +81,7 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this, name = 
     val path = Path2D()
 
     suspend fun updatePath(time: Double, offset: Double) {
-        if (!vision.alive || !vision.found) return
+        if (!vision.found) return
 
         val pose = vision.getMedianPose(0.33, offset = offset)
 
