@@ -14,7 +14,7 @@ import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.use
 
-private suspend fun Climber.elevateWithPidTo(state: ClimberState) = use(Climber) {
+private suspend fun Climber.elevateWithPidTo(state: ClimberState) = use(Climber, name = "Elevate Climber w/ PID") {
     val frontPid = when (state) {
         ClimberState.LEVEL_2 -> PIDFController(kp = 0.57, ki = 0.0065, offset = 0.275)
         ClimberState.LEVEL_3 -> PIDFController(kp = 0.525, ki = 0.0065, offset = 0.275)
@@ -78,7 +78,7 @@ suspend fun Climber.elevateFrontTo(state: ClimberState) = elevateFrontTo(state.p
  *
  * @param position desired potentiometer position
  */
-suspend fun Climber.elevateFrontTo(position: Double) = use(this) {
+suspend fun Climber.elevateFrontTo(position: Double) = use(this, name = "Front Climber") {
     periodic {
         if (Climber.frontLegPosition !in (position tol ALLOWED_CLIMBER_ERROR)) {
             Climber.setFrontSpeed(if (Climber.frontLegPosition < position) CLIMBER_SPEED else -CLIMBER_SPEED)
@@ -101,7 +101,7 @@ suspend fun Climber.elevateRearTo(state: ClimberState) = Climber.elevateRearTo(s
  *
  * @param position desired potentiometer position
  */
-suspend fun Climber.elevateRearTo(position: Double) = use(this) {
+suspend fun Climber.elevateRearTo(position: Double) = use(this, name = "Rear Climber") {
     periodic {
         if (Climber.rearLegPosition !in (position tol ALLOWED_CLIMBER_ERROR)) {
             Climber.setRearSpeed(if (Climber.rearLegPosition < position) CLIMBER_SPEED else -CLIMBER_SPEED)
@@ -112,19 +112,19 @@ suspend fun Climber.elevateRearTo(position: Double) = use(this) {
     }
 }
 
-suspend fun ClimberDrive.drive(reverse: Boolean = false) = use(this) {
+suspend fun ClimberDrive.drive(reverse: Boolean = false) = use(this, name = "Drive Climber") {
     periodic {
         ClimberDrive.driveOpenLoop(reverse)
     }
 }
 
-suspend fun ClimberDrive.driveTimed(time: Double, reverse: Boolean = false) = use(this) {
+suspend fun ClimberDrive.driveTimed(time: Double, reverse: Boolean = false) = use(this, name = "Timed Climber Drive") {
     timer(time) {
         ClimberDrive.driveOpenLoop(reverse)
     }
 }
 
-suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, ClimberDrive, Drivetrain) {
+suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, ClimberDrive, Drivetrain, name = "Climber Sequence") {
     Climber.logEvent("Elevating to ${state.name}")
 
     // Elevate the robot to the desired state

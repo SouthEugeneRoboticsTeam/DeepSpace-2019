@@ -5,7 +5,7 @@ import org.sert2521.deepspace.util.secondaryJoystick
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.framework.use
 
-suspend fun Lift.manualControl() = use(this) {
+suspend fun Lift.manualControl() = use(this, name = "Manual Lift") {
     periodic(watchOverrun = false) {
         val speed = liftSpeedScalar * secondaryJoystick.y
 
@@ -15,7 +15,7 @@ suspend fun Lift.manualControl() = use(this) {
     }
 }
 
-suspend fun Lift.elevateTo(state: LiftState) = use(this) {
+suspend fun Lift.elevateTo(state: LiftState) = use(this, name = "Elevate Lift") {
     Lift.followMotionCurve(
         calculateOptimalTime(Lift.position, state.position, MAX_ACCELERATION),
         state

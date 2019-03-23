@@ -20,7 +20,5 @@ object Claw : Subsystem("Claw") {
             }
         }
 
-    override suspend fun default() {
-        state = ClawState.CLAMPED
-    }
+    override suspend fun default() = Claw.clamp(true)
 }

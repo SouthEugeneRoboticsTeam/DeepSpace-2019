@@ -34,7 +34,7 @@ private val scale get() = 1.0 - primaryController.leftTrigger.deadband(0.02).rem
 /**
  * Allows for teleoperated drive of the robot.
  */
-suspend fun Drivetrain.teleopDrive() = use(this) {
+suspend fun Drivetrain.teleopDrive() = use(this, name = "Teleop Drive") {
     periodic(watchOverrun = false) {
         val liftScalar = (1.0 - Lift.position / LiftState.HIGH.position).remap(0.0..1.0, 0.35..1.0)
 
@@ -45,20 +45,20 @@ suspend fun Drivetrain.teleopDrive() = use(this) {
     }
 }
 
-suspend fun Drivetrain.drive(speed: Double) = use(this) {
+suspend fun Drivetrain.drive(speed: Double) = use(this, name = "Drive") {
     periodic {
         Drivetrain.driveOpenLoop(speed, speed)
     }
 }
 
-suspend fun Drivetrain.driveTimed(time: Double, speed: Double) = use(this) {
+suspend fun Drivetrain.driveTimed(time: Double, speed: Double) = use(this, name = "Timed Drive") {
     timer(time) {
         Drivetrain.driveOpenLoop(speed, speed)
     }
     Drivetrain.reset()
 }
 
-suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this) {
+suspend fun Drivetrain.alignWithVision(source: VisionSource) = use(this, name = "Vision Align") {
     val context = coroutineContext
     val cancelJob = launch {
         periodic {

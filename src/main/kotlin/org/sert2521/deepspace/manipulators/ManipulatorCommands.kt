@@ -16,13 +16,8 @@ import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.framework.use
 
-suspend fun Manipulators.releaseCurrent() = when (currentGamePiece) {
-    GamePiece.CARGO -> use(Bucket) { Bucket.open() }
-    else -> use(Claw) { Claw.release(true) }
-}
-
 private var intakeJob: Job? = null
-suspend fun Manipulators.intakeCargo(extraTime: Double? = null) = use(Conveyor, Intake) {
+suspend fun Manipulators.intakeCargo(extraTime: Double? = null) = use(Conveyor, Intake, name = "Intake Cargo") {
     try {
         Intake.state = IntakeState.LOWERED
 
