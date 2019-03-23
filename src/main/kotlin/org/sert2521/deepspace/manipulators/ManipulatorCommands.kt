@@ -4,10 +4,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.sert2521.deepspace.lift.Lift
-import org.sert2521.deepspace.manipulators.bucket.Bucket
-import org.sert2521.deepspace.manipulators.bucket.open
-import org.sert2521.deepspace.manipulators.claw.Claw
-import org.sert2521.deepspace.manipulators.claw.release
 import org.sert2521.deepspace.manipulators.conveyor.Conveyor
 import org.sert2521.deepspace.manipulators.intake.Intake
 import org.sert2521.deepspace.manipulators.intake.IntakeState
