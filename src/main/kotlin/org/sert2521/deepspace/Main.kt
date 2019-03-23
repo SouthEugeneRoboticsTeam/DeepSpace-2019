@@ -1,8 +1,6 @@
 package org.sert2521.deepspace
 
 import edu.wpi.first.wpilibj.DriverStation
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.sert2521.deepspace.autonomous.AutoLoader
 import org.sert2521.deepspace.autonomous.AutoMode
 import org.sert2521.deepspace.climber.Climber
@@ -22,7 +20,6 @@ import org.sert2521.deepspace.util.initPreferences
 import org.sert2521.deepspace.util.launchTelemetry
 import org.sert2521.deepspace.util.logBuildInfo
 import org.sert2521.deepspace.util.logger
-import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.RobotProgram
 import org.team2471.frc.lib.framework.initializeWpilib
@@ -34,6 +31,7 @@ object Robot : RobotProgram {
     }
 
     private val vision = Vision.getFromSource(VisionSource.Cargo)
+    private var finalizedLogs = false
 
     init {
         logger
@@ -51,14 +49,6 @@ object Robot : RobotProgram {
         initControls()
         initPreferences()
         logBuildInfo()
-
-        // Await communication with driver station before finalizing logs
-        GlobalScope.launch(MeanlibDispatcher) {
-            suspendUntil { DriverStation.getInstance().isDSAttached }
-
-            initLogs()
-            launchTelemetry()
-        }
     }
 
     override suspend fun enable() {
@@ -82,6 +72,18 @@ object Robot : RobotProgram {
         println("Entering autonomous...")
 
         AutoMode.runAuto()
+    }
+
+    override fun comms() {
+        println("ESTABLISHED COMMS")
+        println("Alliance: ${DriverStation.getInstance().alliance.name}")
+
+        if (!finalizedLogs) {
+            initLogs()
+            launchTelemetry()
+
+            finalizedLogs = true
+        }
     }
 }
 
