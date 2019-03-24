@@ -116,6 +116,11 @@ object Climber : Subsystem("Climber") {
         frontLegs.stop()
     }
 
+    fun abort() {
+        cancelActive()
+        logEvent("Climb aborted")
+    }
+
     override fun reset() = stopClimber()
 }
 
