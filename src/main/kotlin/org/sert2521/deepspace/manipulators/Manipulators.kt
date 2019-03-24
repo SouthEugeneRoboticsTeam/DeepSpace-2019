@@ -1,5 +1,6 @@
 package org.sert2521.deepspace.manipulators
 
+import edu.wpi.first.wpilibj.Compressor
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.InterruptHandlerFunction
 import org.sert2521.deepspace.Sensors
@@ -21,6 +22,8 @@ object Manipulators {
     private val hatchPanelSwitch = DigitalInput(Sensors.CLAW_SWITCH).invert()
     private val conveyorSwitch = DigitalInput(Sensors.CONVEYOR_SWITCH).invert()
 
+    private val compressor = Compressor()
+
     val hasCargoInConveyor get() = conveyorSwitch.get()
     val hasHatchPanel get() = hatchPanelSwitch.get()
 
@@ -31,6 +34,17 @@ object Manipulators {
             hasHatchPanel -> GamePiece.HATCH_PANEL
             hasCargo -> GamePiece.CARGO
             else -> null
+        }
+
+    var compressorEnabled = true
+        set(value) {
+            field = value
+
+            if (value) {
+                compressor.start()
+            } else {
+                compressor.stop()
+            }
         }
 
     init {

@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.drivetrain.drive
 import org.sert2521.deepspace.drivetrain.driveTimed
+import org.sert2521.deepspace.manipulators.Manipulators
 import org.sert2521.deepspace.util.PIDFController
 import org.sert2521.deepspace.util.timer
 import org.sert2521.deepspace.util.tol
@@ -126,6 +127,8 @@ suspend fun ClimberDrive.driveTimed(time: Double, reverse: Boolean = false) = us
 
 suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, ClimberDrive, Drivetrain, name = "Climber Sequence") {
     Climber.logEvent("Elevating to ${state.name}")
+
+    Manipulators.compressorEnabled = false
 
     // Elevate the robot to the desired state
     val elevateRobot = launch(MeanlibDispatcher) { Climber.elevateWithPidTo(state) }
