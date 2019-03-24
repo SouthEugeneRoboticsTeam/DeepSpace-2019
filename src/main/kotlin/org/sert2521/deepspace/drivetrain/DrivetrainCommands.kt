@@ -72,9 +72,6 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean 
         }
     }
 
-    // Pickup hatch panel if currently does not have game piece
-    val shouldPickup = Manipulators.currentGamePiece == null
-
     vision.locked = true
 
     // Wait for light to turn on
@@ -91,8 +88,8 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean 
         val yPosition = pose.yDistance / 12.0
         val angle = (pose.targetAngle + pose.robotAngle) * -1
 
-        val oldPath = path.easeCurve.getDerivative(time)
-        var oldDuration = path.duration
+        val previousSlope = path.easeCurve.getDerivative(time)
+        var previousDuration = path.duration
 
         if (path.xyCurve.headPoint != null) path.xyCurve.removePoint(path.xyCurve.headPoint)
         if (path.xyCurve.tailPoint != null) path.xyCurve.removePoint(path.xyCurve.tailPoint)
@@ -100,15 +97,15 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean 
         path.addPointToEnd(0.0, 0.0, angle = 0.0, magnitude = yPosition / 3.0)
         path.addPointToEnd(xPosition, yPosition, angle = angle, magnitude = yPosition / 3.0)
 
-        if (oldDuration == 0.0) oldDuration = path.length / 4.0 + 1.0
+        if (previousDuration == 0.0) previousDuration = path.length / 4.0 + 1.0
 
-        path.addEasePointToEnd(time, 0.0, slope = oldPath, magnitude = 1.0)
-        path.addEasePointToEnd(oldDuration, 1.0, slope = 0.0, magnitude = 1.0)
+        path.addEasePointToEnd(time, 0.0, slope = previousSlope, magnitude = 1.0)
+        path.addEasePointToEnd(previousDuration, 1.0, slope = 0.0, magnitude = 1.0)
 
         path.easeCurve.headKey = path.easeCurve.getKey(time)
-        path.easeCurve.tailKey = path.easeCurve.getKey(oldDuration)
+        path.easeCurve.tailKey = path.easeCurve.getKey(previousDuration)
 
-        path.duration = oldDuration
+        path.duration = previousDuration
 
 //        println("""
 //            ----------------------------------------------------
@@ -131,6 +128,9 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean 
         updatePath(0.0, Vision.getOffset(0.0))
 
         vision.locked = false
+
+        // Pickup hatch panel if currently does not have game piece
+        val shouldPickup = Manipulators.currentGamePiece == null
 
         when {
             shouldPickup -> GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.25) }, {
