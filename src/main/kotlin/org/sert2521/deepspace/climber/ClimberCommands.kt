@@ -126,90 +126,93 @@ suspend fun ClimberDrive.driveTimed(time: Double, reverse: Boolean = false) = us
 }
 
 suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, ClimberDrive, Drivetrain, name = "Climber Sequence") {
-    Climber.logEvent("Elevating to ${state.name}")
+    try {
+        Climber.logEvent("Elevating to ${state.name}")
 
-    Manipulators.compressorEnabled = false
+        Manipulators.compressorEnabled = false
 
-    // Elevate the robot to the desired state
-    val elevateRobot = launch(MeanlibDispatcher) { Climber.elevateWithPidTo(state) }
+        // Elevate the robot to the desired state
+        val elevateRobot = launch(MeanlibDispatcher) { Climber.elevateWithPidTo(state) }
 
-    // Wait for the legs to reach the desired state
-    suspendUntil {
-        Climber.frontLegPosition >= state.position - ALLOWED_CLIMBER_ERROR &&
-        Climber.rearLegPosition >= state.position - ALLOWED_CLIMBER_ERROR
-    }
+        // Wait for the legs to reach the desired state
+        suspendUntil {
+            Climber.frontLegPosition >= state.position - ALLOWED_CLIMBER_ERROR &&
+                Climber.rearLegPosition >= state.position - ALLOWED_CLIMBER_ERROR
+        }
 
-    Climber.logEvent("Done elevating, driving")
+        Climber.logEvent("Done elevating, driving")
 
-    // Drive the robot forwards indefinitely
-    val runForwardUntilRearLidar = launch(MeanlibDispatcher) {
+        // Drive the robot forwards indefinitely
+        val runForwardUntilRearLidar = launch(MeanlibDispatcher) {
+            parallel(
+                { Drivetrain.drive(-0.20) },
+                { ClimberDrive.drive() }
+            )
+        }
+
+        // Wait until the rear lidar is above the step
+        suspendUntil { Climber.rearOverStep }
+
+        // Cancel all driving and holding and prepare to lift legs
+        runForwardUntilRearLidar.cancelAndJoin()
+        elevateRobot.cancelAndJoin()
+
+        Climber.logEvent("Retracting rear legs")
+
+        // Raise the rear legs, while keeping the front at the desired state
+        val raiseRear = launch(MeanlibDispatcher) {
+            parallel(
+                { Climber.elevateRearTo(ClimberState.UP) },
+                { ClimberDrive.driveTimed(0.15, true) }
+            )
+        }
+
+        // Wait until the rear leg is up
+        suspendUntil { Climber.rearLegPosition <= 0 }
+
+        Climber.logEvent("Done retracting rear legs, driving")
+
+        // Drive forwards using the drivetrain and climber driveOpenLoop motor
+        val runForwardUntilFrontLidar = launch(MeanlibDispatcher) {
+            parallel(
+                { Drivetrain.drive(-0.15) },
+                { ClimberDrive.drive() }
+            )
+        }
+
+        // Wait until the front lidar is above the step
+        suspendUntil { Climber.frontOverStep }
+
+        // Cancel all driving and holding and prepare to lift legs
+        runForwardUntilFrontLidar.cancelAndJoin()
+        raiseRear.cancelAndJoin()
+
+        Climber.logEvent("Retracting front legs")
+
+        // Raise front legs and jerk the drivetrain to ensure legs don't catch
+        val raiseFront = launch(MeanlibDispatcher) {
+            parallel(
+                { Climber.elevateFrontTo(ClimberState.UP) },
+                { Drivetrain.driveTimed(0.15, 0.15) }
+            )
+        }
+
+        // Wait until the front legs are up
+        suspendUntil { Climber.frontLegPosition <= 0 }
+
+        // Stop raising
+        raiseFront.cancelAndJoin()
+
+        Climber.logEvent("Done retracting front legs, driving")
+
+        // Finish driving onto platform
         parallel(
-            { Drivetrain.drive(-0.20) },
-            { ClimberDrive.drive() }
+            { Drivetrain.driveTimed(0.75, -0.35) },
+            { ClimberDrive.driveTimed(0.75) }
         )
+
+        Climber.logEvent("Climb complete")
+    } finally {
+        Manipulators.compressorEnabled = true
     }
-
-    // Wait until the rear lidar is above the step
-    suspendUntil { Climber.rearOverStep }
-
-    // Cancel all driving and holding and prepare to lift legs
-    runForwardUntilRearLidar.cancelAndJoin()
-    elevateRobot.cancelAndJoin()
-
-    Climber.logEvent("Retracting rear legs")
-
-    // Raise the rear legs, while keeping the front at the desired state
-    val raiseRear = launch(MeanlibDispatcher) {
-        parallel(
-            { Climber.elevateRearTo(ClimberState.UP) },
-            { ClimberDrive.driveTimed(0.15, true) }
-        )
-    }
-
-    // Wait until the rear leg is up
-    suspendUntil { Climber.rearLegPosition <= 0 }
-
-    Climber.logEvent("Done retracting rear legs, driving")
-
-    // Drive forwards using the drivetrain and climber driveOpenLoop motor
-    val runForwardUntilFrontLidar = launch(MeanlibDispatcher) {
-        parallel(
-            { Drivetrain.drive(-0.15) },
-            { ClimberDrive.drive() }
-        )
-    }
-
-    // Wait until the front lidar is above the step
-    suspendUntil { Climber.frontOverStep }
-
-    // Cancel all driving and holding and prepare to lift legs
-    runForwardUntilFrontLidar.cancelAndJoin()
-    raiseRear.cancelAndJoin()
-
-    Climber.logEvent("Retracting front legs")
-
-    // Raise front legs and jerk the drivetrain to ensure legs don't catch
-    val raiseFront = launch(MeanlibDispatcher) {
-        parallel(
-            { Climber.elevateFrontTo(ClimberState.UP) },
-            { Drivetrain.driveTimed(0.15, 0.15) }
-        )
-    }
-
-    // Wait until the front legs are up
-    suspendUntil { Climber.frontLegPosition <= 0 }
-
-    // Stop raising
-    raiseFront.cancelAndJoin()
-
-    Climber.logEvent("Done retracting front legs, driving")
-
-    // Finish driving onto platform
-    parallel({
-        Drivetrain.driveTimed(0.75, -0.35)
-    }, {
-        ClimberDrive.driveTimed(0.75)
-    })
-
-    Climber.logEvent("Climb complete")
 }
