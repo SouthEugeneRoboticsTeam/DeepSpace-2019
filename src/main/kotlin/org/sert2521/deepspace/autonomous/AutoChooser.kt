@@ -71,8 +71,8 @@ enum class AutoMode(val command: suspend () -> Unit) {
                 "No Pickup" to Constraint.NO_PICKUP
         )
         val gamePieceChooser = SendableChooser(
-            "Hatch Panel" to GamePiece.HATCH_PANEL,
-            "Cargo" to GamePiece.CARGO
+                "Hatch Panel" to GamePiece.HATCH_PANEL,
+                "Cargo" to GamePiece.CARGO
         )
 
         val start get() = startChooser.selected ?: StartPosition(Location.MIDDLE, Level.ONE)
