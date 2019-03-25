@@ -26,12 +26,12 @@ import java.util.Date
 private suspend fun releaseHatchPanel() {
     GlobalScope.parallel({
         delay(0.5)
-        timer(1.0) {
-            Drivetrain.driveOpenLoop(-0.3, -0.3)
+        timer(0.75) {
+            Drivetrain.driveOpenLoop(-0.4, -0.4)
         }
     }, {
         val timeStart = Date().time
-        Claw.release(true) { Date().time > timeStart + 1500 }
+        Claw.release(true) { Date().time > timeStart + 1250 }
     })
 }
 
@@ -51,7 +51,7 @@ suspend fun crossBaseline() {
     }
 }
 
-suspend fun levelOneToRocket(start: AutoMode.StartPosition, pickup: Boolean) {
+suspend fun levelOneToRocketFront(start: AutoMode.StartPosition, pickup: Boolean) {
     val auto = autonomi["Paths"]
 
     auto.isMirrored = start.location == AutoMode.Location.RIGHT
@@ -59,21 +59,25 @@ suspend fun levelOneToRocket(start: AutoMode.StartPosition, pickup: Boolean) {
     try {
         Drivetrain.driveAlongPath(auto["HAB to Rocket Front"], 0.2)
 
-        Drivetrain.alignWithVision(VisionSource.Cargo)
+        Drivetrain.alignWithVision(VisionSource.Cargo, true)
 
-        if (pickup) {
-            GlobalScope.parallel({
-                delay(0.5)
-                Drivetrain.driveAlongPath(auto["Rocket Front to Reverse"], 0.2)
-            }, {
-                val timeStart = Date().time
-                Claw.release(true) { Date().time > timeStart + 1500 }
-            })
+        releaseHatchPanel()
+    } finally {
+        println("Done following path")
+    }
+}
 
-//            Drivetrain.driveAlongPath(auto["Rocket Reverse to Pickup"], 0.2)
-        } else {
-            releaseHatchPanel()
-        }
+suspend fun levelOneToRocketRear(start: AutoMode.StartPosition, pickup: Boolean) {
+    val auto = autonomi["Paths"]
+
+    auto.isMirrored = start.location == AutoMode.Location.RIGHT
+
+    try {
+        Drivetrain.driveAlongPath(auto["HAB to Rocket Rear"], 0.2)
+
+        Drivetrain.alignWithVision(VisionSource.Cargo, true)
+
+        releaseHatchPanel()
     } finally {
         println("Done following path")
     }
@@ -89,21 +93,9 @@ suspend fun levelOneToCargoSide(start: AutoMode.StartPosition, gamePiece: GamePi
     try {
         Drivetrain.driveAlongPath(auto["HAB to Cargo Side"], 0.1)
 
-        Drivetrain.alignWithVision(VisionSource.Cargo)
+        Drivetrain.alignWithVision(VisionSource.Cargo, true)
 
-        if (pickup) {
-            GlobalScope.parallel({
-                delay(0.5)
-                Drivetrain.driveAlongPath(auto["Rocket Front to Reverse"], 0.1)
-            }, {
-                val timeStart = Date().time
-                Claw.release(true) { Date().time > timeStart + 1500 }
-            })
-
-            Drivetrain.driveAlongPath(auto["Rocket Reverse to Pickup"], 0.1)
-        } else {
-            releaseHatchPanel()
-        }
+        releaseHatchPanel()
     } finally {
         println("Done following path")
     }
@@ -116,23 +108,11 @@ suspend fun levelOneToCargoFront(start: AutoMode.StartPosition, pickup: Boolean)
     if (start.location != AutoMode.Location.MIDDLE) return
 
     try {
-        Drivetrain.driveAlongPath(auto["HAB to Cargo Front"], 0.1)
+        Drivetrain.driveAlongPath(auto["Middle HAB to Left Cargo Front"], 0.1)
 
-        Drivetrain.alignWithVision(VisionSource.Cargo)
+        Drivetrain.alignWithVision(VisionSource.Cargo, true)
 
-        if (pickup) {
-            GlobalScope.parallel({
-                delay(0.5)
-                Drivetrain.driveAlongPath(auto["Cargo Front to Reverse"], 0.1)
-            }, {
-                val timeStart = Date().time
-                Claw.release(true) { Date().time > timeStart + 1500 }
-            })
-
-            Drivetrain.driveAlongPath(auto["Cargo Front Reverse to Pickup"], 0.1)
-        } else {
-            releaseHatchPanel()
-        }
+        releaseHatchPanel()
     } finally {
         println("Done following path")
     }

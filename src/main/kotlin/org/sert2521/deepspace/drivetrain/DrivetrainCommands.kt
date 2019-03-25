@@ -21,6 +21,7 @@ import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.delay
 import org.team2471.frc.lib.coroutines.parallel
 import org.team2471.frc.lib.coroutines.periodic
+import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.use
 import org.team2471.frc.lib.math.deadband
 import org.team2471.frc.lib.motion.following.driveAlongPath
@@ -74,15 +75,15 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean 
 
     vision.locked = true
 
-    // Wait for light to turn on
-    delay(0.2)
+    // Wait for light to turn on and target to be found
+    suspendUntil { vision.found }
 
     val path = Path2D()
 
     suspend fun updatePath(time: Double, offset: Double) {
         if (!vision.found) return
 
-        val pose = vision.getMedianPose(0.33, offset = offset)
+        val pose = vision.getMedianPose(0.5, offset = offset)
 
         val xPosition = pose.xDistance / 12.0
         val yPosition = pose.yDistance / 12.0
@@ -106,29 +107,15 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean 
         path.easeCurve.tailKey = path.easeCurve.getKey(previousDuration)
 
         path.duration = previousDuration
-
-//        println("""
-//            ----------------------------------------------------
-//            PATH UPDATED
-//            ----------------------------------------------------
-//            Length: ${path.length}, Tangent: ${path.getTangent(time)}
-//            Head: ${path.xyCurve.headPoint}, Tail: ${path.xyCurve.tailPoint}
-//            Duration (w/ Speed): ${path.durationWithSpeed}, (w/o Speed): ${path.duration}
-//            Ease head: ${path.easeCurve.headKey}, Tail: ${path.easeCurve.tailKey}
-//            Slope: $oldPath, ${path.easeCurve.getDerivative(time)}
-//            ----------------------------------------------------
-//        """.trimIndent())
     }
 
-    updatePath(0.0, Vision.getOffset(24.0))
+    updatePath(0.0, Vision.getOffset(-4.0))
 
     driveAlongPath(path, extraTime = 0.1)
 
+    vision.locked = false
+
     if (!alignOnly) {
-        updatePath(0.0, Vision.getOffset(0.0))
-
-        vision.locked = false
-
         // Pickup hatch panel if currently does not have game piece
         val shouldPickup = Manipulators.currentGamePiece == null
 
@@ -141,7 +128,9 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean 
         }
     }
 
-    vision.locked = false
+    timer(0.35) {
+        Drivetrain.driveOpenLoop(0.25, 0.25)
+    }
 
     cancelJob.cancelAndJoin()
 }

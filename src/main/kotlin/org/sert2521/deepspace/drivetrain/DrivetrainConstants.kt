@@ -9,8 +9,8 @@ internal const val DISTANCE_D = 0.015
 internal const val MAX_VELOCITY = 10.0 // ft/s
 
 internal val robotConfig = RobotParameters(
-    robotWidth = 27.0 / 12.0,
-    robotLength = 32.25 / 12.0
+    robotWidth = 34.0 / 12.0,
+    robotLength = 39.0 / 12.0
 )
 
 internal val drivetrainConfig = ArcadeParameters(

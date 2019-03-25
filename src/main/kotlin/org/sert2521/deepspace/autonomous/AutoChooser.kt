@@ -22,7 +22,8 @@ enum class AutoMode(val command: suspend () -> Unit) {
 
     CROSS_BASELINE({ crossBaseline() }),
 
-    LEVEL_ONE_TO_ROCKET({ levelOneToRocket(start, constraint != Constraint.NO_PICKUP) }),
+    LEVEL_ONE_TO_ROCKET_FRONT({ levelOneToRocketFront(start, constraint != Constraint.NO_PICKUP) }),
+    LEVEL_ONE_TO_ROCKET_REAR({ levelOneToRocketRear(start, constraint != Constraint.NO_PICKUP) }),
     LEVEL_ONE_TO_CARGO_SIDE({ levelOneToCargoSide(start, gamePiece, constraint != Constraint.NO_PICKUP) }),
     LEVEL_ONE_TO_CARGO_FRONT({ levelOneToCargoFront(start, constraint != Constraint.NO_PICKUP) }),
 
@@ -42,7 +43,7 @@ enum class AutoMode(val command: suspend () -> Unit) {
     }
 
     enum class Objective {
-        NONE, BASELINE, CARGO_FRONT, CARGO_SIDE, ROCKET_FRONT
+        NONE, BASELINE, CARGO_FRONT, CARGO_SIDE, ROCKET_FRONT, ROCKET_REAR
     }
 
     enum class Constraint {
@@ -62,7 +63,8 @@ enum class AutoMode(val command: suspend () -> Unit) {
                 "Baseline" to Objective.BASELINE,
                 "Cargo Front" to Objective.CARGO_FRONT,
                 "Cargo Side" to Objective.CARGO_SIDE,
-                "Rocket Front" to Objective.ROCKET_FRONT
+                "Rocket Front" to Objective.ROCKET_FRONT,
+                "Rocket Rear" to Objective.ROCKET_REAR
         )
         val constraintChooser = SendableChooser(
                 "None" to Constraint.NONE,
@@ -87,7 +89,11 @@ enum class AutoMode(val command: suspend () -> Unit) {
                 Level.TWO -> LEVEL_TWO_TO_CARGO_SIDE
             }
             Objective.ROCKET_FRONT -> when (start.level) {
-                Level.ONE -> LEVEL_ONE_TO_ROCKET
+                Level.ONE -> LEVEL_ONE_TO_ROCKET_FRONT
+                Level.TWO -> LEVEL_TWO_TO_ROCKET
+            }
+            Objective.ROCKET_REAR -> when (start.level) {
+                Level.ONE -> LEVEL_ONE_TO_ROCKET_REAR
                 Level.TWO -> LEVEL_TWO_TO_ROCKET
             }
         }
