@@ -31,7 +31,7 @@ import kotlin.math.absoluteValue
 
 private val throttle get() = primaryController.leftThumbstick.y.deadband(0.02)
 private val turn get() = primaryController.rightThumbstick.x.deadband(0.02)
-private val scale get() = 1.0 - primaryController.leftTrigger.deadband(0.02).remap(0.0..1.0, 0.0..0.5)
+private val scale get() = 1.0 - primaryController.leftTrigger.deadband(0.02)
 
 /**
  * Allows for teleoperated drive of the robot.
@@ -40,8 +40,11 @@ suspend fun Drivetrain.teleopDrive() = use(this, name = "Teleop Drive") {
     periodic(watchOverrun = false) {
         val liftScalar = (1.0 - Lift.position / LiftState.HIGH.position).remap(0.0..1.0, 0.35..1.0)
 
-        val scaledThrottle = throttle.remap(0.0..1.0, 0.0..scale) * liftScalar * -driveSpeedScalar
-        val scaledTurn = turn.remap(0.0..1.0, 0.0..scale) * liftScalar * driveSpeedScalar
+        val throttleScalar = scale.remap(0.0..1.0, 0.5..1.0)
+        val turnScalar = scale.remap(0.0..1.0, 0.4..1.0)
+
+        val scaledThrottle = throttle * throttleScalar * liftScalar * -driveSpeedScalar
+        val scaledTurn = turn * turnScalar * liftScalar * driveSpeedScalar
 
         Drivetrain.hybridDrive(scaledThrottle, 0.0, scaledTurn)
     }
