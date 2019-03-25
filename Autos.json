@@ -976,7 +976,7 @@
 			}
 		},
 		"Paths": {
-			"m_mirrored": true,
+			"m_mirrored": false,
 			"name": "Paths",
 			"paths": {
 				"HAB to Cargo Front": {
@@ -2090,7 +2090,7 @@
 		}
 	},
 	"robotParameters": {
-		"robotLength": 2.6666666666666665,
-		"robotWidth": 2.3333333333333335
+		"robotLength": 3.25,
+		"robotWidth": 2.8333333333333335
 	}
 }
