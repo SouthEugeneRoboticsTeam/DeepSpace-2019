@@ -65,6 +65,7 @@ suspend fun Drivetrain.driveTimed(time: Double, speed: Double) = use(this, name 
 
 suspend fun Drivetrain.driveStraight(speed: Double = throttle) {
     Drivetrain.reset()
+    Drivetrain.zeroEncoders()
     periodic {
         Drivetrain.straightDrive(speed)
     }
