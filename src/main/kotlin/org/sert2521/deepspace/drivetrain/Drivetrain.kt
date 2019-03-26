@@ -125,7 +125,7 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
 
     fun straightDrive(power: Double) {
         // Calculate current heading
-        val heading: Double = (leftDistance - rightDistance) / drivetrainConfig.trackWidth
+        val heading = (leftDistance - rightDistance) / drivetrainConfig.trackWidth
 
         // If heading is more than +-1 degrees, apply more power to the side that's lagging behind
         if (heading !in (0.0 tol ALLOWED_HEADING_ERROR)) {
