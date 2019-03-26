@@ -63,77 +63,85 @@ suspend fun Drivetrain.driveTimed(time: Double, speed: Double) = use(this, name 
     Drivetrain.reset()
 }
 
-suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean = false) = use(this, name = "Vision Align") {
-    val vision = Vision.getFromSource(source)
+suspend fun Drivetrain.driveStraight(speed: Double = throttle) {
+    periodic {
+        Drivetrain.straightDrive(speed)
+    }
+    Drivetrain.reset()
+}
 
-    val context = coroutineContext
-    val cancelJob = launch(MeanlibDispatcher) {
-        periodic {
-            if (throttle.absoluteValue > 0.1 || turn.absoluteValue > 0.1) {
-                vision.locked = false
-                context.cancel()
+suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean = false) =
+    use(this, name = "Vision Align") {
+        val vision = Vision.getFromSource(source)
+
+        val context = coroutineContext
+        val cancelJob = launch(MeanlibDispatcher) {
+            periodic {
+                if (throttle.absoluteValue > 0.1 || turn.absoluteValue > 0.1) {
+                    vision.locked = false
+                    context.cancel()
+                }
             }
         }
-    }
 
-    vision.locked = true
+        vision.locked = true
 
-    // Wait for light to turn on and target to be found
-    suspendUntil { vision.found }
+        // Wait for light to turn on and target to be found
+        suspendUntil { vision.found }
 
-    val path = Path2D()
+        val path = Path2D()
 
-    suspend fun updatePath(time: Double, offset: Double) {
-        if (!vision.found) return
+        suspend fun updatePath(time: Double, offset: Double) {
+            if (!vision.found) return
 
-        val pose = vision.getMedianPose(0.5, offset = offset)
+            val pose = vision.getMedianPose(0.5, offset = offset)
 
-        val xPosition = pose.xDistance / 12.0
-        val yPosition = pose.yDistance / 12.0
-        val angle = (pose.targetAngle + pose.robotAngle) * -1
+            val xPosition = pose.xDistance / 12.0
+            val yPosition = pose.yDistance / 12.0
+            val angle = (pose.targetAngle + pose.robotAngle) * -1
 
-        val previousSlope = path.easeCurve.getDerivative(time)
-        var previousDuration = path.duration
+            val previousSlope = path.easeCurve.getDerivative(time)
+            var previousDuration = path.duration
 
-        if (path.xyCurve.headPoint != null) path.xyCurve.removePoint(path.xyCurve.headPoint)
-        if (path.xyCurve.tailPoint != null) path.xyCurve.removePoint(path.xyCurve.tailPoint)
+            if (path.xyCurve.headPoint != null) path.xyCurve.removePoint(path.xyCurve.headPoint)
+            if (path.xyCurve.tailPoint != null) path.xyCurve.removePoint(path.xyCurve.tailPoint)
 
-        path.addPointToEnd(0.0, 0.0, angle = 0.0, magnitude = yPosition / 3.0)
-        path.addPointToEnd(xPosition, yPosition, angle = angle, magnitude = yPosition / 3.0)
+            path.addPointToEnd(0.0, 0.0, angle = 0.0, magnitude = yPosition / 3.0)
+            path.addPointToEnd(xPosition, yPosition, angle = angle, magnitude = yPosition / 3.0)
 
-        if (previousDuration == 0.0) previousDuration = path.length / 4.0 + 1.0
+            if (previousDuration == 0.0) previousDuration = path.length / 4.0 + 1.0
 
-        path.addEasePointToEnd(time, 0.0, slope = previousSlope, magnitude = 1.0)
-        path.addEasePointToEnd(previousDuration, 1.0, slope = 0.0, magnitude = 1.0)
+            path.addEasePointToEnd(time, 0.0, slope = previousSlope, magnitude = 1.0)
+            path.addEasePointToEnd(previousDuration, 1.0, slope = 0.0, magnitude = 1.0)
 
-        path.easeCurve.headKey = path.easeCurve.getKey(time)
-        path.easeCurve.tailKey = path.easeCurve.getKey(previousDuration)
+            path.easeCurve.headKey = path.easeCurve.getKey(time)
+            path.easeCurve.tailKey = path.easeCurve.getKey(previousDuration)
 
-        path.duration = previousDuration
-    }
-
-    updatePath(0.0, Vision.getOffset(-4.0))
-
-    driveAlongPath(path, extraTime = 0.1)
-
-    vision.locked = false
-
-    if (!alignOnly) {
-        // Pickup hatch panel if currently does not have game piece
-        val shouldPickup = Manipulators.currentGamePiece == null
-
-        when {
-            shouldPickup -> GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.25) }, {
-                delay(0.25)
-                Claw.release(true) { !Drivetrain.followingPath }
-            })
-            else -> driveAlongPath(path, extraTime = 0.25)
+            path.duration = previousDuration
         }
-    }
 
-    timer(0.35) {
-        Drivetrain.driveOpenLoop(0.25, 0.25)
-    }
+        updatePath(0.0, Vision.getOffset(-4.0))
 
-    cancelJob.cancelAndJoin()
-}
+        driveAlongPath(path, extraTime = 0.1)
+
+        vision.locked = false
+
+        if (!alignOnly) {
+            // Pickup hatch panel if currently does not have game piece
+            val shouldPickup = Manipulators.currentGamePiece == null
+
+            when {
+                shouldPickup -> GlobalScope.parallel({ driveAlongPath(path, extraTime = 0.25) }, {
+                    delay(0.25)
+                    Claw.release(true) { !Drivetrain.followingPath }
+                })
+                else -> driveAlongPath(path, extraTime = 0.25)
+            }
+        }
+
+        timer(0.35) {
+            Drivetrain.driveOpenLoop(0.25, 0.25)
+        }
+
+        cancelJob.cancelAndJoin()
+    }

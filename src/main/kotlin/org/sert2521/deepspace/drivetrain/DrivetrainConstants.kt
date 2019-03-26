@@ -6,6 +6,8 @@ import org.team2471.frc.lib.motion_profiling.following.RobotParameters
 const val DISTANCE_P = 0.00004789
 const val DISTANCE_D = 0.015
 
+const val ALLOWED_HEADING_ERROR = 0.0174533 // 1 degree
+
 val robotConfig = RobotParameters(
     robotWidth = 34.0 / 12.0,
     robotLength = 39.0 / 12.0

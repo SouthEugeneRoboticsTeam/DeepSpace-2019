@@ -7,6 +7,7 @@ import org.sert2521.deepspace.climber.ClimberState
 import org.sert2521.deepspace.climber.runClimbSequence
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.drivetrain.alignWithVision
+import org.sert2521.deepspace.drivetrain.driveStraight
 import org.sert2521.deepspace.lift.Lift
 import org.sert2521.deepspace.lift.LiftState
 import org.sert2521.deepspace.lift.elevateTo
@@ -43,6 +44,9 @@ fun initControls() {
 
         ({ dPad == Controller.Direction.UP }).whenTrue { setDriverCamera(DriverCameraSource.Forward) }
         ({ dPad == Controller.Direction.DOWN }).whenTrue { setDriverCamera(DriverCameraSource.Down) }
+
+        // Update controls when finalized
+//        ({}).whileTrue { Drivetrain.driveStraight() }
     }
 
     secondaryJoystick.run {

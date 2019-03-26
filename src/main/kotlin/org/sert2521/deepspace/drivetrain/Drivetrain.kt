@@ -6,9 +6,11 @@ import org.sert2521.deepspace.Characteristics
 import org.sert2521.deepspace.MotorControllers
 import org.sert2521.deepspace.util.Logger
 import org.sert2521.deepspace.util.Telemetry
+import org.sert2521.deepspace.util.tol
 import org.team2471.frc.lib.actuators.MotorController
 import org.team2471.frc.lib.framework.Subsystem
 import org.team2471.frc.lib.motion.following.ArcadeDrive
+import org.team2471.frc.lib.motion.following.hybridDrive
 
 /**
  * The robot's drive system.
@@ -119,6 +121,20 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
     ) {
         leftDrive.setPositionSetpoint(leftDistance, leftFeedForward)
         rightDrive.setPositionSetpoint(rightDistance, rightFeedForward)
+    }
+
+    fun straightDrive(power: Double) {
+        // Calculate current heading
+        val heading: Double = (leftDistance - rightDistance) / drivetrainConfig.trackWidth
+
+        // If heading is more than +-1 degrees, apply more power to the side that's lagging behind
+        if (heading !in (0.0 tol ALLOWED_HEADING_ERROR)) {
+            val error: Double = leftDistance - rightDistance
+            hybridDrive(power, 0.0, -error)
+        } else {
+            hybridDrive(power, 0.0, 0.0)
+        }
+
     }
 
     override fun startFollowing() {
