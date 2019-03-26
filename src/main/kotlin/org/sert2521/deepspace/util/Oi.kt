@@ -20,6 +20,7 @@ import org.sert2521.deepspace.manipulators.claw.release
 import org.sert2521.deepspace.manipulators.conveyor.Conveyor
 import org.sert2521.deepspace.manipulators.conveyor.run
 import org.sert2521.deepspace.manipulators.intakeCargo
+import org.team2471.frc.lib.input.Controller
 import org.team2471.frc.lib.input.Joystick
 import org.team2471.frc.lib.input.XboxController
 import org.team2471.frc.lib.input.whenTrue
@@ -39,6 +40,9 @@ fun initControls() {
 
         // Alignment
         ({ a }).whenTrue { Drivetrain.alignWithVision(VisionSource.Cargo, alignOnly = true) }
+
+        ({ dPad == Controller.Direction.UP }).whenTrue { setDriverCamera(DriverCameraSource.Forward) }
+        ({ dPad == Controller.Direction.DOWN }).whenTrue { setDriverCamera(DriverCameraSource.Down) }
     }
 
     secondaryJoystick.run {

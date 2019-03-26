@@ -12,6 +12,7 @@ import org.sert2521.deepspace.manipulators.bucket.Bucket
 import org.sert2521.deepspace.manipulators.claw.Claw
 import org.sert2521.deepspace.manipulators.conveyor.Conveyor
 import org.sert2521.deepspace.manipulators.intake.Intake
+import org.sert2521.deepspace.util.DriverCameraSource
 import org.sert2521.deepspace.util.Vision
 import org.sert2521.deepspace.util.VisionSource
 import org.sert2521.deepspace.util.initControls
@@ -20,6 +21,7 @@ import org.sert2521.deepspace.util.initPreferences
 import org.sert2521.deepspace.util.launchTelemetry
 import org.sert2521.deepspace.util.logBuildInfo
 import org.sert2521.deepspace.util.logger
+import org.sert2521.deepspace.util.setDriverCamera
 import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.RobotProgram
 import org.team2471.frc.lib.framework.initializeWpilib
@@ -45,6 +47,8 @@ object Robot : RobotProgram {
 
         // Turn off light
         vision.locked = false
+
+        setDriverCamera(DriverCameraSource.Forward)
 
         initControls()
         initPreferences()

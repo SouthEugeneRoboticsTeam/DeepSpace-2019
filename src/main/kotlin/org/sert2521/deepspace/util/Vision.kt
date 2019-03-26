@@ -11,6 +11,10 @@ enum class VisionSource(val path: String) {
     Cargo("cargo")
 }
 
+enum class DriverCameraSource(val key: String) {
+    Forward("forward"), Down("down")
+}
+
 /**
  * An estimated pose for the camera relative to a target. All values are given in the robot's
  * coordinate system.
@@ -140,4 +144,8 @@ abstract class Vision(source: VisionSource) {
 
         fun getOffset(offset: Double) = (robotConfig.robotLength * 12 / 2) + offset
     }
+}
+
+fun setDriverCamera(source: DriverCameraSource) {
+    NetworkTableInstance.getDefault().getEntry("/DriverCamera").setString(source.key)
 }
