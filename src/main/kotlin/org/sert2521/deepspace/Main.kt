@@ -45,7 +45,6 @@ object Robot : RobotProgram {
         AutoLoader
         Manipulators
 
-        // Turn off light
         vision.locked = false
 
         setDriverCamera(DriverCameraSource.Forward)
@@ -64,7 +63,6 @@ object Robot : RobotProgram {
     override suspend fun disable() {
         subsystems.forEach { it.disable() }
 
-        // Turn off light
         vision.locked = false
 
         suspendUntil { Math.abs(Drivetrain.speed) < 0.25 }
@@ -73,10 +71,15 @@ object Robot : RobotProgram {
 
     override suspend fun teleop() {
         println("Entering teleop...")
+
+        vision.locked = false
     }
 
     override suspend fun autonomous() {
         println("Entering autonomous...")
+
+        // Turn on vision LED without locking
+        Vision.light = true
 
         AutoMode.runAuto()
     }
