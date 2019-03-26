@@ -129,12 +129,11 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
 
         // If heading is more than +-1 degrees, apply more power to the side that's lagging behind
         if (heading !in (0.0 tol ALLOWED_HEADING_ERROR)) {
-            val error: Double = leftDistance - rightDistance
+            val error = leftDistance - rightDistance
             hybridDrive(power, 0.0, -error)
         } else {
             hybridDrive(power, 0.0, 0.0)
         }
-
     }
 
     override fun startFollowing() {
