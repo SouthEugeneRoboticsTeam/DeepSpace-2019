@@ -2,7 +2,6 @@ package org.sert2521.deepspace.climber
 
 import badlog.lib.BadLog
 import badlog.lib.DataInferMode
-import com.ctre.phoenix.motorcontrol.NeutralMode
 import edu.wpi.first.wpilibj.AnalogInput
 import org.sert2521.deepspace.MotorControllers
 import org.sert2521.deepspace.Sensors
@@ -29,8 +28,7 @@ object Climber : Subsystem("Climber") {
         MotorControllers.CLIMBER_RIGHT_REAR
     ).config {
         inverted(true)
-        ctreController.setNeutralMode(NeutralMode.Brake)
-        ctreFollowers.forEach { it.setNeutralMode(NeutralMode.Coast) }
+        coastMode()
     }
 
     private val frontLock = Servo(Servos.CLIMBER_LOCK_RIGHT_FRONT, Servos.CLIMBER_LOCK_LEFT_FRONT).apply {

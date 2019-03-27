@@ -12,7 +12,7 @@ enum class VisionSource(val path: String) {
 }
 
 enum class DriverCameraSource(val key: String) {
-    Forward("forward"), Down("down")
+    Forward("Forward"), Down("Down")
 }
 
 /**
