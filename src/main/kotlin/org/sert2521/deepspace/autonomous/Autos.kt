@@ -1,7 +1,6 @@
 package org.sert2521.deepspace.autonomous
 
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.drivetrain.alignWithVision
 import org.sert2521.deepspace.manipulators.GamePiece
@@ -11,8 +10,8 @@ import org.sert2521.deepspace.manipulators.conveyor.Conveyor
 import org.sert2521.deepspace.manipulators.conveyor.runTimed
 import org.sert2521.deepspace.util.VisionSource
 import org.sert2521.deepspace.util.timer
-import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.delay
+import org.team2471.frc.lib.coroutines.meanlibLaunch
 import org.team2471.frc.lib.coroutines.parallel
 import org.team2471.frc.lib.motion.following.driveAlongPath
 import java.util.Date
@@ -36,7 +35,7 @@ private suspend fun releaseHatchPanel() {
 }
 
 private fun prepareLoadedCargo() {
-    GlobalScope.launch(MeanlibDispatcher) {
+    GlobalScope.meanlibLaunch {
         Conveyor.runTimed(1.0)
     }
 }

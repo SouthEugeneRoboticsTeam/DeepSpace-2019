@@ -3,7 +3,6 @@ package org.sert2521.deepspace.drivetrain
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.launch
 import org.sert2521.deepspace.lift.Lift
 import org.sert2521.deepspace.lift.LiftState
 import org.sert2521.deepspace.manipulators.Manipulators
@@ -17,8 +16,8 @@ import org.sert2521.deepspace.util.driveSpeedScalar
 import org.sert2521.deepspace.util.primaryController
 import org.sert2521.deepspace.util.remap
 import org.sert2521.deepspace.util.timer
-import org.team2471.frc.lib.coroutines.MeanlibDispatcher
 import org.team2471.frc.lib.coroutines.delay
+import org.team2471.frc.lib.coroutines.meanlibLaunch
 import org.team2471.frc.lib.coroutines.parallel
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.coroutines.suspendUntil
@@ -67,7 +66,7 @@ suspend fun Drivetrain.alignWithVision(source: VisionSource, alignOnly: Boolean 
     val vision = Vision.getFromSource(source)
 
     val context = coroutineContext
-    val cancelJob = launch(MeanlibDispatcher) {
+    val cancelJob = meanlibLaunch {
         periodic {
             if (throttle.absoluteValue > 0.1 || turn.absoluteValue > 0.1) {
                 vision.locked = false

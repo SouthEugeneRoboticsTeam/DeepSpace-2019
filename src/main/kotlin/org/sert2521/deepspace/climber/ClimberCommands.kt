@@ -1,7 +1,6 @@
 package org.sert2521.deepspace.climber
 
 import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.launch
 import org.sert2521.deepspace.drivetrain.Drivetrain
 import org.sert2521.deepspace.drivetrain.drive
 import org.sert2521.deepspace.drivetrain.driveTimed
@@ -9,7 +8,7 @@ import org.sert2521.deepspace.manipulators.Manipulators
 import org.sert2521.deepspace.util.PIDFController
 import org.sert2521.deepspace.util.timer
 import org.sert2521.deepspace.util.tol
-import org.team2471.frc.lib.coroutines.MeanlibDispatcher
+import org.team2471.frc.lib.coroutines.meanlibLaunch
 import org.team2471.frc.lib.coroutines.parallel
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.coroutines.suspendUntil
@@ -132,7 +131,7 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
         Manipulators.compressorEnabled = false
 
         // Elevate the robot to the desired state
-        val elevateRobot = launch(MeanlibDispatcher) { Climber.elevateWithPidTo(state) }
+        val elevateRobot = meanlibLaunch { Climber.elevateWithPidTo(state) }
 
         // Wait for the legs to reach the desired state
         suspendUntil {
@@ -143,7 +142,7 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
         Climber.logEvent("Done elevating, driving")
 
         // Drive the robot forwards indefinitely
-        val runForwardUntilRearLidar = launch(MeanlibDispatcher) {
+        val runForwardUntilRearLidar = meanlibLaunch {
             parallel(
                 { Drivetrain.drive(-0.20) },
                 { ClimberDrive.drive() }
@@ -160,7 +159,7 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
         Climber.logEvent("Retracting rear legs")
 
         // Raise the rear legs, while keeping the front at the desired state
-        val raiseRear = launch(MeanlibDispatcher) {
+        val raiseRear = meanlibLaunch {
             parallel(
                 { Climber.elevateRearTo(ClimberState.UP) },
                 { ClimberDrive.driveTimed(0.15, true) }
@@ -173,7 +172,7 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
         Climber.logEvent("Done retracting rear legs, driving")
 
         // Drive forwards using the drivetrain and climber driveOpenLoop motor
-        val runForwardUntilFrontLidar = launch(MeanlibDispatcher) {
+        val runForwardUntilFrontLidar = meanlibLaunch {
             parallel(
                 { Drivetrain.drive(-0.15) },
                 { ClimberDrive.drive() }
@@ -190,7 +189,7 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
         Climber.logEvent("Retracting front legs")
 
         // Raise front legs and jerk the drivetrain to ensure legs don't catch
-        val raiseFront = launch(MeanlibDispatcher) {
+        val raiseFront = meanlibLaunch {
             parallel(
                 { Climber.elevateFrontTo(ClimberState.UP) },
                 { Drivetrain.driveTimed(0.15, 0.15) }

@@ -5,8 +5,7 @@ import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import org.team2471.frc.lib.coroutines.MeanlibDispatcher
+import org.team2471.frc.lib.coroutines.meanlibLaunch
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.framework.Subsystem
 
@@ -129,7 +128,7 @@ class Telemetry {
  */
 fun launchTelemetry() {
     if (telemetryJob == null) {
-        telemetryJob = GlobalScope.launch(MeanlibDispatcher) {
+        telemetryJob = GlobalScope.meanlibLaunch {
             periodic(0.1, false) {
                 log()
 
