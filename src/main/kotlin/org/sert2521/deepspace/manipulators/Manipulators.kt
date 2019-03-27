@@ -49,7 +49,6 @@ object Manipulators {
 
     init {
         telemetry.add("Has Cargo in Conveyor") { hasCargoInConveyor }
-        telemetry.add("Has Cargo") { hasCargo }
         telemetry.add("Has Hatch Panel") { hasHatchPanel }
 
         logger.addBooleanTopic("Has Cargo in Conveyor") { hasCargoInConveyor }
