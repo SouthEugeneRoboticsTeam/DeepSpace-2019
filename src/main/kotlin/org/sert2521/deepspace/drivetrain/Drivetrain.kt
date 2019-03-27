@@ -74,12 +74,6 @@ object Drivetrain : Subsystem("Drivetrain"), ArcadeDrive {
 
         logger.addNumberTopic("Angle", "deg") { ahrs.angle }
         logger.addBooleanTopic("Following Path") { followingPath }
-        logger.addNumberTopic("Left Output", "%", "hide", "join:Drivetrain/Percent") {
-            leftDrive.output
-        }
-        logger.addNumberTopic("Right Output", "%", "hide", "join:Drivetrain/Percent") {
-            rightDrive.output
-        }
         logger.addNumberTopic("Left Distance", "ft", "hide", "join:Drivetrain/Distances") {
             leftDistance
         }
