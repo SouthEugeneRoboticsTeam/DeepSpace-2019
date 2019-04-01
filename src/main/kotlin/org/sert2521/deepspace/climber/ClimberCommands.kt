@@ -17,12 +17,12 @@ import org.team2471.frc.lib.framework.use
 private suspend fun Climber.elevateWithPidTo(state: ClimberState) = use(Climber, name = "Elevate Climber w/ PID") {
     val frontPid = when (state) {
         ClimberState.LEVEL_2 -> PIDFController(kp = 0.57, ki = 0.0065, offset = 0.275)
-        ClimberState.LEVEL_3 -> PIDFController(kp = 0.525, ki = 0.0065, offset = 0.275)
+        ClimberState.LEVEL_3 -> PIDFController(kp = 0.59, ki = 0.0065, offset = 0.285)
         else -> PIDFController()
     }
     val rearPid = when (state) {
-        ClimberState.LEVEL_2 -> PIDFController(kp = 0.55, ki = 0.005, offset = 0.20)
-        ClimberState.LEVEL_3 -> PIDFController(kp = 0.625, ki = 0.005, offset = 0.17)
+        ClimberState.LEVEL_2 -> PIDFController(kp = 0.63, ki = 0.005, offset = 0.16)
+        ClimberState.LEVEL_3 -> PIDFController(kp = 0.67, ki = 0.005, offset = 0.16)
         else -> PIDFController()
     }
 
@@ -158,20 +158,28 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
 
         Climber.logEvent("Retracting rear legs")
 
+        parallel({
+            ClimberDrive.driveTimed(0.15, true)
+            ClimberDrive.reset()
+        },
+        {
+            Drivetrain.driveTimed(0.15, 0.15)
+            Drivetrain.reset()
+        })
+
         // Raise the rear legs, while keeping the front at the desired state
         val raiseRear = meanlibLaunch {
-            parallel(
-                { Climber.elevateRearTo(ClimberState.UP) },
-                { ClimberDrive.driveTimed(0.15, true) }
-            )
+            Climber.elevateRearTo(ClimberState.UP)
         }
 
         // Wait until the rear leg is up
         suspendUntil { Climber.rearLegPosition <= 0 }
 
+        Drivetrain.reset()
+
         Climber.logEvent("Done retracting rear legs, driving")
 
-        // Drive forwards using the drivetrain and climber driveOpenLoop motor
+        // Drive forwards using the drivetrain and climber drive motor
         val runForwardUntilFrontLidar = meanlibLaunch {
             parallel(
                 { Drivetrain.drive(-0.15) },
@@ -188,12 +196,12 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
 
         Climber.logEvent("Retracting front legs")
 
-        // Raise front legs and jerk the drivetrain to ensure legs don't catch
+        // Jerk the drivetrain to ensure legs don't catch
+        Drivetrain.driveTimed(0.25, 0.15)
+        Drivetrain.reset()
+
         val raiseFront = meanlibLaunch {
-            parallel(
-                { Climber.elevateFrontTo(ClimberState.UP) },
-                { Drivetrain.driveTimed(0.15, 0.15) }
-            )
+            Climber.elevateFrontTo(ClimberState.UP)
         }
 
         // Wait until the front legs are up
