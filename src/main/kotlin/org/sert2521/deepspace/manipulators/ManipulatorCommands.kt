@@ -1,5 +1,6 @@
 package org.sert2521.deepspace.manipulators
 
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import org.sert2521.deepspace.lift.Lift
 import org.sert2521.deepspace.manipulators.conveyor.Conveyor
@@ -26,7 +27,7 @@ suspend fun Manipulators.intakeCargo(extraTime: Double? = null) = use(Conveyor, 
 
         if (extraTime != null) {
             intakeJob?.cancel()
-            intakeJob = meanlibLaunch {
+            intakeJob = GlobalScope.meanlibLaunch {
                 timer(extraTime) {
                     Conveyor.spin()
                     Intake.spin()
