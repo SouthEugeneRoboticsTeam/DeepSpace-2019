@@ -41,8 +41,8 @@ fun initControls() {
         // Alignment
         ({ a }).whenTrue { Drivetrain.alignWithVision(VisionSource.Cargo, alignOnly = true) }
 
-        ({ dPad == Controller.Direction.UP }).whenTrue { setDriverCamera(DriverCameraSource.Forward) }
-        ({ dPad == Controller.Direction.DOWN }).whenTrue { setDriverCamera(DriverCameraSource.Down) }
+        ({ x }).whenTrue { setDriverCamera(DriverCameraSource.Down) }
+        ({ y }).whenTrue { setDriverCamera(DriverCameraSource.Forward) }
     }
 
     secondaryJoystick.run {
