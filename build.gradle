@@ -35,7 +35,7 @@ dependencies {
 
     compile project("meanlib")
     compile "com.github.SouthEugeneRoboticsTeam:badlog:$badlogVersion"
-    compile "com.github.sertain.sertain:core:$sertainVersion"
+    //compile "com.github.sertain.sertain:core:$sertainVersion"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0"
     compile "com.kauailabs.navx.frc:navx-java:3.1.344"
 
@@ -45,6 +45,10 @@ dependencies {
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
 
     ktlint "com.github.shyiko:ktlint:$ktlintVersion"
+
+    compile(fileTree("C:\\Users\\Aidan\\IdeaProjects\\sertain\\core\\build\\libs") {
+        include "*.jar"
+    })
 }
 
 compileKotlin {
