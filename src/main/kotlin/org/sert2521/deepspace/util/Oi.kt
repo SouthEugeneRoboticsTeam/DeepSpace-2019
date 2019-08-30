@@ -20,16 +20,29 @@ import org.sert2521.deepspace.manipulators.claw.release
 import org.sert2521.deepspace.manipulators.conveyor.Conveyor
 import org.sert2521.deepspace.manipulators.conveyor.run
 import org.sert2521.deepspace.manipulators.intakeCargo
+import org.sertain.util.SendableChooser
 import org.team2471.frc.lib.input.Joystick
 import org.team2471.frc.lib.input.XboxController
 import org.team2471.frc.lib.input.whenTrue
 import org.team2471.frc.lib.input.whileTrue
 
+enum class ControlMode {
+    CONTROLLER, JOYSTICK
+}
+
 val primaryController by lazy { XboxController(Operator.PRIMARY_CONTROLLER) }
+val primaryJoystick by lazy { Joystick(Operator.PRIMARY_STICK) }
 val secondaryJoystick by lazy { Joystick(Operator.SECONDARY_STICK) }
 
 val driveSpeedScalar get() = Preferences.getInstance().getDouble("drive_speed_scalar", 1.0)
 val liftSpeedScalar get() = Preferences.getInstance().getDouble("lift_speed_scalar", 1.0)
+
+private val controlModeChooser = SendableChooser(
+    "Controller" to ControlMode.CONTROLLER,
+    "Joystick" to ControlMode.JOYSTICK
+)
+
+val controlMode = controlModeChooser.selected ?: ControlMode.CONTROLLER
 
 fun initControls() {
     primaryController.run {
@@ -42,6 +55,18 @@ fun initControls() {
 
         ({ x }).whenTrue { setDriverCamera(DriverCameraSource.Down) }
         ({ y }).whenTrue { setDriverCamera(DriverCameraSource.Forward) }
+    }
+
+    primaryJoystick.run {
+        // Manipulators
+        ({ getButton(1) }).whileTrue { Claw.release(true) }
+        ({ getButton(3) }).whileTrue { Manipulators.intakeCargo(2.0) }
+
+        // Alignment
+        ({ getButton(2) }).whenTrue { Drivetrain.alignWithVision(VisionSource.Cargo, alignOnly = true) }
+
+        ({ getButton(7) }).whenTrue { setDriverCamera(DriverCameraSource.Down) }
+        ({ getButton(8) }).whenTrue { setDriverCamera(DriverCameraSource.Forward) }
     }
 
     secondaryJoystick.run {

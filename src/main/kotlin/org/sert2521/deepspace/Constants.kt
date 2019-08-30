@@ -75,6 +75,7 @@ object Pneumatics {
 
 object Operator {
     const val PRIMARY_CONTROLLER = 0
+    const val PRIMARY_STICK = 2
     const val SECONDARY_STICK = 1
 }
 

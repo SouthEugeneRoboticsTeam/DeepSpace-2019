@@ -8,12 +8,15 @@ import org.sert2521.deepspace.lift.LiftState
 import org.sert2521.deepspace.manipulators.Manipulators
 import org.sert2521.deepspace.manipulators.claw.Claw
 import org.sert2521.deepspace.manipulators.claw.release
+import org.sert2521.deepspace.util.ControlMode
 import org.sert2521.deepspace.util.Vision
 import org.sert2521.deepspace.util.VisionSource
 import org.sert2521.deepspace.util.addEasePointToEnd
 import org.sert2521.deepspace.util.addPointToEnd
+import org.sert2521.deepspace.util.controlMode
 import org.sert2521.deepspace.util.driveSpeedScalar
 import org.sert2521.deepspace.util.primaryController
+import org.sert2521.deepspace.util.primaryJoystick
 import org.sert2521.deepspace.util.remap
 import org.sert2521.deepspace.util.timer
 import org.team2471.frc.lib.coroutines.delay
@@ -28,9 +31,18 @@ import org.team2471.frc.lib.motion.following.hybridDrive
 import org.team2471.frc.lib.motion_profiling.Path2D
 import kotlin.math.absoluteValue
 
-private val throttle get() = primaryController.leftThumbstick.y.deadband(0.02)
-private val turn get() = primaryController.rightThumbstick.x.deadband(0.02)
-private val scale get() = 1.0 - primaryController.leftTrigger.deadband(0.02)
+private val throttle get() = when(controlMode) {
+    ControlMode.CONTROLLER -> primaryController.leftThumbstick.y.deadband(0.02)
+    ControlMode.JOYSTICK -> primaryJoystick.y.deadband(0.02)
+}
+private val turn get() = when(controlMode) {
+    ControlMode.CONTROLLER -> primaryController.rightThumbstick.x.deadband(0.02)
+    ControlMode.JOYSTICK -> primaryJoystick.x.deadband(0.02)
+}
+private val scale get() = when(controlMode) {
+    ControlMode.CONTROLLER -> 1.0 - primaryController.leftTrigger.deadband(0.02)
+    ControlMode.JOYSTICK -> 1.0
+}
 
 /**
  * Allows for teleoperated drive of the robot.
