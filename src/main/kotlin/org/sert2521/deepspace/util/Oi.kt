@@ -1,6 +1,7 @@
 package org.sert2521.deepspace.util
 
 import edu.wpi.first.wpilibj.Preferences
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.sert2521.deepspace.Operator
 import org.sert2521.deepspace.climber.Climber
 import org.sert2521.deepspace.climber.ClimberState
@@ -42,9 +43,11 @@ private val controlModeChooser = SendableChooser(
     "Joystick" to ControlMode.JOYSTICK
 )
 
-val controlMode = controlModeChooser.selected ?: ControlMode.CONTROLLER
+val controlMode get() = controlModeChooser.selected ?: ControlMode.CONTROLLER
 
 fun initControls() {
+    SmartDashboard.putData("Control Mode", controlModeChooser)
+
     primaryController.run {
         // Manipulators
         ({ rightBumper }).whileTrue { Claw.release(true) }
