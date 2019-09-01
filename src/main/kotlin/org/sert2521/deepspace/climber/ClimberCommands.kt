@@ -17,12 +17,12 @@ import org.team2471.frc.lib.framework.use
 private suspend fun Climber.elevateWithPidTo(state: ClimberState) = use(Climber, name = "Elevate Climber w/ PID") {
     val frontPid = when (state) {
         ClimberState.LEVEL_2 -> PIDFController(kp = 0.57, ki = 0.0065, offset = 0.275)
-        ClimberState.LEVEL_3 -> PIDFController(kp = 0.59, ki = 0.0065, offset = 0.285)
+        ClimberState.LEVEL_3 -> PIDFController(kp = 0.58, ki = 0.0065, offset = 0.235)
         else -> PIDFController()
     }
     val rearPid = when (state) {
-        ClimberState.LEVEL_2 -> PIDFController(kp = 0.63, ki = 0.005, offset = 0.16)
-        ClimberState.LEVEL_3 -> PIDFController(kp = 0.67, ki = 0.005, offset = 0.16)
+        ClimberState.LEVEL_2 -> PIDFController(kp = 0.67, ki = 0.006, offset = 0.21)
+        ClimberState.LEVEL_3 -> PIDFController(kp = 0.69, ki = 0.006, offset = 0.22)
         else -> PIDFController()
     }
 
@@ -158,12 +158,13 @@ suspend fun Climber.runClimbSequence(state: ClimberState) = use(Climber, Climber
 
         Climber.logEvent("Retracting rear legs")
 
+        // Lurch forward to dislodge potentially jammed leg
         parallel({
-            ClimberDrive.driveTimed(0.15, true)
+            ClimberDrive.driveTimed(0.25, true)
             ClimberDrive.reset()
         },
         {
-            Drivetrain.driveTimed(0.15, 0.15)
+            Drivetrain.driveTimed(0.25, 0.2)
             Drivetrain.reset()
         })
 
