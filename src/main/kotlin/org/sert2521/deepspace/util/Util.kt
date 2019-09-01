@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.Timer as WPI_Timer
 class TimerScope internal constructor(var time: Double) {
     var periodicScope: PeriodicScope? = null
 
-    val period = periodicScope?.period ?: 0.0
+    val period get() = periodicScope?.period ?: 0.0
     fun stop() = periodicScope?.stop()
 }
 
