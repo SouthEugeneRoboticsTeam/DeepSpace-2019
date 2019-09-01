@@ -13,6 +13,7 @@ import org.team2471.frc.lib.coroutines.parallel
 import org.team2471.frc.lib.coroutines.periodic
 import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.use
+import kotlin.math.max
 
 private suspend fun Climber.elevateWithPidTo(state: ClimberState) = use(Climber, name = "Elevate Climber w/ PID") {
     val frontPid = when (state) {
@@ -52,14 +53,8 @@ private suspend fun Climber.elevateWithPidTo(state: ClimberState) = use(Climber,
         }
 
         // Ensure the legs don't sink by forcing the value to be at least the PID holding offset
-        val frontValue = Math.max(
-            frontPid.update(state.position + frontOffset, frontLegPosition) * frontScalar,
-            frontPid.offset
-        )
-        val rearValue = Math.max(
-            rearPid.update(state.position, rearLegPosition) * rearScalar,
-            rearPid.offset
-        )
+        val frontValue = max(frontPid.update(state.position + frontOffset, frontLegPosition) * frontScalar, frontPid.offset)
+        val rearValue = max(rearPid.update(state.position, rearLegPosition) * rearScalar, rearPid.offset)
 
         if (rearLegPosition >= 0.0) setFrontSpeed(frontValue)
         setRearSpeed(rearValue)

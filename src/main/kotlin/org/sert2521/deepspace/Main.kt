@@ -26,6 +26,7 @@ import org.team2471.frc.lib.coroutines.suspendUntil
 import org.team2471.frc.lib.framework.RobotProgram
 import org.team2471.frc.lib.framework.initializeWpilib
 import org.team2471.frc.lib.framework.runRobotProgram
+import kotlin.math.absoluteValue
 
 object Robot : RobotProgram {
     private val subsystems by lazy {
@@ -65,7 +66,7 @@ object Robot : RobotProgram {
 
         vision.locked = false
 
-        suspendUntil { Math.abs(Drivetrain.speed) < 0.25 }
+        suspendUntil { Drivetrain.speed.absoluteValue < 0.25 }
         Drivetrain.coast()
     }
 

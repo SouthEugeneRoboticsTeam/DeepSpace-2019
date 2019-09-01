@@ -121,9 +121,9 @@ fun Number.remap(fromRange: DoubleRange, toRange: DoubleRange) =
  * @return the [Color] located at a specified [percent]
  */
 fun Pair<Color, Color>.fade(percent: Double): Color {
-    val red = Math.abs(percent * second.red + (1 - percent) * first.red)
-    val green = Math.abs(percent * second.green + (1 - percent) * first.green)
-    val blue = Math.abs(percent * second.blue + (1 - percent) * first.blue)
+    val red = abs(percent * second.red + (1 - percent) * first.red)
+    val green = abs(percent * second.green + (1 - percent) * first.green)
+    val blue = abs(percent * second.blue + (1 - percent) * first.blue)
 
     return Color(red.toInt(), green.toInt(), blue.toInt())
 }

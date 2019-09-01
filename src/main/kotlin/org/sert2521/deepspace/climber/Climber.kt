@@ -11,6 +11,7 @@ import org.sert2521.deepspace.util.Servo
 import org.sert2521.deepspace.util.Telemetry
 import org.team2471.frc.lib.actuators.MotorController
 import org.team2471.frc.lib.framework.Subsystem
+import kotlin.math.pow
 
 enum class ClimberState(val position: Double) {
     UP(-0.5 / 12.0),
@@ -45,8 +46,8 @@ object Climber : Subsystem("Climber") {
     private val frontLidar = AnalogInput(Sensors.CLIMBER_FRONT_LIDAR)
     private val rearLidar = AnalogInput(Sensors.CLIMBER_REAR_LIDAR)
 
-    val frontLegPosition get() = (-0.0120787 * Math.pow(frontPot.averageValue.toDouble(), 0.950661) + 21.1877) / 12.0
-    val rearLegPosition get() = (-0.0148318 * Math.pow(rearPot.averageValue.toDouble(), 0.926422) + 25.7399) / 12.0
+    val frontLegPosition get() = (-0.0120787 * frontPot.averageValue.toDouble().pow(0.950661) + 21.1877) / 12.0
+    val rearLegPosition get() = (-0.0148318 * rearPot.averageValue.toDouble().pow(0.926422) + 25.7399) / 12.0
 
     val frontOverStep get() = frontLidar.averageValue > 700
     val rearOverStep get() = rearLidar.averageValue > 700
