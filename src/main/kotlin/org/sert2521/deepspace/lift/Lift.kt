@@ -50,11 +50,13 @@ object Lift : Subsystem("Lift") {
     private val logger = Logger(this)
 
     private val motor = MotorController(
-        MotorControllers.LIFT_RIGHT,
-        MotorControllers.LIFT_LEFT
+        MotorControllers.LIFT_LEFT,
+        MotorControllers.LIFT_RIGHT
     ).config {
         ctreController.configNeutralDeadband(0.0)
-        ctreFollowers.forEach { it.inverted = true }
+
+        ctreController.inverted = true
+        ctreFollowers.forEach { it.inverted = false }
 
         brakeMode()
         sensorPhase(true)
