@@ -31,15 +31,15 @@ import org.team2471.frc.lib.motion.following.hybridDrive
 import org.team2471.frc.lib.motion_profiling.Path2D
 import kotlin.math.absoluteValue
 
-private val throttle get() = when(controlMode) {
+private val throttle get() = when (controlMode) {
     ControlMode.CONTROLLER -> primaryController.leftThumbstick.y.deadband(0.02)
     ControlMode.JOYSTICK -> primaryJoystick.y.deadband(0.02)
 }
-private val turn get() = when(controlMode) {
+private val turn get() = when (controlMode) {
     ControlMode.CONTROLLER -> primaryController.rightThumbstick.x.deadband(0.02)
     ControlMode.JOYSTICK -> primaryJoystick.x.deadband(0.02)
 }
-private val scale get() = when(controlMode) {
+private val scale get() = when (controlMode) {
     ControlMode.CONTROLLER -> 1.0 - primaryController.leftTrigger.deadband(0.02)
     ControlMode.JOYSTICK -> 1.0
 }

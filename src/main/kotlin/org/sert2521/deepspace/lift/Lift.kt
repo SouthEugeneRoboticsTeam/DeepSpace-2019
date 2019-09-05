@@ -53,7 +53,7 @@ object Lift : Subsystem("Lift") {
         MotorControllers.LIFT_LEFT,
         MotorControllers.LIFT_RIGHT
     ).config {
-        ctreController.configNeutralDeadband(0.0)
+        ctreController.configNeutralDeadband(0.0, 0)
 
         ctreController.inverted = true
         ctreFollowers.forEach { it.inverted = false }
